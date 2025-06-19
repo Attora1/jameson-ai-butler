@@ -1,0 +1,10 @@
+export const mockTasks = [
+  {
+    fields: {
+      Name: "Fake Garage Cleanup",
+      Due: new Date().toISOString(),
+      Urgency: 4,
+      Location: "Garage"
+    }
+  }
+];
