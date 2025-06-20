@@ -2,7 +2,7 @@
 
 **Built for Bolt.new's World’s Largest Hackathon | June 2025**
 
-Jameson is a proactive, customizable AI butler designed to support neurodivergent users—especially those navigating ADHD, PTSD, and executive dysfunction. Inspired by Jarvis (Iron Man), Jameson brings British wit, emotional awareness, and real utility into your daily life.
+Jameson is a proactive, customizable AI butler designed to support neurodivergent users. Inspired by Jarvis (Iron Man) and Alfred (Batman), Jameson brings British wit, emotional awareness, and real utility into your daily life.
 
 ---
 
