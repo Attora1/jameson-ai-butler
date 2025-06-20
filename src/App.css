@@ -114,33 +114,79 @@
 }
 
 .header-buttons {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #1e1e1e;
-  border-bottom: 1px solid #444;
-  z-index: 100;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  background: darkslategrey;
+  /* To keep buttons aligned left inside the chat container */
+  justify-content: flex-start;
+  z-index: 10;
 }
 
 .settings-button,
 .clear-memory-button {
-  background: #2a2a2a;
-  border: none;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
-  color: white;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  padding: 6px 10px;
+  border: none;
+  background: #eee;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  color:#2c3e50;
+}
+
+.settings-button:hover,
+.clear-memory-button:hover {
+  background: #2c3e50;
 }
 
 .settings-button {
   font-size: 1.2rem;
 }
+
+.close-settings {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #2c3e50;
+}
+
+
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 10rem;
+  width: 100vw;
+  height: 100vh;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: auto;
+}
+
+.settings-modal {
+  background: white;
+  width: 30vw; /* half screen width */
+  max-width: 600px;
+  min-height: 300px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+}
+
 
 
 

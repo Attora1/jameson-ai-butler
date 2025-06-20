@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
 import MessageList from './components/MessageList.jsx';
 import ChatInput from './components/ChatInput.jsx';
+import SettingsModal from './components/SettingsModal.jsx';
 import { generateResponse } from './logic/AIResponseHandler.js';
 import { getWeather } from './utils/getWeather.js'; 
 import './App.css';
-import {
-  INACTIVITY_TIMEOUT_MS,
-  INACTIVITY_CHECK_INTERVAL_MS,
-  TEA_COOLDOWN_MS,
-  MOOD_TRIGGER_SHORT_MESSAGE_COUNT,
-  MOOD_TRIGGER_DELAY_MS,
-  SHORT_MESSAGE_LENGTH_THRESHOLD,
-  STORAGE_KEY,
-  PLACATION_PHRASES
-} from './constants.js';
+import { STORAGE_KEY } from './constants.js';
 
 function App() {
   const [input, setInput] = useState('');
@@ -21,7 +13,7 @@ function App() {
   const [isResponding, setIsResponding] = useState(false);
   const [hasPlacated, setHasPlacated] = useState(false);
   const [teaCooldown, setTeaCooldown] = useState(false);
-  const [skipNextResponse, setSkipNextResponse] = useState(false);
+  const [skipNextResponse, setSkipNextResponse] = useState(false); // <-- this one!
   const [moodMetrics, setMoodMetrics] = useState({
     shortMessageCount: 0,
     lastFrustrationCheck: Date.now(),
@@ -30,6 +22,9 @@ function App() {
   const [inactivityNudged, setInactivityNudged] = useState(false);
   const [welcomedBack, setWelcomedBack] = useState(false);
   const [temperature, setTemperature] = useState(null);
+  const [showSettings, setShowSettings] = useState(false); // <-- don't forget this too!
+  
+
 
   // *** NEW SETTINGS STATE ***
   const [settings, setSettings] = useState(() => {
@@ -129,37 +124,15 @@ function App() {
         onSubmit={handleSubmit}
         disabled={isResponding}
       />
+{showSettings && (
+  <SettingsModal 
+    settings={settings}
+    setSettings={setSettings}
+    setShowSettings={setShowSettings}
+  />
+)}
 
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="close-settings" onClick={() => setShowSettings(false)}>✖</button>
-            <h2>Jameson Settings</h2>
-            {/* Example input to update mode */}
-            <label>
-              Mode:
-              <select 
-                value={settings.mode} 
-                onChange={(e) => setSettings(prev => ({ ...prev, mode: e.target.value }))}
-              >
-                <option value="formal">Formal</option>
-                <option value="casual">Casual</option>
-              </select>
-            </label>
-            {/* Example input to update zip */}
-            <label>
-              Zip Code:
-              <input 
-                type="text" 
-                value={settings.zip} 
-                onChange={(e) => setSettings(prev => ({ ...prev, zip: e.target.value }))}
-              />
-            </label>
-            {/* Add more settings inputs here */}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
