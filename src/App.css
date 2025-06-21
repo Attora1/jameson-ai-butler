@@ -1,205 +1,255 @@
-/* App.css */
+:root {
+  --gold-deep: #e19127;
+  --gold-soft: #eec38a;
+  --navy-deep: #183257;
+  --blue-gray: #345682;
+  --cloud-gray: #acb6be;
+  --steel-blue: #1d2e44;
+  --gold-dark: #c9a356;
+
+  --text-light: #e0e6ed;
+  --background-dark: #15202b;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
+  background-color: var(--background-dark);
+  color: var(--text-light);
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 10rem;
-  padding: 2rem;
-}
-
-/* Mobile Optimization */
-@media (max-width: 768px) {
-  .user-message, .bot-message {
-    max-width: 90%;
-    font-size: 0.9rem;
-    padding: 0.6rem 1rem;
-  }
-  
-}
-
-
-.user-message.short-text, .bot-message.short-text {
-  max-width: 40%;
-}
-
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Messages Container */
-.messages {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  min-height: 70vh;  /* Prevent collapse */
-  overflow-y: auto;  /* Enable scroll */
-  padding: 1rem;
-  background: darkslategrey; /* Dark gray background */
 }
 
-/* Responsive Message Bubbles */
-.user-message, .bot-message {
-  max-width: 80%;
-  padding: 0.75rem 1.25rem;
-  border-radius: 1.5rem;
-  word-break: break-word;
-  position: relative;
-  animation: fadeIn 0.3s ease-out; /* Gentle appear */
-}
-
-
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* User Message Alignment */
-.user-message {
-  align-self: flex-end;     /* Right side */
-  margin-left: 30%; 
-  margin-bottom: 0.5rem;        /* Prevent overflow */
-  background: #82b7dc;       /* Blue tint */
-  border-radius: 1rem 1rem 0 1rem; /* Right-edge curves */
-  position: static !important; /* Disable float */
-  transform: none !important;
-}
-
-/* Bot Message Alignment */
-.bot-message {
-  align-self: flex-start;    /* Left side */
-  margin-right: 30%;        /* Prevent overflow */
-  background: #f5f5f5;      /* Gray tint */
-  border-radius: 1rem 1rem 1rem 0; /* Left-edge curves */
-}
-
-/* Input Form */
-.chat-input {
+.App {
+  height: 100%;
+  width: 100%;
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
+  flex-direction: column;
 }
 
-.chat-input input {
-  flex: 1;
+/* Header Buttons */
+.header-buttons {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.header-buttons button,
+.settings-button,
+.clear-memory-button {
+  color: var(--text-light);
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  margin-left: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.header-buttons button:hover {
+  background-color: var(--navy-deep);
+  color: var(--gold-deep);
+}
+
+/* Chat container */
+.chat-container {
+  background-color: var(--steel-blue);
+  flex-grow: 1;
+  overflow-y: auto;
   padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: space-between;
+  overflow-x: hidden;
+}
+
+/* Messages scroll container */
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem; /* for scrollbar spacing */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Message Bubbles */
+.message-bubble {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  max-width: 80%;
+  line-height: 1.4;
+}
+
+.message-bubble.user {
+  background-color: var(--gold-dark);
+  color: #1c1c1c;
+  align-self: flex-end;
+}
+
+.message-bubble.ai {
+  background-color: rgba(13, 33, 65, 0.548);
+  color: var(--text-light);
+  align-self: flex-start;
+}
+
+/* Make messages scrollable */
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Chat Input */
+.chat-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  gap: 0.75rem;
+  overflow: hidden;
+  flex-direction: row;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(21, 32, 43, 0.9);
+}
+
+.chat-input-container input {
+  flex: 1;
+  max-width: 600px;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--blue-gray);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
   font-size: 1rem;
 }
 
-.chat-input button {
-  padding: 1rem 2rem;
-  background: #2c3e50;
-  color: white;
+.chat-input-container button {
+  padding: 0.75rem 1.25rem;
+  background-color: var(--gold-deep);
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.chat-input button:disabled {
-  background: #95a5a6;
-  cursor: not-allowed;
-}
-
-.chat-container {
-  position: relative;
-  border: 1px solid #333;
   border-radius: 8px;
-  padding-top: 3rem; /* Make room for buttons */
-  overflow: hidden;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.header-buttons {
-  position: relative;
+.chat-input-container button:hover {
+  background-color: var(--navy-deep);
+  color: var(--gold-deep);
+}
+
+/* SETTINGS MODAL */
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(9, 26, 44, 0.5);
   display: flex;
-  gap: 10px;
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-  background: darkslategrey;
-  /* To keep buttons aligned left inside the chat container */
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
   z-index: 10;
 }
 
-.settings-button,
-.clear-memory-button {
+.settings-modal {
+  background-color: rgba(28, 60, 105, 0.7);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+  max-width: 800px;
+  width: 70%;
+  max-height: 80vh;         /* Limit height */
+  overflow-y: auto;         /* Scroll if overflow */
+  color: var(--cloud-gray);
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+.settings-modal h2 {
+  grid-column: 1 / -1;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--gold-soft);
+}
+
+.settings-modal label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.settings-modal input,
+.settings-modal select {
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid var(--blue-gray);
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(28, 60, 105, 0.9);
+  color: var(--text-light);
+  appearance: none;
   cursor: pointer;
-  font-size: 1.2rem;
-  padding: 6px 10px;
-  border: none;
-  background: #eee;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-  color:#2c3e50;
+  transition: background-color 0.3s ease;
 }
 
-.settings-button:hover,
-.clear-memory-button:hover {
-  background: #2c3e50;
-}
-
-.settings-button {
-  font-size: 1.2rem;
+.settings-modal select:hover,
+.settings-modal select:focus,
+.settings-modal .close-settings:hover {
+  background-color: rgba(20, 45, 80, 1);
+  outline: none;
+  border-color: var(--gold-soft);
+  color: var(--gold-soft);
 }
 
 .close-settings {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 1rem;
+  right: 1rem;
+  background: var(--steel-blue);
+  color: var(--text-light);
   border: none;
-  background: transparent;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #2c3e50;
-}
-
-
-.settings-overlay {
-  position: fixed;
-  top: 0;
-  left: 10rem;
-  width: 100vw;
-  height: 100vh;
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  overflow: auto;
-}
-
-.settings-modal {
-  background: white;
-  width: 30vw; /* half screen width */
-  max-width: 600px;
-  min-height: 300px;
-  padding: 20px;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  overflow-y: auto;
+  cursor: pointer;
 }
 
-
-
-
-
-/* Remove default Vite styles */
-.logo, .card, .read-the-docs {
-  display: none;
+.save-settings {
+  position: absolute;
+  bottom: 1rem;
+  right: 4rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--navy-deep);
+  color: var(--gold-deep);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 11;
 }
 
-/* 🔍 Temporary Debug Borders (Add LAST) */
-input { 
-  border: 2px solid #2ecc71 !important; /* Green border if input is active */
-}
-button { 
-  border: 2px solid #e74c3c !important; /* Red border around button */
+.save-settings:hover {
+  background-color: var(--gold-deep);
+  color: var(--navy-deep);
 }

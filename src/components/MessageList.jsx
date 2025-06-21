@@ -4,16 +4,18 @@ export default function MessageList({ messages }) {
   return (
     <div className="messages">
       {messages.length === 0 && (
-        <div className="bot-message">
+        <div className="message-bubble ai">
           <p>Jameson: Operational. Awaiting instructions. ♦tea sip♦</p>
         </div>
       )}
       {messages.map((msg, i) => (
-        <div key={i} className={msg.isUser ? 'user-message' : 'bot-message'}>
+        <div
+          key={i}
+          className={`message-bubble ${msg.isUser ? 'user' : 'ai'}`}
+        >
           <p>{msg.text}</p>
         </div>
       ))}
     </div>
   );
 }
-// This component renders the list of messages in the chat.

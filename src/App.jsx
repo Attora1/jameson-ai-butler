@@ -1,54 +1,57 @@
 import { useState, useEffect } from 'react';
 import MessageList from './components/MessageList.jsx';
 import ChatInput from './components/ChatInput.jsx';
+import ChatContainer from './components/ChatContainer.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import { generateResponse } from './logic/AIResponseHandler.js';
-import { getWeather } from './utils/getWeather.js'; 
+import { getWeather } from './utils/getWeather.js';
+import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import './App.css';
-import { STORAGE_KEY } from './constants.js';
 
 function App() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isResponding, setIsResponding] = useState(false);
-  const [hasPlacated, setHasPlacated] = useState(false);
-  const [teaCooldown, setTeaCooldown] = useState(false);
-  const [skipNextResponse, setSkipNextResponse] = useState(false); // <-- this one!
+  const [skipNextResponse, setSkipNextResponse] = useState(false);
+
   const [moodMetrics, setMoodMetrics] = useState({
     shortMessageCount: 0,
     lastFrustrationCheck: Date.now(),
   });
+
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityNudged, setInactivityNudged] = useState(false);
-  const [welcomedBack, setWelcomedBack] = useState(false);
   const [temperature, setTemperature] = useState(null);
-  const [showSettings, setShowSettings] = useState(false); // <-- don't forget this too!
-  
+  const [showSettings, setShowSettings] = useState(false);
 
-
-  // *** NEW SETTINGS STATE ***
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("JAMESON_SETTINGS");
-    return saved ? JSON.parse(saved) : { mode: "formal", zip: "48203" };
+    const parsed = saved ? JSON.parse(saved) : {};
+    return { ...DEFAULT_SETTINGS, ...parsed };
   });
 
-  // Persist settings whenever they change
+    // Persist messages to localStorage on change
+  useEffect(() => {
+    const savedMessages = localStorage.getItem(STORAGE_KEY);
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
+  }, []);
+
+  // Persist settings to localStorage on change
   useEffect(() => {
     localStorage.setItem("JAMESON_SETTINGS", JSON.stringify(settings));
   }, [settings]);
 
-  // ...existing useEffect for weather, inactivity, etc...
-
+  // Get weather based on zip
   useEffect(() => {
     async function fetchInitialWeather() {
       const weather = await getWeather(settings.zip);
       if (weather) setTemperature(weather.temperature);
     }
-  
+
     fetchInitialWeather();
   }, [settings.zip]);
-
-  // ...existing other effects and handlers...
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,76 +68,88 @@ function App() {
     setIsResponding(true);
     try {
       const weather = await getWeather(settings.zip);
-      const reply = await generateResponse(input, messages, { 
-        temperature: weather.temperature, 
-        hatesCold: weather.hatesCold,
+      const reply = await generateResponse(input, messages, {
         mode: settings.mode,
-        zip: settings.zip
+        nameFormal: settings.nameFormal,
+        nameCasual: settings.nameCasual,
+        title: settings.title,
+        mood: settings.mood,
+        voiceGender: settings.voiceGender,
+        voiceAccent: settings.voiceAccent,
+        fontFamily: settings.fontFamily,
+        fontSize: settings.fontSize,
+       memoryLimit: settings.memoryLimit,
       });
+      
       setMessages(prev => [...prev, { text: reply, isUser: false }]);
-      setMoodMetrics({
-        shortMessageCount: 0,
-        lastFrustrationCheck: Date.now()
-      });
-
     } catch (error) {
-      setMessages(prev => [...prev, { 
-        text: "♦cough♦ Technical difficulties, madam.", 
-        isUser: false 
+      setMessages(prev => [...prev, {
+        text: "♦cough♦ Technical difficulties, madam.",
+        isUser: false
       }]);
-      setMoodMetrics({
-        shortMessageCount: 0,
-        lastFrustrationCheck: Date.now()
-      });
     }
+
     setIsResponding(false);
-    setHasPlacated(false);
-  
     setMoodMetrics({
       shortMessageCount: 0,
       lastFrustrationCheck: Date.now()
     });
   };
 
-  return (
-    <div className="App">
-      <div className="header-buttons">
-        <button
-          onClick={() => setShowSettings(true)}
-          className="settings-button"
-        >
-          ⚙️
-        </button>
+useEffect(() => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+}, [messages]);
 
-        <button 
-          onClick={() => {
-            localStorage.removeItem(STORAGE_KEY);
-            setMessages([]);
-          }}
-          className='clear-memory-button'
-        >
-          Clear Memory
-        </button>
+return (
+  <div className="App">
+    {/* Header Buttons */}
+    <div className="header-buttons">
+      <button
+        onClick={() => setShowSettings(true)}
+        className="settings-button"
+      >
+        ⚙️
+      </button>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem(STORAGE_KEY);
+          setMessages([]);
+        }}
+        className="clear-memory-button"
+      >
+        Clear Memory
+      </button>
+    </div>
+
+    {/* Main Chat Container */}
+    <div className="chat-container">
+      {/* Wrap MessageList in div with "messages" class */}
+      <div className="messages">
+        <MessageList messages={messages} />
       </div>
 
-      <MessageList messages={messages} />
-      <ChatInput
-        input={input}
-        setInput={setInput}
-        onSubmit={handleSubmit}
-        disabled={isResponding}
-      />
-{showSettings && (
-  <SettingsModal 
-    settings={settings}
-    setSettings={setSettings}
-    setShowSettings={setShowSettings}
-  />
-)}
+      {/* Wrap ChatInput in div with "chat-input-container" class */}
 
-
+        <ChatInput
+          input={input}
+          setInput={setInput}
+          onSubmit={handleSubmit}
+          disabled={isResponding}
+        />
+      
     </div>
-  );
+
+    {/* Settings Modal */}
+    {showSettings && (
+      <SettingsModal
+        settings={settings}
+        setSettings={setSettings}
+        setShowSettings={setShowSettings}
+      />
+    )}
+  </div>
+);  
 }
 
 export default App;

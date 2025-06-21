@@ -1,35 +1,61 @@
 import jamesonPersona from './jamesonPersona.js';
 import { getWeather } from '../utils/getWeather.js';
+import { DEFAULT_SETTINGS } from '../constants.js';
 
+const DEFAULT_ZIP = '48203'; // Detroit, as a general fallback
 
 export async function buildPromptWithContext(messages, context = {}) {
-  // Get last 6 lines of convo
   const recentExchanges = messages
     .slice(-5)
     .map(msg => `${msg.isUser ? '[User]' : '[Jameson]'} ${msg.text}`)
     .join('\n');
 
-
-
-  // Apply user input from latest message
   const userInput = messages[messages.length - 1]?.text || '';
-  const mode = context.mode ?? "formal";
 
-  const finalContext = {
-    temperature: context?.temperature ?? 66,
-    hatesCold: context?.hatesCold ?? true,
-    mode: context?.mode ?? messages[messages.length - 1]?.mode ?? "formal"
-  };
-  
-  // 🌦 Pull from context or fallback to live weather
-  const { temperature, hatesCold } = context.temperature !== undefined && context.hatesCold !== undefined
-    ? context
-    : await getWeather(context.zip); // optional zip in context
+  const mergedSettings = { ...DEFAULT_SETTINGS, ...context };
 
-  const systemPrompt = jamesonPersona(userInput, { temperature, hatesCold, mode });
+  const {
+    mode,
+    nameFormal,
+    nameCasual,
+    partnerName,
+    childrenName,
+    userPronouns,
+    partnerPronouns,
+    zip,
+    enableWeather = true, // Weather on by default
+  } = mergedSettings;
+
+  // Defaults if weather fetch fails or disabled
+  let temperature = 66;
+  let hatesCold = false;
+
+  if (enableWeather) {
+    const zipToUse = zip || DEFAULT_ZIP;
+    try {
+      const weather = await getWeather(zipToUse);
+      if (weather) {
+        temperature = weather.temperature;
+        hatesCold = temperature < 50;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch weather:', error);
+    }
+  }
+
+  const systemPrompt = jamesonPersona(userInput, {
+    temperature,
+    hatesCold,
+    mode,
+    nameFormal,
+    nameCasual,
+    partnerName,
+    childrenName,
+    userPronouns,
+    partnerPronouns,
+  });
 
   return `${systemPrompt}\n\n${recentExchanges}`;
-} // This function builds the full prompt for the AI model by combining the Jameson persona,
-// recent conversation history, and any relevant context. 
+}
 
 export default buildPromptWithContext;

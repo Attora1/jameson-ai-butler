@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ChatInput({ input, setInput, onSubmit, disabled }) {
   return (
-    <form className="chat-input" onSubmit={onSubmit}>
+    <form className="chat-input-container" onSubmit={onSubmit}>
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
