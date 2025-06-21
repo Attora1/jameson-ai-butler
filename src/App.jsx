@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import MessageList from './components/MessageList.jsx';
-import ChatInput from './components/ChatInput.jsx';
-import ChatContainer from './components/ChatContainer.jsx';
+import MessageList from './components/Chat/MessageList.jsx';
+import ChatInput from './components/Chat/ChatInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import { generateResponse } from './logic/AIResponseHandler.js';
 import { getWeather } from './utils/getWeather.js';
 import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
-import './App.css';
+import Focus from './components/Modes/Focus.jsx';
+// Add more modes as needed
+
+import './styles/App.css';
 
 function App() {
   const [input, setInput] = useState('');
@@ -30,7 +32,22 @@ function App() {
     return { ...DEFAULT_SETTINGS, ...parsed };
   });
 
-    // Persist messages to localStorage on change
+  const renderModeComponent = () => {
+    switch (settings.mode) {
+      case 'focus':
+        return <Focus settings={settings} />;
+      case 'low_spoon':
+        return <LowSpoon settings={settings} />;
+      case 'partner_support':
+        return <PartnerSupport settings={settings} />;
+      case 'crisis':
+        return <Crisis settings={settings} />;
+      default:
+        return null;
+    }
+  };
+
+  // Load messages once on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
     if (savedMessages) {
@@ -38,20 +55,24 @@ function App() {
     }
   }, []);
 
-  // Persist settings to localStorage on change
+  // Persist settings when changed
   useEffect(() => {
     localStorage.setItem("JAMESON_SETTINGS", JSON.stringify(settings));
   }, [settings]);
 
-  // Get weather based on zip
+  // Fetch weather on zip change
   useEffect(() => {
     async function fetchInitialWeather() {
       const weather = await getWeather(settings.zip);
       if (weather) setTemperature(weather.temperature);
     }
-
     fetchInitialWeather();
   }, [settings.zip]);
+
+  // Persist messages on change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  }, [messages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,78 +99,70 @@ function App() {
         voiceAccent: settings.voiceAccent,
         fontFamily: settings.fontFamily,
         fontSize: settings.fontSize,
-       memoryLimit: settings.memoryLimit,
+        memoryLimit: settings.memoryLimit,
       });
-      
+
       setMessages(prev => [...prev, { text: reply, isUser: false }]);
     } catch (error) {
-      setMessages(prev => [...prev, {
-        text: "♦cough♦ Technical difficulties, madam.",
-        isUser: false
-      }]);
+      setMessages(prev => [
+        ...prev,
+        { text: "♦cough♦ Technical difficulties, madam.", isUser: false },
+      ]);
     }
-
     setIsResponding(false);
     setMoodMetrics({
       shortMessageCount: 0,
-      lastFrustrationCheck: Date.now()
+      lastFrustrationCheck: Date.now(),
     });
   };
 
-useEffect(() => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-}, [messages]);
+  return (
+    <div className="App">
+      {/* Header ABOVE chat only */}
+        <div className="header-buttons">
+          <button onClick={() => setShowSettings(true)} className="settings-button">
+            ⚙️
+          </button>
+          <button
+            onClick={() => {
+              localStorage.removeItem(STORAGE_KEY);
+              setMessages([]);
+            }}
+            className="clear-memory-button"
+          >
+            Clear Memory
+          </button>
+        </div>
 
-return (
-  <div className="App">
-    {/* Header Buttons */}
-    <div className="header-buttons">
-      <button
-        onClick={() => setShowSettings(true)}
-        className="settings-button"
-      >
-        ⚙️
-      </button>
+      <div className="main-content">
+        {/* Chat Section */}
+        <div className="chat-container">
+          <div className="messages">
+            <MessageList messages={messages} />
+          </div>
+          <ChatInput
+            input={input}
+            setInput={setInput}
+            onSubmit={handleSubmit}
+            disabled={isResponding}
+          />
+        </div>
 
-      <button
-        onClick={() => {
-          localStorage.removeItem(STORAGE_KEY);
-          setMessages([]);
-        }}
-        className="clear-memory-button"
-      >
-        Clear Memory
-      </button>
-    </div>
-
-    {/* Main Chat Container */}
-    <div className="chat-container">
-      {/* Wrap MessageList in div with "messages" class */}
-      <div className="messages">
-        <MessageList messages={messages} />
+        {/* Mode panel renders the active mode */}
+        <div className="mode-panel">{renderModeComponent()}</div>
       </div>
 
-      {/* Wrap ChatInput in div with "chat-input-container" class */}
-
-        <ChatInput
-          input={input}
-          setInput={setInput}
-          onSubmit={handleSubmit}
-          disabled={isResponding}
+      {/* Settings modal */}
+      {showSettings && (
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={settings}
+          setSettings={setSettings}
         />
-      
+      )}
     </div>
-
-    {/* Settings Modal */}
-    {showSettings && (
-      <SettingsModal
-        settings={settings}
-        setSettings={setSettings}
-        setShowSettings={setShowSettings}
-      />
-    )}
-  </div>
-);  
+  );
 }
 
 export default App;
