@@ -3,10 +3,15 @@ import React, { useState, useEffect } from 'react';
 const quotes = [
   "Focus on what matters, let the rest wait.",
   "Small steps every day lead to big progress.",
-  "Do one thing at a time, and do it well.",
-  "Your future self will thank you for this focus.",
+  "One thing at a time.",
   "Progress, not perfection.",
-  "Concentration is the key to unlocking your potential."
+  "Stay present, stay productive.",
+  "Every quest completed is a step closer to your goals.",
+  "You are capable of amazing things.",
+  "Stay focused, stay strong.",
+  "Your attention is your most valuable resource.",
+  "Focus on the task, not the outcome.",
+  "Every moment of focus is a moment of growth.",
 ];
 
 export default function MotivQuote() {

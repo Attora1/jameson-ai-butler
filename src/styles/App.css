@@ -35,8 +35,7 @@ html, body, #root, .App {
   width: 100%;
   max-width: 600px;
   justify-content: flex-end;
-  right: 9rem;
-  position: relative;
+
 }
 
 .header-buttons button {
@@ -56,12 +55,16 @@ html, body, #root, .App {
 
 /* Main layout for chat and focus panel side-by-side */
 .main-content {
-  flex: 1;
   display: flex;
-  gap: .5rem;
+  flex: 1;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1rem;
   padding: 1rem 2rem;
+  height: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
   overflow: hidden;
-  min-height: 0; /* important for flex children to shrink properly */
 }
 
 /* Chat container */
@@ -145,12 +148,18 @@ html, body, #root, .App {
 
 /* Focus / Mode panel */
 .mode-panel {
-  flex: 1;
-  max-width: 600px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  display: flex;
+  flex-direction: column;
   background-color: var(--background-dark);
   border-radius: 12px;
   padding: 1rem;
   overflow-y: auto;
+  max-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Settings modal overlay */
@@ -254,11 +263,3 @@ html, body, #root, .App {
   color: var(--navy-deep);
 }
 
-.motivational-quote {
-  font-style: italic;
-  font-size: 0.9rem;
-  color: var(--gold-soft);
-  margin-bottom: 1rem;
-  text-align: center;
-  user-select: none;
-}

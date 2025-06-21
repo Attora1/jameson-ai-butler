@@ -5,7 +5,7 @@ export default function MessageList({ messages }) {
     <div className="messages">
       {messages.length === 0 && (
         <div className="message-bubble ai">
-          <p>Jameson: Operational. Awaiting instructions. ♦tea sip♦</p>
+          <p>Systems operational. Awaiting instructions. ♦tea sip♦</p>
         </div>
       )}
       {messages.map((msg, i) => (
@@ -13,7 +13,7 @@ export default function MessageList({ messages }) {
           key={i}
           className={`message-bubble ${msg.isUser ? 'user' : 'ai'}`}
         >
-          <p>{msg.text}</p>
+          <p>{msg.text.replace(/^\[Jameson\] |\[User\] /, '')}</p>
         </div>
       ))}
     </div>
