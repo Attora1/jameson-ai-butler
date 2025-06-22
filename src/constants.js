@@ -1,16 +1,29 @@
 export const DEFAULT_SETTINGS = {
-  mode: "focus",
-  zip: "",               // Blank by default; uses fallback in code
-  enableWeather: true,   // Weather enabled by default
-  nameFormal: "",
-  nameCasual: "",
-  title: "Mx.",
-  mood: "partly_cloudy",
-  voiceGender: "man",
-  voiceAccent: "british",
+  nameFormal: 'User',
+  nameCasual: 'you',
+  zip: '',
+  tone: 'formal', 
+  mode: 'chat',
+  mood: 'partly_cloudy',
+  partnerName: 'partner',
+  partnerPronouns: {
+    subject: "they",
+    object: "them",
+    possessive: "their",
+    reflexive: "themself" // singular they reflexive form
+  },
+  userPronouns: {
+    subject: "they",
+    object: "them",
+    possessive: "their",
+    reflexive: "themself"
+  },
+  voiceGender: 'female', // confirm these align with voice API
+  voiceAccent: 'british',
+  fontFamily: 'sans_serif', // unify with FONT_FAMILIES values
+  fontSize: 'medium',
   memoryLimit: 25,
-  fontFamily: "default",
-  fontSize: "medium"
+  enableWeather: true,
 };
 
 // 🏷️ Dropdown option lists
@@ -21,7 +34,16 @@ export const HONORIFICS = [
   { value: "Mr.", label: "Mr." },
   { value: "Ms.", label: "Ms." },
   { value: "Dr.", label: "Dr." },
-  { value: "", label: "Other / None" }
+  { value: 'other', label: 'Other (Custom)' },
+  { value: 'none', label: 'None' }
+];
+
+export const PARTNER_TITLES = [
+  { value: 'partner', label: 'Partner' },
+  { value: 'spouse', label: 'Spouse' },
+  { value: 'wife', label: 'Wife' },
+  { value: 'husband', label: 'Husband' },
+  { value: 'other', label: 'Other (Custom)' },
 ];
 
 export const MOODS = [
@@ -33,8 +55,8 @@ export const MOODS = [
 ];
 
 export const VOICE_GENDERS = [
-  { value: "woman", label: "Woman's Voice" },
-  { value: "man", label: "Man's Voice" }
+  { value: "female", label: "Female's Voice" },
+  { value: "male", label: "Male's Voice" }
 ];
 
 export const VOICE_ACCENTS = [
@@ -47,7 +69,6 @@ export const VOICE_ACCENTS = [
   { value: "spanish", label: "Spanish Accent" },
   { value: "german", label: "German Accent" },
   { value: "italian", label: "Italian Accent" } 
-  // Future: Add regional/ethnic accents here
 ];
 
 export const MEMORY_LIMITS = [
@@ -106,8 +127,6 @@ export const PRONOUN_SETS = {
     reflexive: "xemself",
     label: "Xe/Xem",
   },
-  // Add more if you want
 };
-
 
 export const STORAGE_KEY = "JAMESON_MEMORY";

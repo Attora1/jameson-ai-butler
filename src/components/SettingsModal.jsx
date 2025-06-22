@@ -12,7 +12,7 @@ import {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const SettingsModal = ({ settings, setSettings, setShowSettings }) => {
+const SettingsModal = ({ settings, setSettings, onClose }) => {
   const [localSettings, setLocalSettings] = useState(settings);
 
   useEffect(() => {
@@ -21,20 +21,21 @@ const SettingsModal = ({ settings, setSettings, setShowSettings }) => {
 
   const handleSave = () => {
     setSettings(localSettings);
-    setShowSettings(false);
+    onClose();
   };
 
   return (
-    <div className="settings-overlay" onClick={() => setShowSettings(false)}>
-      <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="settings-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div className="settings-modal" onClick={(e) => e.stopPropagation()} tabIndex={-1}>
         <button
           className="close-settings"
-          onClick={() => setShowSettings(false)}
+          onClick={onClose}
           aria-label="Close settings modal"
+          type="button"
         >
           ✖
         </button>
-        <h2>Jameson Settings</h2>
+        <h2 id="settings-title">Jameson Settings</h2>
 
         {/* --- Personal Info --- */}
         <label>
@@ -129,7 +130,7 @@ const SettingsModal = ({ settings, setSettings, setShowSettings }) => {
           <select
             value={localSettings.tone || localSettings.mode}
             onChange={(e) =>
-              setLocalSettings(prev => ({ ...prev, mode: e.target.value }))
+              setLocalSettings(prev => ({ ...prev, tone: e.target.value }))
             }
           >
             <option value="formal">Formal</option>
@@ -161,9 +162,11 @@ const SettingsModal = ({ settings, setSettings, setShowSettings }) => {
               setLocalSettings(prev => ({ ...prev, mode: e.target.value }))
             }
           >
+            <option value="chat">Chat</option>
             <option value="low_spoon">Low Spoon</option>
             <option value="focus">Focus</option>
             <option value="partner_support">Partner Support</option>
+            <option value="crisis">Crisis</option>
           </select>
         </label>
 
@@ -250,7 +253,7 @@ const SettingsModal = ({ settings, setSettings, setShowSettings }) => {
 
         {/* Save Button */}
         <div className="settings-footer">
-          <button className="save-settings" onClick={handleSave}>
+          <button className="save-settings" onClick={handleSave} type="button">
             Save
           </button>
         </div>

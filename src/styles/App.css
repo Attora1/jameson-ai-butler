@@ -27,15 +27,12 @@ html, body, #root, .App {
   overflow: hidden;
 }
 
-
-
 .header-buttons {
   display: flex;
-  gap: .5rem;
+  gap: 0.5rem;
   width: 100%;
   max-width: 600px;
   justify-content: flex-end;
-
 }
 
 .header-buttons button {
@@ -262,4 +259,3 @@ html, body, #root, .App {
   background-color: var(--gold-deep);
   color: var(--navy-deep);
 }
-

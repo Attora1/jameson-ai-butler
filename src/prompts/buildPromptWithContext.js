@@ -2,7 +2,7 @@ import jamesonPersona from './jamesonPersona.js';
 import { getWeather } from '../utils/getWeather.js';
 import { DEFAULT_SETTINGS } from '../constants.js';
 
-const DEFAULT_ZIP = '48203'; // Detroit, as a general fallback
+const DEFAULT_ZIP = '48203'; // Detroit fallback
 
 export async function buildPromptWithContext(messages, context = {}) {
   const recentExchanges = messages
@@ -16,15 +16,27 @@ export async function buildPromptWithContext(messages, context = {}) {
 
   const {
     mode,
+    tone,
     nameFormal,
     nameCasual,
-    partnerName,
-    childrenName,
-    userPronouns,
+    partnerTitle,
+    partnerCustomTitle,
     partnerPronouns,
+    childrenName,
     zip,
-    enableWeather = true, // Weather on by default
+    mood,
+    voiceGender,
+    voiceAccent,
+    fontSize,
+    fontFamily,
+    memoryLimit,
+    enableWeather = true,
   } = mergedSettings;
+
+  // Resolve partnerName based on partnerTitle & custom title
+  const partnerName = partnerTitle === 'other'
+    ? partnerCustomTitle?.trim() || 'partner'
+    : partnerTitle || 'partner';
 
   // Defaults if weather fetch fails or disabled
   let temperature = 66;
@@ -43,16 +55,26 @@ export async function buildPromptWithContext(messages, context = {}) {
     }
   }
 
-  const systemPrompt = jamesonPersona(userInput, {
-    temperature,
-    hatesCold,
-    mode,
+  console.log('[DEBUG] Jameson context being passed:', {
+    tone,
     nameFormal,
     nameCasual,
     partnerName,
-    childrenName,
-    userPronouns,
     partnerPronouns,
+    mood,
+  });
+
+  const systemPrompt = jamesonPersona({
+    userInput,
+    temperature,
+    mode,
+    tone,
+    nameFormal,
+    nameCasual,
+    partnerName,
+    partnerPronouns,
+    childrenName,
+    mood,
   });
 
   return `${systemPrompt}\n\n${recentExchanges}`;
