@@ -80,9 +80,13 @@ Jameson is a proactive, customizable AI butler designed to support neurodivergen
 ---
 
 
-## 📄 License
+## 📄 License & Use
 
 MIT License – because Jameson believes in sharing the good silver.
+
+Jameson is open source for educational and non-commercial use under the terms outlined in the LICENSE file.  
+Please refer to the [Project Origin Statement](./Jameson_Project_Origin_Statement.md) for concept authorship and contribution guidelines.
+
 
 ---
 
@@ -95,4 +99,7 @@ MIT License – because Jameson believes in sharing the good silver.
 > **Jameson:** How about tidying just your desk? One zone, five minutes, and I’ll queue up some lo-fi for it.
 
 ---
+
+
+
 
