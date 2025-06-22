@@ -1,7 +1,7 @@
 export const DEFAULT_SETTINGS = {
   nameFormal: 'User',
   nameCasual: 'you',
-  zip: '',
+  zip: '48203',
   tone: 'formal', 
   mode: 'chat',
   lastMode: null,

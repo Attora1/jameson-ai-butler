@@ -12,14 +12,38 @@ import {
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+// Validate US zip code format
+const isValidZipCode = (zip) => {
+  if (!zip || typeof zip !== 'string') return false;
+  const cleanZip = zip.trim();
+  return /^\d{5}(-\d{4})?$/.test(cleanZip);
+};
+
 const SettingsModal = ({ settings, setSettings, onClose }) => {
   const [localSettings, setLocalSettings] = useState(settings);
+  const [zipError, setZipError] = useState('');
 
   useEffect(() => {
     setLocalSettings(settings);
   }, [settings]);
 
+  const handleZipChange = (e) => {
+    const newZip = e.target.value;
+    setLocalSettings(prev => ({ ...prev, zip: newZip }));
+    
+    // Validate zip code and show error if invalid
+    if (newZip && !isValidZipCode(newZip)) {
+      setZipError('Please enter a valid 5-digit US zip code');
+    } else {
+      setZipError('');
+    }
+  };
+
   const handleSave = () => {
+    // Ensure we have a valid zip code before saving
+    if (!localSettings.zip || !isValidZipCode(localSettings.zip)) {
+      setLocalSettings(prev => ({ ...prev, zip: '48203' })); // Use default
+    }
     setSettings(localSettings);
     onClose();
   };
@@ -67,11 +91,11 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
           <input
             type="text"
             value={localSettings.zip || ''}
-            onChange={(e) =>
-              setLocalSettings(prev => ({ ...prev, zip: e.target.value }))
-            }
+            onChange={handleZipChange}
             placeholder="e.g. 90210"
+            maxLength="10"
           />
+          {zipError && <span style={{ color: 'red', fontSize: '0.8em' }}>{zipError}</span>}
         </label>
 
         <label>
