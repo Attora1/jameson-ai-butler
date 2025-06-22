@@ -4,6 +4,7 @@ export const DEFAULT_SETTINGS = {
   zip: '',
   tone: 'formal', 
   mode: 'chat',
+  lastMode: null,
   mood: 'partly_cloudy',
   partnerName: 'partner',
   partnerPronouns: {

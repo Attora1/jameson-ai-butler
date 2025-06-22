@@ -127,6 +127,24 @@ html, body, #root, .App {
   font-size: 1rem;
 }
 
+.chat-textarea {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--blue-gray);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-light);
+  font-size: 1rem;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.4;
+  font-family: inherit;
+  max-height: calc(1.4em * 8 + 1.5rem); /* approx 8 lines + padding */
+  overflow-y: auto;
+}
+
+
+
 .chat-input-container button {
   padding: 0.75rem 1.25rem;
   background-color: var(--gold-deep);
