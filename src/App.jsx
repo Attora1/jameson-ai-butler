@@ -137,6 +137,16 @@ function App() {
       <div className="main-content">
         {/* Chat Section */}
         <div className="chat-container">
+          {/* Hackathon Badge */}
+          <div className="hackathon-badge">
+            <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
+              <img 
+                src="https://img.shields.io/badge/Bolt.new-Hackathon-blue?style=flat&logo=bolt&logoColor=white" 
+                alt="Bolt.new Hackathon"
+              />
+            </a>
+          </div>
+          
           <div className="messages">
             <MessageList messages={messages} />
           </div>
