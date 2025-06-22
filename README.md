@@ -1,6 +1,11 @@
 # 🧠 Jameson: Your AI Butler Assistant
 
-**Built for Bolt.new's World’s Largest Hackathon | June 2025**
+[![Bolt.new Hackathon](https://img.shields.io/badge/Bolt.new-Hackathon-blue?style=for-the-badge&logo=bolt&logoColor=white)](https://bolt.new)
+[![Built with Bolt](https://img.shields.io/badge/Built%20with-Bolt-orange?style=for-the-badge&logo=lightning&logoColor=white)](https://bolt.new)
+[![Hackathon 2025](https://img.shields.io/badge/Hackathon-2025-green?style=for-the-badge&logo=calendar&logoColor=white)](https://bolt.new)
+[![AI Assistant](https://img.shields.io/badge/AI-Assistant-purple?style=for-the-badge&logo=robot&logoColor=white)](https://github.com/Attora1/jameson-ai-butler)
+
+**Built for Bolt.new's World's Largest Hackathon | June 2025**
 
 Jameson is a proactive, customizable AI butler designed to support neurodivergent users. Inspired by Jarvis (Iron Man) and Alfred (Batman), Jameson brings British wit, emotional awareness, and real utility into your daily life.
 
@@ -33,7 +38,7 @@ Jameson is a proactive, customizable AI butler designed to support neurodivergen
 
 - **Reminders & Proactivity**  
   Examples:
-  - “Miss, you’ve therapy in 20 minutes. Might I suggest getting ready?”
+  - "Miss, you've therapy in 20 minutes. Might I suggest getting ready?"
   - Gentle nudges when energy is low or task-switching is hard
 
 - **Accessible UI**  
@@ -92,14 +97,10 @@ Please refer to the [Project Origin Statement](./Jameson_Project_Origin_Statemen
 
 ## 💬 Sample Interaction
 
-> **Jameson:** Good morning, miss. You’ve got low spoons today, but the bagel was an excellent choice. Shall I suggest a low-effort goal?
+> **Jameson:** Good morning, miss. You've got low spoons today, but the bagel was an excellent choice. Shall I suggest a low-effort goal?
 
 > **User:** yeah. something light.
 
-> **Jameson:** How about tidying just your desk? One zone, five minutes, and I’ll queue up some lo-fi for it.
+> **Jameson:** How about tidying just your desk? One zone, five minutes, and I'll queue up some lo-fi for it.
 
 ---
-
-
-
-
