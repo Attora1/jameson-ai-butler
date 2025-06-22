@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { buildPromptWithContext } from '../prompts/buildPromptWithContext';
 import { detectContextualMode } from '../utils/modeDetect.js';
+import { parseSpoonCount } from '../utils/parseSpoonCount.js'; // adjust path if needed
+
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_PRO_KEY);
 
@@ -12,14 +14,37 @@ export async function generateResponse(userInput, messageHistory, context) {
 
   let newContext = { ...context };
 
+
   // Update mode if needed
   if (detectedMode && detectedMode !== context.mode) {
     newContext = {
-      ...context,
+      ...newContext,
       lastMode,
       mode: detectedMode,
     };
   }
+
+  const spoonCount = parseSpoonCount(userInput);
+  if (newContext.mode === 'low_spoon' && spoonCount !== null) {
+    const suggestions = getSpoonSuggestions(spoonCount);
+    if (suggestions.length > 0) {
+      const suggestionText = suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n');
+      newContext = {
+        ...newContext,
+        spoonCount: spoonCount,
+      };
+    
+      return `Understood. Setting today's spoon count to ${spoonCount}. I'll gently work with that.\n\nMight I suggest:\n${suggestionText}`;
+    }
+  }
+
+  if (
+    newContext.mode === 'low_spoon' &&
+    (typeof newContext.spoonCount !== 'number' || isNaN(newContext.spoonCount))
+  ) {
+    return `We've shifted into Low Spoon Mode, ${newContext.nameCasual}. How many spoons are we working with today? (0 to 12)\nNo rush — we'll go at your pace.`;
+  }
+  
 
   // Save current userInput if we're still in chat mode
   if (newContext.mode === 'chat') {

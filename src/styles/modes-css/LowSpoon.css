@@ -1,0 +1,85 @@
+.low-spoon-container {
+    padding: 1rem 1.5rem;
+    background-color: var(--background-dark);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    gap: 1rem;
+  }
+  
+  .low-spoon-subtitle {
+    font-style: italic;
+    color: var(--cloud-gray);
+    margin-bottom: 0.5rem;
+  }
+  
+  .suggestions {
+    width: 100%;
+    background-color: var(--steel-blue);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(225, 145, 39, 0.4);
+  }
+  
+  .suggestions h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--gold-soft);
+    font-weight: 600;
+  }
+  
+  .suggestion-item {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--cloud-gray);
+  }
+  
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+  
+  .low-spoon-jameson-message {
+    margin-top: auto;
+    font-style: italic;
+    color: var(--gold-soft);
+    padding: 1rem 0;
+    text-align: center;
+    max-width: 90%;
+  }
+  
+  .spoon-tracker {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    background: rgba(240, 240, 255, 0.1);
+    border-radius: 24px;
+    padding: 8px 12px;
+    box-shadow: 0 0 8px var(--gold-deep);
+    user-select: none;
+    z-index: 9999;
+  }
+  
+  .spoon-icon {
+    cursor: pointer;
+    margin: 0 2px;
+    transition: fill 0.3s ease;
+  }
+  
+  
+  .spoon-icon.filled {
+    color: var(--gold-deep);
+  }
+  
+  .spoon-icon:hover,
+  .spoon-icon:focus {
+    transform: scale(1.3);
+    color: var(--gold-soft);
+    outline: none;
+  }
+  

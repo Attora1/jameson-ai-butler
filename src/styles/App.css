@@ -117,15 +117,7 @@ html, body, #root, .App {
   background-color: rgba(21, 32, 43, 0.9);
 }
 
-.chat-input-container input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--blue-gray);
-  background-color: rgba(255, 255, 255, 0.06);
-  color: var(--text-light);
-  font-size: 1rem;
-}
+
 
 .chat-textarea {
   flex: 1;
