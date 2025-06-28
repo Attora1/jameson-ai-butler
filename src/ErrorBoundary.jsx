@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-export class JamesonErrorBoundary extends Component {
+export class AELIErrorBoundary extends Component {
   state = { 
     hasError: false,
     errorMessage: '' 
@@ -14,13 +14,13 @@ export class JamesonErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error("Jameson-tier Catastrophe:", error, info);
+    console.error("AELI-tier Catastrophe:", error, info);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="jameson-error">
+        <div className="AELI-error">
           <h2>*clinks broken teacup*</h2>
           <p>Dreadfully sorry, sir. The {this.state.errorMessage} incident occurred.</p>
           <button onClick={() => this.setState({ hasError: false })}>

@@ -1,0 +1,128 @@
+/* ===============================
+   Tether CSS (tether.css)
+   For Partner Mode mini-game
+   =============================== */
+
+   canvas {
+    display: block;
+   }
+ 
+   .tether-canvas {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(230deg, #F3E8DD, #F5D9C4, #EADDE2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 20;
+  }
+  
+  
+  .orb {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #F2E1B8, #F8D9C0, #D6C6DC);
+    box-shadow: 0 0 10px rgba(242, 225, 184, 0.5);
+    animation: pulseGlow 5s ease-in-out infinite;
+  }
+  
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .line {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #D9A79E;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(217, 167, 158, 0.5);
+    transition: transform 0.2s ease;
+  }
+  .tether-modal {
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 245, 235, 0.95);
+    color: #7D6860;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(156, 122, 110, 0.2);
+    font-size: 1rem;
+    z-index: 30;
+    text-align: center;
+    opacity: 0;
+    transition: top 0.6s ease, opacity 0.6s ease;
+  }
+  
+  @keyframes slideFadeIn {
+    0% { transform: translate(-50%, -60%); opacity: 0; }
+    100% { transform: translate(-50%, -50%); opacity: 1; }
+  }
+  
+
+.tether-modal.show {
+    top: 3rem;
+    opacity: 1;
+  }
+
+  .tether-modal button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(217, 167, 158, 0.8);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .tether-modal button:hover {
+    background: rgba(217, 167, 158, 1);
+    transform: scale(1.05);
+  }
+  
+
+  .tether-button {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 210, 180, 0.7);
+    color: #7D6860;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .tether-button:hover {
+    background: rgba(255, 182, 193, 0.7);
+    transform: scale(1.05);
+  }
+
+  @keyframes softVibrate {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    25% { transform: translate(-50%, -50%) scale(1.02) rotate(0.5deg); }
+    50% { transform: translate(-50%, -50%) scale(0.99) rotate(-0.5deg); }
+    75% { transform: translate(-50%, -50%) scale(1.01) rotate(0.3deg); }
+  }
+  
+  .tether-shape {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: softVibrate 3s ease-in-out infinite;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  

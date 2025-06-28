@@ -130,4 +130,4 @@ export const PRONOUN_SETS = {
   },
 };
 
-export const STORAGE_KEY = "JAMESON_MEMORY";
+export const STORAGE_KEY = "AELI_MEMORY";

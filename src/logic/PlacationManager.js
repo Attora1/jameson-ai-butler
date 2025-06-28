@@ -3,7 +3,7 @@ export function shouldPlacate({ messages, placations, hasPlacated, teaCooldown }
   
     const lastMessage = messages[messages.length - 1];
   
-    // Don’t placate if Jameson just did
+    // Don’t placate if AELI just did
     if (placations.includes(lastMessage.text)) return false;
   
     if (lastMessage.isUser && lastMessage.text.length < 20 && !hasPlacated && !teaCooldown) {

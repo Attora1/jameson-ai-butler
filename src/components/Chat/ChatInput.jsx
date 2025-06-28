@@ -3,21 +3,37 @@ import React, { useRef, useEffect } from 'react';
 export default function ChatInput({ input, setInput, onSubmit, disabled }) {
   const textareaRef = useRef(null);
 
+  // Refocus reliably when re-enabled
   useEffect(() => {
-    if (textareaRef.current) {
+    if (!disabled && textareaRef.current) {
       textareaRef.current.focus();
-      textareaRef.current.style.height = 'auto'; // reset first
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // then expand
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [input]);
+  }, [disabled, input]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    onSubmit(e);
+    // Do not refocus here; allow the `useEffect` on disabled to handle it.
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
 
   return (
-    <form className="chat-input-container" onSubmit={onSubmit}>
+    <form className="chat-input-container" onSubmit={handleSubmit}>
       <textarea
         ref={textareaRef}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Consult Jameson..."
+        onKeyDown={handleKeyDown}
+        placeholder="Consult AELI..."
         disabled={disabled}
         rows={1}
         className="chat-textarea"

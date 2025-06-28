@@ -59,7 +59,7 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
         >
           ✖
         </button>
-        <h2 id="settings-title">Jameson Settings</h2>
+        <h2 id="settings-title">AELI Settings</h2>
 
         {/* --- Personal Info --- */}
         <label>

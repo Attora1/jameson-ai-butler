@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import './styles/App.css';
+
 import MessageList from './components/Chat/MessageList.jsx';
 import ChatInput from './components/Chat/ChatInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
@@ -6,9 +8,9 @@ import { generateResponse } from './logic/AIResponseHandler.js';
 import { getWeather } from './utils/getWeather.js';
 import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import Focus from './components/Modes/Focus.jsx';
-// Add more modes as needed
-
-import './styles/App.css';
+import LowSpoon from './components/Modes/LowSpoon.jsx';
+import PartnerSupport from './components/Modes/PartnerSupport.jsx';
+import { SpoonContext } from './context/SpoonContext.jsx';
 
 function App() {
   const [input, setInput] = useState('');
@@ -25,29 +27,34 @@ function App() {
   const [inactivityNudged, setInactivityNudged] = useState(false);
   const [temperature, setTemperature] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [spoonCount, setSpoonCount] = useState(12);
 
   const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem("JAMESON_SETTINGS");
+    const saved = localStorage.getItem("AELI_SETTINGS");
     const parsed = saved ? JSON.parse(saved) : {};
     return { ...DEFAULT_SETTINGS, ...parsed };
   });
 
   const renderModeComponent = () => {
+    const subtitle = settings.nameCasual
+      ? `Take it slow, ${settings.nameCasual}. No rush here.`
+      : `Take it slow. No rush here.`;
+
     switch (settings.mode) {
       case 'focus':
         return <Focus settings={settings} />;
       case 'low_spoon':
-        return <LowSpoon settings={settings} />;
+        return <LowSpoon settings={settings} subtitle={subtitle} />;
       case 'partner_support':
         return <PartnerSupport settings={settings} />;
       case 'crisis':
         return <Crisis settings={settings} />;
       default:
-        return null;
+        console.warn(`Unknown mode: ${settings.mode}. Defaulting to Low Spoon Mode.`);
+        return <LowSpoon settings={settings} subtitle={subtitle} />;
     }
   };
 
-  // Load messages once on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
     if (savedMessages) {
@@ -55,12 +62,10 @@ function App() {
     }
   }, []);
 
-  // Persist settings when changed
   useEffect(() => {
-    localStorage.setItem("JAMESON_SETTINGS", JSON.stringify(settings));
+    localStorage.setItem("AELI_SETTINGS", JSON.stringify(settings));
   }, [settings]);
 
-  // Fetch weather on zip change
   useEffect(() => {
     async function fetchInitialWeather() {
       const weather = await getWeather(settings.zip);
@@ -69,7 +74,6 @@ function App() {
     fetchInitialWeather();
   }, [settings.zip]);
 
-  // Persist messages on change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
@@ -89,7 +93,7 @@ function App() {
     setIsResponding(true);
     try {
       const weather = await getWeather(settings.zip);
-      const reply = await generateResponse(input, messages, {
+      const { replyText, newContext, spoonCount: parsedSpoonCount } = await generateResponse(input, messages, {
         mode: settings.mode,
         nameFormal: settings.nameFormal,
         nameCasual: settings.nameCasual,
@@ -102,7 +106,15 @@ function App() {
         memoryLimit: settings.memoryLimit,
       });
 
-      setMessages(prev => [...prev, { text: reply, isUser: false }]);
+      setMessages(prev => [...prev, { text: replyText, isUser: false }]);
+
+      if (typeof parsedSpoonCount === 'number') {
+        setSpoonCount(parsedSpoonCount);
+      }
+
+      if (newContext.mode && newContext.mode !== settings.mode) {
+        setSettings(prev => ({ ...prev, mode: newContext.mode }));
+      }
     } catch (error) {
       setMessages(prev => [
         ...prev,
@@ -117,8 +129,11 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {/* Header ABOVE chat only */}
+    <SpoonContext.Provider value={{ spoonCount, setSpoonCount }}>
+      <div className="App">
+
+
+        <div className="main-content">
         <div className="header-buttons">
           <button onClick={() => setShowSettings(true)} className="settings-button">
             ⚙️
@@ -133,45 +148,32 @@ function App() {
             Clear Memory
           </button>
         </div>
+        <div className={`chat-container ${settings.mode}-theme`}>
+        <div className="messages">
+              <MessageList messages={messages} />
+            </div>
+            <ChatInput
+              input={input}
+              setInput={setInput}
+              onSubmit={handleSubmit}
+              disabled={isResponding}
+            />
+          </div>
+          <div>
+            {renderModeComponent()}
+          </div>
 
-      <div className="main-content">
-        {/* Chat Section */}
-        <div className="chat-container">
-          {/* Hackathon Badge */}
-          <div className="hackathon-badge">
-            <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
-              <img 
-                src="https://img.shields.io/badge/Bolt.new-Hackathon-blue?style=flat&logo=bolt&logoColor=white" 
-                alt="Bolt.new Hackathon"
-              />
-            </a>
-          </div>
-          
-          <div className="messages">
-            <MessageList messages={messages} />
-          </div>
-          <ChatInput
-            input={input}
-            setInput={setInput}
-            onSubmit={handleSubmit}
-            disabled={isResponding}
-          />
+          {showSettings && (
+            <SettingsModal
+              isOpen={showSettings}
+              onClose={() => setShowSettings(false)}
+              settings={settings}
+              setSettings={setSettings}
+            />
+          )}
         </div>
-
-        {/* Mode panel renders the active mode */}
-        <div className="mode-panel">{renderModeComponent()}</div>
       </div>
-
-      {/* Settings modal */}
-      {showSettings && (
-        <SettingsModal
-          isOpen={showSettings}
-          onClose={() => setShowSettings(false)}
-          settings={settings}
-          setSettings={setSettings}
-        />
-      )}
-    </div>
+    </SpoonContext.Provider>
   );
 }
 

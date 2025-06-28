@@ -1,4 +1,4 @@
-import jamesonPersona from './jamesonPersona.js';
+import AELIPersona from './AELIPersona.js';
 import { getWeather } from '../utils/getWeather.js';
 import { DEFAULT_SETTINGS } from '../constants.js';
 
@@ -7,7 +7,7 @@ const DEFAULT_ZIP = '48203'; // Detroit fallback
 export async function buildPromptWithContext(messages, context = {}) {
   const recentExchanges = messages
     .slice(-5)
-    .map(msg => `${msg.isUser ? '[User]' : '[Jameson]'} ${msg.text}`)
+    .map(msg => `${msg.isUser ? '[User]' : '[AELI]'} ${msg.text}`)
     .join('\n');
 
   const userInput = messages[messages.length - 1]?.text || '';
@@ -55,7 +55,7 @@ export async function buildPromptWithContext(messages, context = {}) {
     }
   }
 
-  console.log('[DEBUG] Jameson context being passed:', {
+  console.log('[DEBUG] AELI context being passed:', {
     tone,
     nameFormal,
     nameCasual,
@@ -64,7 +64,7 @@ export async function buildPromptWithContext(messages, context = {}) {
     mood,
   });
 
-  const systemPrompt = jamesonPersona({
+  const systemPrompt = AELIPersona({
     userInput,
     temperature,
     mode,

@@ -24,7 +24,7 @@ export default function MessageList({ messages }) {
           key={i}
           className={`message-bubble ${msg.isUser ? 'user' : 'ai'}`}
         >
-          <p>{msg.text.replace(/^\[Jameson\] |\[User\] /, '')}</p>
+          <p>{msg.text.replace(/^\[AELI\] |\[User\] /, '')}</p>
         </div>
       ))}
     </div>

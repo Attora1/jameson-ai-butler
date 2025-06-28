@@ -13,7 +13,7 @@ function isValidZipCode(zip) {
 export async function getWeather(zip = "48203", units = "imperial") {
   // Validate and clean the zip code
   if (!isValidZipCode(zip)) {
-    console.warn("[Jameson] Invalid zip code format:", zip, "- using default");
+    console.warn("[AELI] Invalid zip code format:", zip, "- using default");
     zip = "48203"; // fallback to default valid zip
   }
 
@@ -35,7 +35,7 @@ export async function getWeather(zip = "48203", units = "imperial") {
 
     return { temperature, hatesCold };
   } catch (err) {
-    console.error("[Jameson] Weather fetch failed:", err.message);
+    console.error("[AELI] Weather fetch failed:", err.message);
     // Return fallback data instead of failing completely
     return { temperature: 66, hatesCold: true };
   }

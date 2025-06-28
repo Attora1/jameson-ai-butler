@@ -1,8 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { buildPromptWithContext } from '../prompts/buildPromptWithContext';
 import { detectContextualMode } from '../utils/modeDetect.js';
-import { parseSpoonCount } from '../utils/parseSpoonCount.js'; // adjust path if needed
-
+import { parseSpoonCount } from '../utils/parseSpoonCount.js';
+import { getSpoonSuggestions } from '../utils/getSpoonSuggestions.js';
+import { getRandomSpoonReply } from '../utils/spoonReplies.js';
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_PRO_KEY);
 
@@ -14,8 +15,7 @@ export async function generateResponse(userInput, messageHistory, context) {
 
   let newContext = { ...context };
 
-
-  // Update mode if needed
+  // Update mode if detected different
   if (detectedMode && detectedMode !== context.mode) {
     newContext = {
       ...newContext,
@@ -24,29 +24,40 @@ export async function generateResponse(userInput, messageHistory, context) {
     };
   }
 
+  // Check for spoonCount in input
   const spoonCount = parseSpoonCount(userInput);
+  console.log('[AELI DEBUG] Parsed spoonCount:', spoonCount);
+  // ...
+  
   if (newContext.mode === 'low_spoon' && spoonCount !== null) {
     const suggestions = getSpoonSuggestions(spoonCount);
-    if (suggestions.length > 0) {
-      const suggestionText = suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n');
-      newContext = {
-        ...newContext,
-        spoonCount: spoonCount,
-      };
-    
-      return `Understood. Setting today's spoon count to ${spoonCount}. I'll gently work with that.\n\nMight I suggest:\n${suggestionText}`;
-    }
+    const suggestionText = suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n');
+  
+    newContext = {
+      ...newContext,
+      spoonCount,
+    };
+  
+    return {
+      replyText: `${getRandomSpoonReply(spoonCount)}\n\nMight I suggest:\n${suggestionText}`,
+      newContext,
+      spoonCount,
+    };
   }
+  
 
   if (
     newContext.mode === 'low_spoon' &&
     (typeof newContext.spoonCount !== 'number' || isNaN(newContext.spoonCount))
   ) {
-    return `We've shifted into Low Spoon Mode, ${newContext.nameCasual}. How many spoons are we working with today? (0 to 12)\nNo rush — we'll go at your pace.`;
+    return {
+      replyText: `We've shifted into Low Spoon Mode, ${newContext.nameCasual}. How many spoons are we working with today? (0 to 12)\nNo rush — we'll go at your pace.`,
+      newContext,
+      spoonCount: null,
+    };
   }
-  
 
-  // Save current userInput if we're still in chat mode
+  // Save current userInput if in chat mode
   if (newContext.mode === 'chat') {
     newContext = {
       ...newContext,
@@ -57,16 +68,16 @@ export async function generateResponse(userInput, messageHistory, context) {
     };
   }
 
-  const fullPrompt = await buildPromptWithContext([
-    ...messageHistory,
-    { text: userInput, isUser: true }
-  ], newContext); // use updated context here
+  const fullPrompt = await buildPromptWithContext(
+    [...messageHistory, { text: userInput, isUser: true }],
+    newContext
+  );
 
   try {
     const result = await model.generateContent(fullPrompt);
-    let jamesonResponse = result.response.text().replace(/\*/g, '♦');
+    let AELIResponse = result.response.text().replace(/\*/g, '♦');
 
-    // 🧠 Follow-up if returning to Chat Mode
+    // Follow-up if returning to Chat Mode
     if (
       lastMode === 'chat' &&
       context.chatMode?.lastMessage &&
@@ -75,16 +86,25 @@ export async function generateResponse(userInput, messageHistory, context) {
       const followUpLines = [
         `We were discussing "${context.chatMode.lastMessage}", remember?`,
         `Before we switched gears, you said: "${context.chatMode.lastMessage}". Shall we circle back?`,
-        `Not to pry, but you did mention "${context.chatMode.lastMessage}". Still relevant?`
+        `Not to pry, but you did mention "${context.chatMode.lastMessage}". Still relevant?`,
       ];
-      const followUp = followUpLines[Math.floor(Math.random() * followUpLines.length)];
-      jamesonResponse += `\n\n${followUp}`;
+      const followUp =
+        followUpLines[Math.floor(Math.random() * followUpLines.length)];
+      AELIResponse += `\n\n${followUp}`;
     }
 
-    return jamesonResponse;
+    return {
+      replyText: AELIResponse,
+      newContext,
+      spoonCount: null,
+    };
   } catch (error) {
-    console.error('[Jameson] API Error:', error);
-    return "Apologies, the silver polish appears to be tarnished.";
+    console.error('[AELI] API Error:', error);
+    return {
+      replyText: "Apologies, the silver polish appears to be tarnished.",
+      newContext,
+      spoonCount: null,
+    };
   }
 }
 

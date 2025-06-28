@@ -168,7 +168,7 @@ app.get('/api/health', (req, res) => {
 // =====================
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Jameson Voice Server v1.3.0`);
+  console.log(`AELI Voice Server v1.3.0`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`ElevenLabs Key: ${process.env.ELEVENLABS_KEY ? 'Valid' : 'MISSING'}`);
   console.log(`Listening on port ${PORT}`);

@@ -1,0 +1,66 @@
+
+.mode-layout-container {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  flex: 1;
+  box-sizing: border-box;
+ 
+}
+
+
+.mode-layout-columns {
+  display: flex;
+  flex-direction: row;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem;
+  justify-content: space-between;
+  align-items: center; /* vertically center items */
+  gap: 3rem;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  gap: 1.5rem; /* spacing between timer, ring, button */
+  min-width: 300px;
+}
+
+.right-column {
+  flex: 1;
+  min-width: 320px;
+  max-width: 420px;
+}
+
+  .mode-layout-heading {
+    text-align: center;
+    font-size: 1.75rem;
+    text-shadow: 0 0 15px rgba(255, 215, 160, 0.5);
+    color: var(--gold-soft);
+    font-weight: 700;
+    
+  }
+  
+  .mode-layout-subtitle {
+    text-align: center;
+    margin-top: -0.5rem;
+    color: rgba(133, 163, 226, 0.138);
+    font-style: italic;
+    font-weight: 300;
+
+  }
+  
+
+  
+  
+  

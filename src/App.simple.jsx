@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 function App() {
   // Local storage for preferences
   const [userPrefers, setUserPrefers] = useState(() => {
-    const saved = localStorage.getItem('jamesonPrefs');
+    const saved = localStorage.getItem('AELIPrefs');
     return saved ? JSON.parse(saved) : { hates_cold: true };
   });
 
@@ -16,7 +16,7 @@ function App() {
       
       tasks.forEach(task => {
         if (task.due - Date.now() < 25*60000) {
-          alert(`Jameson: ${task.name} requires attention.`);
+          alert(`AELI: ${task.name} requires attention.`);
         }
       });
     };

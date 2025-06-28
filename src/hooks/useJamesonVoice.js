@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-export const useJamesonVoice = () => {
+export const useAELIVoice = () => {
   const [state, setState] = useState({
     isSpeaking: false,
     loading: false,

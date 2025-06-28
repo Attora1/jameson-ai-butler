@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';  
 import { GoogleGenerativeAI } from '@google/generative-ai';  
 import axios from 'axios';  
-import { JamesonErrorBoundary } from './ErrorBoundary';  
+import { AELIErrorBoundary } from './ErrorBoundary';  
 // 🛠️ Disabled ElevenLabs temporarily
-// import { useJamesonVoice } from './hooks/useJamesonVoice';  
-import { buildJamesonPrompt } from './prompts/jamesonPersona';  
+// import { useAELIVoice } from './hooks/useAELIVoice';  
+import { buildAELIPrompt } from './prompts/AELIPersona';  
 import './App.css';  
 
 // 🔴 ENVIRONMENT VARIABLES
@@ -24,11 +24,11 @@ function App() {
   const [audioAllowed, setAudioAllowed] = useState(false);
   const [userPrefers, setUserPrefers] = useState({ hates_cold: false });
   // 🛠️ Disabled voice temporarily
-  // const { speak, isSpeaking, VOICE_OPTIONS } = useJamesonVoice();  
+  // const { speak, isSpeaking, VOICE_OPTIONS } = useAELIVoice();  
   const [currentTasks, setCurrentTasks] = useState([]);
 
   // 🔴 ENV VALIDATION
-  console.log('[Jameson] Airtable Valid:', 
+  console.log('[AELI] Airtable Valid:', 
     AIRTABLE_BASE_ID?.startsWith('app') && AIRTABLE_PAT?.startsWith('pat'));
 
   // 🔴 PROACTIVE SYSTEMS (Airtable Fixes 🛠️)
@@ -115,11 +115,11 @@ function App() {
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });  
-      const result = await model.generateContent(buildJamesonPrompt(input));  
+      const result = await model.generateContent(buildAELIPrompt(input));  
       const reply = await result.response.text();
       setMessages(prev => [...prev, { text: reply, isUser: false }]);  
       // 🛠️ Temporary alert instead of voice
-      alert(`Jameson: ${reply}`);
+      alert(`AELI: ${reply}`);
     } catch (error) {
       setMessages(prev => [...prev, { 
         text: "Apologies, my circuits require polishing. More tea?",  
@@ -130,7 +130,7 @@ function App() {
 
   // 🔴 UI RENDERING (Simplified)
   return (  
-    <JamesonErrorBoundary>  
+    <AELIErrorBoundary>  
       <div className="App" onClick={() => setAudioAllowed(true)}>
         <div className="messages">  
           {messages.map((msg, i) => (  
@@ -144,12 +144,12 @@ function App() {
           <input  
             value={input}  
             onChange={(e) => setInput(e.target.value)}  
-            placeholder="Consult Jameson..."  
+            placeholder="Consult AELI..."  
           />  
           <button type="submit">Engage</button>  
         </form>  
       </div>  
-    </JamesonErrorBoundary>  
+    </AELIErrorBoundary>  
   );  
 }  
 
