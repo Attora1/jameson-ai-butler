@@ -130,7 +130,7 @@ function App() {
 
   return (
     <SpoonContext.Provider value={{ spoonCount, setSpoonCount }}>
-      <div className="App">
+      <div className={`App ${settings.mode}-theme`}>
 
 
         <div className="main-content">

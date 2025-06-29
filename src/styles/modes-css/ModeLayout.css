@@ -48,7 +48,14 @@
     text-shadow: 0 0 15px rgba(255, 215, 160, 0.5);
     color: var(--gold-soft);
     font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     
+  }
+
+  .header-right {
+    margin-left: auto;
   }
   
   .mode-layout-subtitle {

@@ -16,7 +16,7 @@ html, body, #root, .App {
   width:100%;
   margin: 0;
   padding: 0;
-  background-color: var(--background-dark);
+  background: none;
   color: var(--text-light);
   font-family: system-ui, sans-serif;
 }
@@ -137,8 +137,21 @@ html, body, #root, .App {
   opacity: 0.73;
 }
 
+
+
+.partner_support-theme {
+  background: linear-gradient(230deg, #d9b086, #f6a05f, #ec5b73);
+  color: #7D6860;
+}
+
+.focus-theme {
+  background: var(--background-dark);
+  color: #DCEFFF;
+}
+
+
 .partner_support-theme.chat-container {
-  background: rgba(255, 236, 225, 0.7); /* warm soft peach */
+  background: rgba(253, 171, 184, 0.433); /* warm soft peach */
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(6px);
   box-shadow: 0 0 20px rgba(214, 228, 154, 0.225);
@@ -146,12 +159,6 @@ html, body, #root, .App {
   transition: background-color 0.6s ease, box-shadow 0.6s ease;
 }
 
-
-  
-  .partner_support-theme .chat-input-container button {
-    opacity: 0.85;
-  }
-  
 
 
 /* Messages scroll area */
@@ -181,7 +188,7 @@ html, body, #root, .App {
 }
 
 .message-bubble.ai {
-  background-color: rgba(13, 33, 65, 0.55);
+  background-color: rgba(13, 33, 65, 0.514);
   color: var(--text-light);
   align-self: flex-start;
 }

@@ -1,0 +1,94 @@
+.coregulation-timer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 2rem;
+    color: var(--text-color, #7D6860);
+  }
+  
+  .coregulation-timer-setup h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .coregulation-timer-setup p {
+    margin-bottom: 1rem;
+  }
+  
+  .duration-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .duration-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 9999px;
+    background: var(--partner-accent-color, #D9A79E);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+  
+  .duration-buttons button.active,
+  .duration-buttons button:hover {
+    background: var(--partner-accent-hover, #c29084);
+    transform: scale(1.05);
+  }
+  
+  .start-button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 9999px;
+    background: var(--partner-accent-color, #D9A79E);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+  
+  .start-button:hover {
+    background: var(--partner-accent-hover, #c29084);
+    transform: scale(1.05);
+  }
+  
+  .coregulation-timer-display {
+    font-size: 2.5rem;
+    font-weight: 600;
+    padding: 1rem;
+    border: 5px solid var(--partner-accent-color, #D9A79E);
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border 0.3s ease;
+  }
+  
+  .coregulation-timer-display.calm-animation {
+    animation: pulseRing 6s ease-in-out infinite;
+  }
+  
+  @keyframes pulseRing {
+    0%, 100% {
+      transform: scale(1);
+      border-color: var(--partner-accent-color, #D9A79E);
+    }
+    50% {
+      transform: scale(1.05);
+      border-color: var(--partner-accent-hover, #c29084);
+    }
+  }
+  
+  .coregulation-timer-complete {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--partner-accent-color, #D9A79E);
+  }
+  

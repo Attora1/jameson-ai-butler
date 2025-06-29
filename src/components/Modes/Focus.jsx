@@ -87,7 +87,7 @@ const Focus = ({ settings }) => {
   return (
     <>
       <ModeLayout
-        className="focus-mode-theme"
+        className="focus-theme"
         heading="Focus Mode"
         subtitle={settings.nameCasual ? `Let's lock in, ${settings.nameCasual}.` : "Let's lock in."}
         leftColumn={

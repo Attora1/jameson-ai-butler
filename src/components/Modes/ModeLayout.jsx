@@ -1,12 +1,13 @@
 import React from 'react';
 
-export default function ModeLayout({ heading, subtitle, leftColumn, rightColumn, className }) {
+export default function ModeLayout({ heading, subtitle, leftColumn, rightColumn, className, headerRight }) {
   return (
     <div className={`mode-layout ${className || ''}`}>
 
     <div className="mode-layout-container">
       <h2 className="mode-layout-heading">{heading || 'No heading'}</h2>
       <p className="mode-layout-subtitle">{subtitle || 'No subtitle'}</p>
+      {headerRight && <div className="header-right">{headerRight}</div>}
 
       <div className="mode-layout-columns">
         <div className="left-column">{leftColumn || 'No left content'}</div>

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import ModeLayout from '../Modes/ModeLayout.jsx';
-import TetherCanvas from '../TetherCanvas.jsx';
+import TetherCanvas from '../Modes/TetherCanvas.jsx';
+import PartnerSupportHeader from './PartnerSupportHeader.jsx'; // adjust path if needed
+import CoRegulationTimer from './CoRegulationTimer';
+
+import '../../styles/modes-css/PartnerSupport.css';
 
 export default function PartnerSupport({ settings }) {
   const [showTether, setShowTether] = useState(false);
@@ -13,12 +17,17 @@ export default function PartnerSupport({ settings }) {
         <ModeLayout
           className="partner_support-theme"
           heading="Partner Support Mode"
-          subtitle="Here to support you, together."
-          leftColumn={<p>This is your safe, shared space to co-regulate.</p>}
-          rightColumn={<>
-            <p>"You don't have to carry it alone. We'll find calm together."</p>
-            <button className="tether-button" onClick={() => setShowTether(true)}>Begin Tether Activity</button>
-          </>}
+          subtitle="Your safe, shared space to co-regulate."
+          headerRight={<PartnerSupportHeader />}
+          leftColumn={<CoRegulationTimer />}
+          rightColumn={
+            <>
+              <p>"You don't have to carry it alone."</p>
+              <button className="tether-button" onClick={() => setShowTether(true)}>
+                Begin Tether Activity
+              </button>
+            </>
+          }
         />
       )}
     </>
