@@ -11,8 +11,8 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 50%;
-    height: 50%;
+    width: 100%;
+    height: 100%;
     border-radius: 16px;
     transform: translate(-50%, -50%);
     background: rgb(246, 214, 181);
@@ -67,7 +67,7 @@
 
 
 .tether-modal.show {
-    top: 3rem;
+    top: 0rem;
     opacity: 1;
   }
 
@@ -124,6 +124,23 @@
 .tether-modal-buttons button:hover {
   background: rgba(217, 167, 158, 1);
   transform: scale(1.05);
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  background: none;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+.close-button:hover {
+  background: rgba(0,0,0,0.6);
 }
 
 .tether-controls-under {

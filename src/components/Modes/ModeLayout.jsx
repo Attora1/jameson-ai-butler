@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export default function ModeLayout({ heading, subtitle, leftColumn, rightColumn, className, headerRight }) {
   return (
     <div className={`mode-layout ${className || ''}`}>

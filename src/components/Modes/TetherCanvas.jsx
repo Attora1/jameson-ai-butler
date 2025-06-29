@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import '../../styles/modes-css/tether.css';
 import { HeartShape, SpiralShape, FlowerShape } from '../../utils/tetherShapes.jsx';
 
@@ -20,11 +20,12 @@ export default function TetherCanvas({ onComplete }) {
   });
 
   const shapes = [<HeartShape />, <FlowerShape />, <SpiralShape />];
-  const levelSettings = [
+
+  const levelSettings = useMemo(() => [
     { orbs: 8, speed: 1, moving: false },
     { orbs: 12, speed: 1.3, moving: true },
     { orbs: 16, speed: 1.6, moving: true }
-  ];
+  ], []);
 
   const player1 = useRef({ x: 100, y: 100, size: 6, trail: [], glow: false });
   const player2 = useRef({ x: 300, y: 100, size: 6, trail: [], glow: false });
@@ -89,6 +90,7 @@ export default function TetherCanvas({ onComplete }) {
 
     const draw = (time) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       orbs.forEach(orb => {
         if (!orb.collected) {
           if (moving) {
@@ -159,7 +161,7 @@ export default function TetherCanvas({ onComplete }) {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [playerMode, isFusing, shapeIndex]);
+  }, [playerMode, isFusing, shapeIndex, levelSettings]);
 
   useEffect(() => {
     const handleKeyDown = (e) => { keysPressed.current[e.key] = true; };
@@ -209,14 +211,7 @@ export default function TetherCanvas({ onComplete }) {
   return (
     <div className="tether-canvas-wrapper">
       <canvas ref={canvasRef} className="tether-canvas" />
-
-      {reflectionSaved && (
-        <div className="tether-modal show fade-slide">
-          <div className="tether-modal-content">
-            <p>Reflection saved!</p>
-          </div>
-        </div>
-      )}
+      <button onClick={handleReturn} className="close-button">✖</button>
 
       {showIntro && (
         <div className="tether-modal show fade-slide">
@@ -265,11 +260,6 @@ export default function TetherCanvas({ onComplete }) {
           </div>
         </div>
       )}
-
-      <div className="tether-controls-under">
-        <div className="player-controls left">Player 1 | Arrow Keys</div>
-        {playerMode === 'dual' && <div className="player-controls right">Player 2 | WASD</div>}
-      </div>
     </div>
   );
 }

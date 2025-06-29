@@ -68,11 +68,11 @@ html, body, #root, .App {
 
 /* Main layout for chat and focus panel side-by-side */
 .main-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: 450px 1fr; /* chat + mode area */
   flex: 1;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 1rem;
+  align-items: start;
+  gap: 2rem;
   padding: 0.5rem 1rem;
   height: 100%;
   max-height: 100vh;
