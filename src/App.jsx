@@ -14,7 +14,6 @@ import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonContext } from './context/SpoonContext.jsx';
 import useAELIVoice from './hooks/useAELIVoice.js';
 
-
 function App() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -43,7 +42,7 @@ function App() {
         ? messages[messages.length - 1].text
         : "",
     settings
-);
+  );
 
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
@@ -118,6 +117,27 @@ function App() {
     });
   };
 
+  const renderModeContent = () => {
+    switch (settings.mode) {
+      case 'dashboard':
+        return (
+          <LandingDashboard
+            settings={settings}
+            setSettings={setSettings}
+            setShowSettings={setShowSettings}
+          />
+        );
+      case 'focus':
+        return <Focus settings={settings} />;
+      case 'low_spoon':
+        return <LowSpoon settings={settings} />;
+      case 'partner_support':
+        return <PartnerSupport settings={settings} />;
+      default:
+        return <LowSpoon settings={settings} />;
+    }
+  };
+
   return (
     <SpoonContext.Provider value={{ spoonCount, setSpoonCount }}>
       <div className={`App ${settings.mode}-theme`}>
@@ -147,7 +167,7 @@ function App() {
 
           <div className={`chat-container ${settings.mode}-theme`}>
             <div className="messages">
-              <MessageList messages={messages} />
+              <MessageList messages={messages} settings={settings} />
             </div>
             <ChatInput
               input={input}
@@ -158,21 +178,7 @@ function App() {
           </div>
 
           <div>
-            {settings.mode === 'dashboard' ? (
-              <LandingDashboard
-                settings={settings}
-                setSettings={setSettings}
-                setShowSettings={setShowSettings}
-              />
-            ) : settings.mode === 'focus' ? (
-              <Focus settings={settings} />
-            ) : settings.mode === 'low_spoon' ? (
-              <LowSpoon settings={settings} />
-            ) : settings.mode === 'partner_support' ? (
-              <PartnerSupport settings={settings} />
-            ) : (
-              <LowSpoon settings={settings} />
-            )}
+            {renderModeContent()}
           </div>
 
           {showSettings && (
