@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const FOCUS_PLAYLIST_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+// Changed to a different royalty-free music track
+const FOCUS_PLAYLIST_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
 
 export default function MusicToggle() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -10,7 +11,10 @@ export default function MusicToggle() {
     if (!audioRef.current) return;
 
     if (isPlaying) {
-      audioRef.current.play();
+      audioRef.current.play().catch(err => {
+        console.error('Audio playback failed:', err);
+        setIsPlaying(false);
+      });
     } else {
       audioRef.current.pause();
     }
@@ -21,7 +25,7 @@ export default function MusicToggle() {
   return (
     <div className="music-toggle">
       <button onClick={togglePlay} aria-pressed={isPlaying} aria-label={isPlaying ? "Pause music" : "Play music"}>
-        {isPlaying ? "⏸ Pause Music" : "▶️ Play Music"}
+        {isPlaying ? "⏸ Pause Music" : "▶️ Play Focus Music"}
       </button>
       <audio ref={audioRef} loop src={FOCUS_PLAYLIST_URL} />
     </div>
