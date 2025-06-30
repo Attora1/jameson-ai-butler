@@ -7,81 +7,43 @@
 
 **Built for Bolt.new's World's Largest Hackathon | June 2025**
 
-AELI is a proactive, customizable AI butler designed to support neurodivergent users. Inspired by Jarvis (Iron Man) and Alfred (Batman), AELI brings British wit, emotional awareness, and real utility into your daily life.
+# AELI: Adaptive Energy & Life Interface
+
+![Made with Bolt](https://bolt.new/badge/bolt-badge.svg)
 
 ---
 
-## 🪞 Demo
+## 🚀 What is AELI?
 
-> Coming soon: [Live demo link]  
-> [Optional: Link to walkthrough video]
+AELI (pronounced *ay-lee*) is an **adaptive AI butler** designed to support neurodivergent and chronically ill individuals in managing daily life through:
 
----
+- **Low Spoon Mode** for fatigue days
+- **Focus Mode** for structured tasks
+- **Partner Support Mode** for co-regulation
+- **Voice Mode with Eleven Labs** for spoken replies
+- **Gentle, dry British wit** with direct, warm support
 
-## ✨ Features
-
-- **Conversational AI with Personality**  
-  A dry, subtly humorous British assistant who adapts to your tone and energy levels—always professional, never patronizing.
-
-- **Energy & Mood Awareness**  
-  Tracks spoons, routines, and dissociative episodes. Offers context-aware support without overwhelming you.
-
-- **Settings Modal (in progress)**  
-  Fully customizable experience:
-  - Mode (casual/formal)
-  - Tone (gentle/witty/concise)
-  - Zip code (for weather support)
-  - Memory limits
-  - Developer mode
-  - Chat appearance settings (theme, font, size)
-  - Future: Voice and physical avatar customization
-
-- **Reminders & Proactivity**  
-  Examples:
-  - "Miss, you've therapy in 20 minutes. Might I suggest getting ready?"
-  - Gentle nudges when energy is low or task-switching is hard
-
-- **Accessible UI**  
-  Designed for simplicity and neurodivergence:
-  - Sticky buttons on the chat window
-  - ADHD-friendly layout and flow
-  - Minimal distractions
-
-- **Local-first Development**  
-  No backend required. Lightweight, browser-based assistant designed for local deployment with optional API integrations.
+All while respecting your energy, mood, and sensory needs.
 
 ---
 
-## 🧱 Tech Stack
+## 🛠️ Built With
 
-| Layer        | Tools                              |
-|--------------|-------------------------------------|
-| Frontend     | HTML, CSS, JavaScript               |
-| Framework    | React |
-| AI Model     | OpenAI GPT-4 / GPT-4o               |
-| Storage      | localStorage                        |
-| APIs         |  OpenWeather, Airtable, Eleven Labs |
+- **React + Vite** (frontend)
+- **Bolt** (dynamic prompt & function integration)
+- **Eleven Labs** (voice)
+- **LocalStorage** (state persistence)
+- **OpenWeather API** (weather awareness)
 
 ---
 
-## 🧪 Current Status
+## ⚡ Features
 
-- 🔧 Core logic and UI running locally
-- 🎛️ Settings modal in progress (partial functionality)
-- 🪲 Debugging fallback message issue
-- 🎯 Target: Feature-complete by **June 25, 2025**
-- 🏁 Final submission due **June 30, 2025**
-
----
-
-## 🧩 Planned Improvements
-
-- [ ] Fix fallback messaging bug
-- [ ] Polish settings UI
-- [ ] Add voice/avatar options
-- [ ] Improve spoon-tracking UX
-- [ ] Better support for dissociative state detection + gentle reentry prompts
-
+✅ Adaptive mode switching (Focus, Low Spoon, Partner Support)  
+✅ Eleven Labs voice integration with toggleable Voice Mode  
+✅ Weather awareness and gentle mood check-ins  
+✅ Made with Bolt integration for seamless local LLM use  
+✅ Sensory-friendly, clean interface
 ---
 
 
