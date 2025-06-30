@@ -1,0 +1,61 @@
+.preferences-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .preferences-modal-overlay.fade-in {
+    opacity: 1;
+  }
+  
+  .preferences-modal-overlay.fade-out {
+    opacity: 0;
+  }
+  
+  .preferences-modal {
+    background: #1d2e44;
+    color: #EDEAE3;
+    padding: 1.5rem;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+  }
+  
+  .preferences-modal h2 {
+    margin-top: 0;
+    color: #E1C084;
+  }
+  
+  .preferences-modal ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .preferences-modal li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .preferences-modal button {
+    margin-top: 1rem;
+    background: #E1C084;
+    color: #1d2e44;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .preferences-modal button:hover {
+    background: #D9B060;
+  }
+  

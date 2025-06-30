@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { SpoonContext } from '../context/SpoonContext.js';
+import { SpoonContext } from '../context/SpoonContext.jsx';
 
 const MAX_SPOONS = 12;
 

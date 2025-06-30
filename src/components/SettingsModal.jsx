@@ -70,7 +70,7 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, nameFormal: e.target.value }))
             }
-            placeholder="e.g. Nessa"
+            placeholder="e.g. Sam"
           />
         </label>
 
@@ -82,7 +82,7 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, nameCasual: e.target.value }))
             }
-            placeholder="e.g. Ness"
+            placeholder="e.g. Alex"
           />
         </label>
 
@@ -186,11 +186,10 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
               setLocalSettings(prev => ({ ...prev, mode: e.target.value }))
             }
           >
-            <option value="chat">Chat</option>
+            <option value="dashboard">Dashboard</option>
             <option value="low_spoon">Low Spoon</option>
             <option value="focus">Focus</option>
             <option value="partner_support">Partner Support</option>
-            <option value="crisis">Crisis</option>
           </select>
         </label>
 

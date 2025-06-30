@@ -22,7 +22,7 @@ const Focus = ({ settings }) => {
   // ✅ MISSION COMPLETE MODAL HANDLERS
   const handleCompleteMission = () => {
     setShowMissionModal(true);
-  };
+  }; 
 
   const confirmCompleteMission = () => {
     confetti({

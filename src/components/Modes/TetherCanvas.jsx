@@ -218,6 +218,7 @@ export default function TetherCanvas({ onComplete }) {
           <div className="tether-modal-content">
             <h3>✨ Tether Together ✨</h3>
             <p>Guide your lines to collect glowing orbs together.</p>
+            <p>Player 1 | Arrow Keys</p> <p>Player 2 | WASD</p>
             <div className="tether-modal-buttons centered">
               <button onClick={() => handleStart('single')}>Single Player</button>
               <button onClick={() => handleStart('dual')}>Two Players</button>

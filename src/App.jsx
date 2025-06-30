@@ -10,6 +10,7 @@ import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import Focus from './components/Modes/Focus.jsx';
 import LowSpoon from './components/Modes/LowSpoon.jsx';
 import PartnerSupport from './components/Modes/PartnerSupport.jsx';
+import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonContext } from './context/SpoonContext.jsx';
 
 function App() {
@@ -35,25 +36,7 @@ function App() {
     return { ...DEFAULT_SETTINGS, ...parsed };
   });
 
-  const renderModeComponent = () => {
-    const subtitle = settings.nameCasual
-      ? `Take it slow, ${settings.nameCasual}. No rush here.`
-      : `Take it slow. No rush here.`;
-
-    switch (settings.mode) {
-      case 'focus':
-        return <Focus settings={settings} />;
-      case 'low_spoon':
-        return <LowSpoon settings={settings} subtitle={subtitle} />;
-      case 'partner_support':
-        return <PartnerSupport settings={settings} />;
-      case 'crisis':
-        return <Crisis settings={settings} />;
-      default:
-        console.warn(`Unknown mode: ${settings.mode}. Defaulting to Low Spoon Mode.`);
-        return <LowSpoon settings={settings} subtitle={subtitle} />;
-    }
-  };
+  
 
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
@@ -160,7 +143,23 @@ function App() {
             />
           </div>
           <div>
-            {renderModeComponent()}
+          {settings.mode === 'dashboard' ? (
+            <LandingDashboard
+              settings={settings}
+              setSettings={setSettings}
+              setShowSettings={setShowSettings}
+
+            />
+
+        ) : settings.mode === 'focus' ? (
+          <Focus settings={settings} />
+        ) : settings.mode === 'low_spoon' ? (
+          <LowSpoon settings={settings} />
+        ) : settings.mode === 'partner_support' ? (
+          <PartnerSupport settings={settings} />
+        ) : (
+          <LowSpoon settings={settings} />
+        )}
           </div>
 
           {showSettings && (

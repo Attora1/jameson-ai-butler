@@ -112,7 +112,7 @@ html, body, #root, .App {
   margin-top: 2rem;
 }
 
-/* Mode-specific glow overrides */
+/* Mode-specific overrides */
 
 .low_spoon-theme.chat-input-container button{
   opacity: 0.73;
@@ -141,6 +141,7 @@ html, body, #root, .App {
 
 .partner_support-theme {
   background: linear-gradient(230deg, #d9b086, #f6a05f, #ec5b73);
+  filter: brightness(85%);
   color: #7D6860;
 }
 
@@ -159,6 +160,20 @@ html, body, #root, .App {
   transition: background-color 0.6s ease, box-shadow 0.6s ease;
 }
 
+.dashboard-theme {
+background: rgb(3, 45, 46);
+color: #fbe0ccde;
+}
+
+
+.dashboard-theme.chat-container {
+  background: var(--background-dark);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 20px rgba(214, 228, 154, 0.225);
+  height: 80%;
+  transition: background-color 0.6s ease, box-shadow 0.6s ease;
+}
 
 
 /* Messages scroll area */
