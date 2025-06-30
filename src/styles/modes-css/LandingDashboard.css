@@ -40,3 +40,35 @@
   color: var(--text-light);
   opacity: 0.85;
 }
+
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.action-buttons-grid button {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.made-with-bolt {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.5rem;
+}
+
+.bolt-badge {
+  width: 120px;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.bolt-badge:hover {
+  opacity: 1;
+}

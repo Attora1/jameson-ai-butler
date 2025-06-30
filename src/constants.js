@@ -5,7 +5,7 @@ export const DEFAULT_SETTINGS = {
   nameCasual: 'you',
   zip: '48203',
   tone: 'formal',
-  mode: 'chat',
+  mode: 'dashboard', // Changed from 'chat' to 'dashboard'
   lastMode: null,
   mood: 'partly_cloudy',
   partnerName: 'partner',
