@@ -1,8 +1,10 @@
 // src/hooks/useAELIVoice.js
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function useAELIVoice(text, settings) {
+    const audioRef = useRef(null);
+
     useEffect(() => {
         console.log("✅ useAELIVoice triggered with text:", text);
         console.log("✅ Voice Enabled:", settings?.voiceEnabled);
@@ -10,6 +12,9 @@ export default function useAELIVoice(text, settings) {
 
         if (!text || typeof text !== 'string') return;
         if (!settings?.voiceEnabled) return;
+
+        // Pronunciation correction for "AELI"
+        const processedText = text.replace(/AELI/gi, "ay-lee");
 
         const speak = async () => {
             try {
@@ -22,10 +27,12 @@ export default function useAELIVoice(text, settings) {
                             'xi-api-key': import.meta.env.VITE_ELEVENLABS_API_KEY
                         },
                         body: JSON.stringify({
-                            text: text,
+                            text: processedText,
                             voice_settings: {
-                                stability: 0.3,
-                                similarity_boost: 0.75
+                                stability: 0.2,         // less robotic
+                                similarity_boost: 0.8,  // more natural
+                                style: 0.2,             // softer intonation
+                                speed: 1.1              // slightly faster
                             }
                         })
                     }
@@ -40,7 +47,15 @@ export default function useAELIVoice(text, settings) {
 
                 const audioBlob = await response.blob();
                 const audioUrl = URL.createObjectURL(audioBlob);
+
+                // 🚫 Stop previous playback before playing the new one
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.src = "";
+                }
+
                 const audio = new Audio(audioUrl);
+                audioRef.current = audio;
                 audio.play();
             } catch (error) {
                 console.error('Error using ElevenLabs TTS:', error);
@@ -48,5 +63,13 @@ export default function useAELIVoice(text, settings) {
         };
 
         speak();
+
+        return () => {
+            // Cleanup to prevent echo on unmount or re-trigger
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current.src = "";
+            }
+        };
     }, [text, settings?.voiceEnabled]);
 }

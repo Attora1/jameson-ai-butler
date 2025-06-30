@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import useAELIVoice from '../../hooks/useAELIVoice.js';
 
-export default function MessageList({ messages, settings }) {
+export default function MessageList({ messages, settings, hidden }) {
   const containerRef = useRef(null);
 
   const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
