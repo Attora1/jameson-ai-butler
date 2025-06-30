@@ -1,5 +1,5 @@
 // utils/getWeather.js
-const API_KEY = import.meta.env.VITE_OPENWEATHER_KEY;
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 
 // Validate US zip code format (5 digits or 5+4 format)
 function isValidZipCode(zip) {
