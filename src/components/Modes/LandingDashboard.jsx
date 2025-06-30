@@ -62,7 +62,7 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
           <div className="made-with-bolt">
             <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
               <img
-                src="https://bolt.new/badge/bolt-badge.svg"
+                src="/src/assets/badge.png"
                 alt="Made with Bolt"
                 className="bolt-badge"
               />
