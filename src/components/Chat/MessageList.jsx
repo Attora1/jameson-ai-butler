@@ -1,13 +1,19 @@
 import React, { useEffect, useRef } from 'react';
+import useAELIVoice from '../../hooks/useAELIVoice.js';
 
-export default function MessageList({ messages }) {
+export default function MessageList({ messages, settings }) {
   const containerRef = useRef(null);
+
+  const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+  const aeliText = lastMessage && !lastMessage.isUser && lastMessage.text ? lastMessage.text.replace(/^(\\[AELI\\] |\\[User\\] )/, '') : '';
+
+  useAELIVoice(aeliText, settings);
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTo({
         top: containerRef.current.scrollHeight,
-        behavior: 'smooth', // smooth scroll, remove if you want instant
+        behavior: 'smooth',
       });
     }
   }, [messages]);
@@ -22,9 +28,9 @@ export default function MessageList({ messages }) {
       {messages.map((msg, i) => (
         <div
           key={i}
-          className={`message-bubble ${msg.isUser ? 'user' : 'ai'}`}
+          className={`message-bubble ${msg?.isUser ? 'user' : 'ai'}`}
         >
-          <p>{msg.text.replace(/^\[AELI\] |\[User\] /, '')}</p>
+          <p>{msg?.text ? msg.text.replace(/^(\\[AELI\\] |\\[User\\] )/, '') : '[Message unavailable]'}</p>
         </div>
       ))}
     </div>

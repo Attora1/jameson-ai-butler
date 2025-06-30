@@ -5,6 +5,7 @@ import MusicToggle from '../Music.jsx';
 import generateSideQuests from '../genSideQuests';
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import '../../styles/modes-css/Focus.css';
+import { getGreeting, getEncouragement, getWit } from '../../prompts/AELIEngine.js';
 
 const Focus = ({ settings }) => {
   const [task, setTask] = useState('');
@@ -13,35 +14,31 @@ const Focus = ({ settings }) => {
   const [newItem, setNewItem] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
   const [showMissionModal, setShowMissionModal] = useState(false);
+
+  const [greeting, setGreeting] = useState('');
+  const [encouragement, setEncouragement] = useState('');
+  const [wit, setWit] = useState('');
 
   const checklistInputRef = useRef(null);
   const alertSound = useRef(new Audio('../../../sounds/level-passed.mp3'));
 
-  // ✅ MISSION COMPLETE MODAL HANDLERS
-  const handleCompleteMission = () => {
-    setShowMissionModal(true);
-  }; 
+  useEffect(() => {
+    setGreeting(getGreeting(settings));
+    setEncouragement(getEncouragement());
+    setWit(getWit());
+  }, [settings]);
 
+  const handleCompleteMission = () => setShowMissionModal(true);
   const confirmCompleteMission = () => {
-    confetti({
-      particleCount: 150,
-      spread: 80,
-      origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
     setTask('');
     setTaskSubmitted(false);
     setChecklist([]);
     setShowMissionModal(false);
   };
-  
+  const cancelCompleteMission = () => setShowMissionModal(false);
 
-  const cancelCompleteMission = () => {
-    setShowMissionModal(false);
-  };
-
-  // ✅ TIMER LOGIC
   useEffect(() => {
     let timer;
     if (isRunning && secondsLeft > 0) {
@@ -54,17 +51,6 @@ const Focus = ({ settings }) => {
     return () => clearInterval(timer);
   }, [isRunning, secondsLeft]);
 
-  // ✅ SIDE QUEST GENERATION
-  useEffect(() => {
-    if (task.trim()) {
-      const generated = generateSideQuests(task);
-      setSuggestions(generated);
-    } else {
-      setSuggestions([]);
-    }
-  }, [task]);
-
-  // ✅ TIMER CONTROLS
   const startTimer = (minutes) => {
     setSecondsLeft(minutes * 60);
     setIsRunning(true);
@@ -84,15 +70,22 @@ const Focus = ({ settings }) => {
     }
   };
 
+  const hardcodedSideQuests = [
+    "Clear your workspace.",
+    "Refill your water bottle.",
+    "Write down your top 3 priorities.",
+    "Do a quick stretch.",
+    "Take three deep breaths."
+  ];
+
   return (
     <>
       <ModeLayout
         className="focus-theme"
         heading="Focus Mode"
-        subtitle={settings.nameCasual ? `Let's lock in, ${settings.nameCasual}.` : "Let's lock in."}
+        subtitle="Let's lock in and move gently."
         leftColumn={
           <div className="focus-panel">
-            {/* TASK INPUT */}
             {!taskSubmitted ? (
               <label>
                 Task:
@@ -108,7 +101,7 @@ const Focus = ({ settings }) => {
                   }}
                   placeholder="What is the mission right now?"
                   className="task-input"
-                  autoFocus 
+                  autoFocus
                 />
               </label>
             ) : (
@@ -118,7 +111,6 @@ const Focus = ({ settings }) => {
               </>
             )}
 
-            {/* CHECKLIST */}
             <label>
               Checklist:
               <div className="checklist-input">
@@ -131,9 +123,7 @@ const Focus = ({ settings }) => {
                       e.preventDefault();
                       addChecklistItem();
                       setNewItem('');
-                      setTimeout(() => {
-                        document.querySelector('.new-item-input')?.focus();
-                      }, 0);
+                      setTimeout(() => document.querySelector('.new-item-input')?.focus(), 0);
                     }
                   }}
                   placeholder="Add a side-quest"
@@ -144,9 +134,7 @@ const Focus = ({ settings }) => {
                     if (newItem.trim()) {
                       addChecklistItem();
                       setNewItem('');
-                      setTimeout(() => {
-                        document.querySelector('.new-item-input')?.focus();
-                      }, 0);
+                      setTimeout(() => document.querySelector('.new-item-input')?.focus(), 0);
                     }
                   }}
                   className="add-btn"
@@ -157,29 +145,21 @@ const Focus = ({ settings }) => {
             </label>
 
             <ul className="checklist">
-              {checklist
-                .sort((a, b) => a.checked - b.checked)
-                .map((item, index) => (
-                  <li key={index} className={item.checked ? 'checked' : ''}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={item.checked}
-                        onChange={() => toggleChecklistItem(index)}
-                      />
-                      {item.text}
-                    </label>
-                  </li>
+              {checklist.sort((a, b) => a.checked - b.checked).map((item, index) => (
+                <li key={index} className={item.checked ? 'checked' : ''}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={item.checked}
+                      onChange={() => toggleChecklistItem(index)}
+                    />
+                    {item.text}
+                  </label>
+                </li>
               ))}
             </ul>
 
-            {/* ✅ MISSION COMPLETE BUTTON */}
-            <button
-              className="mission-complete-button"
-              onClick={handleCompleteMission}
-            >
-              Mission Complete!
-            </button>
+            <button className="mission-complete-button" onClick={handleCompleteMission}>Mission Complete!</button>
           </div>
         }
         rightColumn={
@@ -187,7 +167,7 @@ const Focus = ({ settings }) => {
             <div className="side-quest-section">
               <h4>🗂️ Optional Side Quests</h4>
               <ul className="suggestion-list">
-                {suggestions.map((idea, idx) => (
+                {hardcodedSideQuests.map((idea, idx) => (
                   <li key={idx}>• {idea}</li>
                 ))}
               </ul>
@@ -196,15 +176,8 @@ const Focus = ({ settings }) => {
             <div className="timer-controls">
               <button onClick={() => startTimer(10)} className="timer-btn">10 min</button>
               <button onClick={() => startTimer(20)} className="timer-btn">20 min</button>
-              <button onClick={() => setIsRunning(!isRunning)} className="timer-btn">
-                {isRunning ? 'Pause' : 'Resume'}
-              </button>
-              <button onClick={() => {
-                setIsRunning(false);
-                setSecondsLeft(0);
-              }} className="timer-btn stop-btn">
-                Stop
-              </button>
+              <button onClick={() => setIsRunning(!isRunning)} className="timer-btn">{isRunning ? 'Pause' : 'Resume'}</button>
+              <button onClick={() => { setIsRunning(false); setSecondsLeft(0); }} className="timer-btn stop-btn">Stop</button>
             </div>
 
             {secondsLeft > 0 && (
@@ -213,22 +186,21 @@ const Focus = ({ settings }) => {
               </p>
             )}
 
-            <MotivQuote />
+            <MotivQuote customEncouragement={encouragement} customWit={wit} />
             <MusicToggle />
           </div>
         }
       />
 
-      {/* ✅ FOCUS MODE SLIDE MODAL */}
-        <div className={`focus-modal ${showMissionModal ? 'show' : ''}`}>
+      <div className={`focus-modal ${showMissionModal ? 'show' : ''}`}>
         <div className="focus-modal-content">
-    <p>Are you sure you want to mark this mission complete and start a new one?</p>
-    <div className="focus-modal-buttons">
-      <button onClick={confirmCompleteMission}>Yes, Complete Mission</button>
-      <button onClick={cancelCompleteMission}>Cancel</button>
-    </div>
-  </div>
-</div>
+          <p>Are you sure you want to mark this mission complete and start a new one?</p>
+          <div className="focus-modal-buttons">
+            <button onClick={confirmCompleteMission}>Yes, Complete Mission</button>
+            <button onClick={cancelCompleteMission}>Cancel</button>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

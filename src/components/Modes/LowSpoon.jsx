@@ -4,6 +4,8 @@ import { SpoonContext } from '../../context/SpoonContext.jsx';
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import DimOverlay from './DimOverlay.jsx';
 import { getReturnFromZen, getModeSubtitle } from '../../utils/AELIRemarks.js';
+import getSpoonSuggestionDynamic from '../../utils/spoonReplies.js';
+import { useDebounce } from '../../utils/useDebounce.js';
 import '../../styles/modes-css/LowSpoon.css';
 
 export default function LowSpoon({ settings }) {
@@ -15,17 +17,20 @@ export default function LowSpoon({ settings }) {
   const [timedSession, setTimedSession] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const petalLayerRef = useRef(null);
-  const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
+  const [currentSuggestion, setCurrentSuggestion] = useState('Gathering your energy readings...');
 
-const handleNextSuggestion = () => {
-  const suggestions = getSpoonSuggestions(spoonCount);
-  setCurrentSuggestionIndex((prev) => (prev + 1) % suggestions.length);
-};
+  const debouncedSpoons = useDebounce(spoonCount, 1500);
 
-const currentSuggestions = getSpoonSuggestions(spoonCount);
-const currentSuggestion = currentSuggestions[currentSuggestionIndex];
-
-
+  useEffect(() => {
+    const fetchSuggestion = async () => {
+      const suggestion = await getSpoonSuggestionDynamic("low_spoon", { spoonCount: debouncedSpoons });
+      console.log(`💡 Gemini Suggestion for ${debouncedSpoons} spoons: ${suggestion}`);
+      setCurrentSuggestion(suggestion);
+    };
+    if (debouncedSpoons !== null) {
+      fetchSuggestion();
+    }
+  }, [debouncedSpoons]);
 
   const handleStart = () => {
     setShowIntro(true);
@@ -78,20 +83,17 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
 
   useEffect(() => {
     if (!isBreathing) return;
-
     const dropLoop = setInterval(() => {
       const el = document.createElement('div');
       const duration = 15000 + Math.floor(Math.random() * 4000);
       const delayOffset = Math.floor(Math.random() * 1000);
       const rotateAmt = 360 + Math.floor(Math.random() * 720);
       const drift = (Math.random() * 2 - 1).toFixed(2);
-
       el.className = 'falling-spoon fall';
       el.style.setProperty('--drift-x', drift);
       el.style.setProperty('--rotateX', `${Math.floor(Math.random() * 360)}deg`);
       el.style.setProperty('--rotateY', `${Math.floor(Math.random() * 360)}deg`);
       el.style.setProperty('--end-rotate', `${rotateAmt}deg`);
-
       el.style.position = 'fixed';
       el.style.top = '0';
       el.style.left = `${Math.random() * 100}%`;
@@ -102,7 +104,6 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
       el.style.willChange = 'transform, opacity';
       el.style.animation = `fallDown ${duration}ms ease-in-out ${delayOffset}ms forwards`;
       el.style.zIndex = '2';
-
       const colors = [
         'rgba(255, 210, 150, 0.8)',
         'rgba(255, 180, 200, 0.6)',
@@ -111,22 +112,10 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
         'rgba(255, 255, 255, 0.3)'
       ];
       const fill = colors[Math.floor(Math.random() * colors.length)];
-
-      el.innerHTML = `
-        <svg width="16" height="36" viewBox="0 0 24 48" xmlns="http://www.w3.org/2000/svg">
-          <path d="
-            M12 0
-            C3 8, 6 20, 12 48
-            C18 20, 21 8, 12 0
-            Z
-          " fill="${fill}" />
-        </svg>
-      `;
-
+      el.innerHTML = `<svg width="16" height="36" viewBox="0 0 24 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 0 C3 8, 6 20, 12 48 C18 20, 21 8, 12 0 Z" fill="${fill}" /></svg>`;
       petalLayerRef.current?.appendChild(el);
       setTimeout(() => el.remove(), duration + delayOffset + 1000);
-    }, 600 + Math.floor(Math.random() * 400)); // drops every 600–1000ms
-
+    }, 600 + Math.floor(Math.random() * 400));
     return () => clearInterval(dropLoop);
   }, [isBreathing]);
 
@@ -136,9 +125,7 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
       <DimOverlay visible={dimVisible} />
       <div ref={petalLayerRef} className="petal-layer" />
       {showIntro && (
-        <div className="breathing-intro-modal show">
-          Let the world go quiet. Inhale in 3...
-        </div>
+        <div className="breathing-intro-modal show">Let the world go quiet. Inhale in 3...</div>
       )}
       <ModeLayout
         className="low-spoon-theme"
@@ -149,22 +136,11 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
             <BreathingRing running={isBreathing} />
             <div className="breathing-controls">
               {!isBreathing ? (
-                <button className="start-breathing-button fade-in-button" onClick={handleStart}>
-                  Begin Breathing
-                </button>
+                <button className="start-breathing-button fade-in-button" onClick={handleStart}>Begin Breathing</button>
               ) : (
-                <button className="stop-breathing-button" onClick={handleStop}>
-                  End Breathing
-                </button>
+                <button className="stop-breathing-button" onClick={handleStop}>End Breathing</button>
               )}
-              <div
-                className="breathing-timer"
-                onClick={handleStartWithTimer}
-                title="Start 1-minute breathing session"
-                style={{ cursor: 'pointer' }}
-              >
-                {timer}
-              </div>
+              <div className="breathing-timer" onClick={handleStartWithTimer} title="Start 1-minute breathing session" style={{ cursor: 'pointer' }}>{timer}</div>
             </div>
           </div>
         }
@@ -172,75 +148,20 @@ const currentSuggestion = currentSuggestions[currentSuggestionIndex];
           <>
             <section className="suggestions" aria-labelledby="suggestions-heading">
               <h3 id="suggestions-heading">Gentle Suggestions</h3>
-              <p className="suggestion-text">
-                {spoonCount === null || spoonCount === undefined
-                  ? 'Gathering your energy readings...'
-                  : currentSuggestions[currentSuggestionIndex]}
-              </p>
-              <button
-              className="refresh-suggestion-button"
-              onClick={handleNextSuggestion}
-              title="Show another suggestion"
-              aria-label="Refresh suggestion"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--gold-soft)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="refresh-icon"
-              >
-
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <polyline points="1 20 1 14 7 14"></polyline>
-                <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 5.36A9 9 0 0020.49 15"></path>
-              </svg>
-            </button>
-
+              <p className="suggestion-text">{currentSuggestion}</p>
+              <button className="refresh-suggestion-button" onClick={() => setCurrentSuggestion('Fetching new suggestion...') || fetchSuggestion()} title="Show another suggestion" aria-label="Refresh suggestion">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold-soft)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="refresh-icon" > <polyline points="23 4 23 10 17 10"></polyline> <polyline points="1 20 1 14 7 14"></polyline> <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 5.36A9 9 0 0020.49 15"></path> </svg>
+              </button>
             </section>
             {AELIMessage && (
-              <div className="low-spoon-AELI-message fade-in-AELI">
-                <p>{AELIMessage}</p>
-              </div>
+              <div className="low-spoon-AELI-message fade-in-AELI"><p>{AELIMessage}</p></div>
             )}
           </>
         }
       />
       <div className="grounding-link">
-        <a href="https://www.crisistextline.org/" target="_blank" rel="noopener noreferrer">
-          Grounding help
-        </a>
+        <a href="https://www.crisistextline.org/" target="_blank" rel="noopener noreferrer">Grounding help</a>
       </div>
     </>
   );
-}
-
-function getSpoonSuggestions(spoonCount) {
-  if (spoonCount >= 10) {
-    return [
-      "Take a short walk to stretch your legs.",
-      "Enjoy a cup of tea or coffee.",
-      "Listen to your favorite song.",
-      "Do a quick mindfulness exercise.",
-    ];
-  } else if (spoonCount >= 5) {
-    return [
-      "Sit down and relax for a few minutes.",
-      "Read a chapter of a book you love.",
-      "Watch a short, uplifting video.",
-      "Do some light stretching or yoga.",
-    ];
-  } else {
-    return [
-      "Take deep breaths and rest your eyes.",
-      "Have a light snack to recharge.",
-      "Listen to calming music or nature sounds.",
-      "Write down your thoughts in a journal.",
-    ];
-  }
 }

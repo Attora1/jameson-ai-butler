@@ -1,14 +1,14 @@
-// utils/spoonReplies.js
-const spoonReplies = [
-    (count) => `Gotcha, you’ve got ${count} spoon${count !== 1 ? 's' : ''} today. Let’s keep it gentle.`,
-    (count) => `I see we’re at ${count} spoon${count !== 1 ? 's' : ''}—perfect for a calm day.`,
-    (count) => `${count} spoons noted. Let’s take it slow and steady.`,
-    (count) => `Alright, ${count} spoon${count !== 1 ? 's' : ''} — careful steps, no rush.`,
-    (count) => `Counting ${count} spoons for today. Let’s treat this day like fine china.`,
-  ];
-  
-  export function getRandomSpoonReply(count) {
-    const idx = Math.floor(Math.random() * spoonReplies.length);
-    return spoonReplies[idx](count);
-  }
-  
+import { getDynamicSuggestion } from './dynamicPhrasing.js';
+
+// Wrapper to get a dynamic suggestion from Gemini for Low Spoon or other modes
+export async function getSpoonSuggestionDynamic(mode = "low_spoon", settings = {}, context = "") {
+    try {
+        const suggestion = await getDynamicSuggestion(mode, settings, context);
+        return suggestion || "Take a gentle moment to breathe and rest.";
+    } catch (error) {
+        console.error("Error fetching dynamic spoon suggestion:", error);
+        return "Take a gentle moment to breathe and rest.";
+    }
+}
+
+export default getSpoonSuggestionDynamic;

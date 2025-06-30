@@ -7,11 +7,16 @@ import '../../styles/modes-css/PartnerSupport.css';
 export default function PartnerSupport({ settings }) {
   const [showTether, setShowTether] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
+  const [suggestions] = useState([
+    "Sit quietly with them.",
+    "Ask if they want a hug.",
+    "Ask if they need anything."
+  ]);
 
   return (
     <div className="partner-support-grid-4">
       <div className="partner-card">
-        <h1>Partner Support Mode</h1>   <PartnerCheckInButton />
+        <h1>Partner Support Mode</h1> <PartnerCheckInButton />
         <p className="subtitle">Your safe, shared space to co-regulate.</p>
       </div>
 
@@ -29,27 +34,24 @@ export default function PartnerSupport({ settings }) {
       <div className="partner-card">
         <h2>Gentle Ways to Show Up</h2>
         <ul>
-          <li>• Sit quietly with them.</li>
-          <li>• Ask if they want a hug.</li>
-          <li>• Ask if they need anything.</li>
+          {suggestions.map((item, index) => (
+            <li key={index}>• {item}</li>
+          ))}
         </ul>
       </div>
 
       <div className="partner-card">
-  <h2>You don't have to carry it alone.</h2>
-  <button className="tether-button" onClick={() => setShowTether(true)}>
-    Begin Tether Activity
-  </button>
-</div>
-
-{showTether && (
-  <div className="tether-overlay">
-    <TetherCanvas onComplete={() => setShowTether(false)} />
-  </div>
-)}
-
+        <h2>You don't have to carry it alone.</h2>
+        <button className="tether-button" onClick={() => setShowTether(true)}>
+          Begin Tether Activity
+        </button>
       </div>
+
+      {showTether && (
+        <div className="tether-overlay">
+          <TetherCanvas onComplete={() => setShowTether(false)} />
+        </div>
+      )}
+    </div>
   );
 }
-
-

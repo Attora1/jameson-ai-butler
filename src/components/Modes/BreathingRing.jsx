@@ -8,10 +8,7 @@ export default function BreathingRing({ running }) {
   const { spoonCount, setSpoonCount } = useContext(SpoonContext);
 
   useEffect(() => {
-    console.log("BreathingRing mounted | running:", running);
-
     if (!running) return;
-
     let isFirst = true;
     let delay = 8000;
 
@@ -29,12 +26,12 @@ export default function BreathingRing({ running }) {
     };
   }, [running]);
 
-  // 🌿 Flower click handler
   const handleFlowerClick = () => {
-    console.log("🌸 Flower clicked | running:", running);
     if (running) return;
-    setSpoonCount(prev => (prev >= 12 ? 0 : prev + 1));
-    console.log("Spoons now:", spoonCount + 1 > 12 ? 0 : spoonCount + 1);
+    const updatedSpoons = spoonCount >= 12 ? 0 : spoonCount + 1;
+    setSpoonCount(updatedSpoons);
+    console.log(`🌸 Flower clicked. Spoons updated to: ${updatedSpoons}`);
+    // Gemini fetch removed here to prevent 429; handled with debounce in LowSpoon instead
   };
 
   return (

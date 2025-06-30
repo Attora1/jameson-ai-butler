@@ -4,7 +4,7 @@ import './styles/App.css';
 import MessageList from './components/Chat/MessageList.jsx';
 import ChatInput from './components/Chat/ChatInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
-import { generateResponse } from './logic/AIResponseHandler.js';
+import generateResponse from './logic/generateResponse.js';
 import { getWeather } from './utils/getWeather.js';
 import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import Focus from './components/Modes/Focus.jsx';
@@ -12,6 +12,8 @@ import LowSpoon from './components/Modes/LowSpoon.jsx';
 import PartnerSupport from './components/Modes/PartnerSupport.jsx';
 import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonContext } from './context/SpoonContext.jsx';
+import useAELIVoice from './hooks/useAELIVoice.js';
+
 
 function App() {
   const [input, setInput] = useState('');
@@ -36,7 +38,12 @@ function App() {
     return { ...DEFAULT_SETTINGS, ...parsed };
   });
 
-  
+  useAELIVoice(
+    messages.length > 0 && !messages[messages.length - 1].isUser
+        ? messages[messages.length - 1].text
+        : "",
+    settings
+);
 
   useEffect(() => {
     const savedMessages = localStorage.getItem(STORAGE_KEY);
@@ -114,25 +121,32 @@ function App() {
   return (
     <SpoonContext.Provider value={{ spoonCount, setSpoonCount }}>
       <div className={`App ${settings.mode}-theme`}>
-
-
         <div className="main-content">
-        <div className="header-buttons">
-          <button onClick={() => setShowSettings(true)} className="settings-button">
-            ⚙️
-          </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              setMessages([]);
-            }}
-            className="clear-memory-button"
-          >
-            Clear Memory
-          </button>
-        </div>
-        <div className={`chat-container ${settings.mode}-theme`}>
-        <div className="messages">
+          <div className="header-buttons">
+            <button onClick={() => setShowSettings(true)} className="settings-button">
+              ⚙️
+            </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem(STORAGE_KEY);
+                setMessages([]);
+              }}
+              className="clear-memory-button"
+            >
+              Clear Memory
+            </button>
+            <button
+              onClick={() =>
+                setSettings(prev => ({ ...prev, voiceEnabled: !prev.voiceEnabled }))
+              }
+              className="voice-toggle-button"
+            >
+              {settings.voiceEnabled ? "🔈 Voice On" : "🔇 Voice Off"}
+            </button>
+          </div>
+
+          <div className={`chat-container ${settings.mode}-theme`}>
+            <div className="messages">
               <MessageList messages={messages} />
             </div>
             <ChatInput
@@ -142,24 +156,23 @@ function App() {
               disabled={isResponding}
             />
           </div>
+
           <div>
-          {settings.mode === 'dashboard' ? (
-            <LandingDashboard
-              settings={settings}
-              setSettings={setSettings}
-              setShowSettings={setShowSettings}
-
-            />
-
-        ) : settings.mode === 'focus' ? (
-          <Focus settings={settings} />
-        ) : settings.mode === 'low_spoon' ? (
-          <LowSpoon settings={settings} />
-        ) : settings.mode === 'partner_support' ? (
-          <PartnerSupport settings={settings} />
-        ) : (
-          <LowSpoon settings={settings} />
-        )}
+            {settings.mode === 'dashboard' ? (
+              <LandingDashboard
+                settings={settings}
+                setSettings={setSettings}
+                setShowSettings={setShowSettings}
+              />
+            ) : settings.mode === 'focus' ? (
+              <Focus settings={settings} />
+            ) : settings.mode === 'low_spoon' ? (
+              <LowSpoon settings={settings} />
+            ) : settings.mode === 'partner_support' ? (
+              <PartnerSupport settings={settings} />
+            ) : (
+              <LowSpoon settings={settings} />
+            )}
           </div>
 
           {showSettings && (

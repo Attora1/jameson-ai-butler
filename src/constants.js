@@ -1,8 +1,10 @@
+// src/constants.js
+
 export const DEFAULT_SETTINGS = {
   nameFormal: 'User',
   nameCasual: 'you',
   zip: '48203',
-  tone: 'formal', 
+  tone: 'formal',
   mode: 'chat',
   lastMode: null,
   mood: 'partly_cloudy',
@@ -11,7 +13,7 @@ export const DEFAULT_SETTINGS = {
     subject: "they",
     object: "them",
     possessive: "their",
-    reflexive: "themself" // singular they reflexive form
+    reflexive: "themself"
   },
   userPronouns: {
     subject: "they",
@@ -19,12 +21,13 @@ export const DEFAULT_SETTINGS = {
     possessive: "their",
     reflexive: "themself"
   },
-  voiceGender: 'female', // confirm these align with voice API
+  voiceGender: 'female',
   voiceAccent: 'british',
-  fontFamily: 'sans_serif', // unify with FONT_FAMILIES values
+  fontFamily: 'sans_serif',
   fontSize: 'medium',
   memoryLimit: 25,
   enableWeather: true,
+  voiceEnabled: false, // voice mode toggle added
 };
 
 // 🏷️ Dropdown option lists
@@ -34,7 +37,6 @@ export const HONORIFICS = [
   { value: "Msr.", label: "Msr." },
   { value: "Mr.", label: "Mr." },
   { value: "Ms.", label: "Ms." },
-  { value: "Dr.", label: "Dr." },
   { value: 'other', label: 'Other (Custom)' },
   { value: 'none', label: 'None' }
 ];

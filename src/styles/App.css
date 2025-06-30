@@ -125,7 +125,7 @@ html, body, #root, .App {
   height: 90%;
 }
 
-.focus-theme.chat-container {
+.focus-theme .chat-container {
   background: linear-gradient(145deg, #1a1b2f6b, #23254a4f);
   border: 1px solid rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(6px);
@@ -133,11 +133,10 @@ html, body, #root, .App {
   height: 90%;
 }
 
-.focus-theme .chat-input-container {
-  opacity: 0.73;
+
+.focus-theme .mode-layout-container {
+  margin-top: -4.5rem;
 }
-
-
 
 .partner_support-theme {
   background: linear-gradient(230deg, #d9b086, #f6a05f, #ec5b73);
