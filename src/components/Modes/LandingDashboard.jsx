@@ -67,15 +67,7 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
               <button onClick={() => setShowPreferences(true)}>What AELI Remembers</button>
             </div>
           </div>
-          <div style={{ textAlign: 'right', marginTop: '1rem' }}>
-  <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
-    <img
-      src="https://bolt.new/badge/bolt-badge.svg"
-      alt="Made with Bolt"
-      style={{ width: '120px', opacity: 0.85 }}
-    />
-  </a>
-</div>
+
 
         </>
 
