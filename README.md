@@ -9,7 +9,6 @@
 
 # AELI: Adaptive Energy & Life Interface
 
-![Made with Bolt](https://bolt.new/badge/bolt-badge.svg)
 
 ---
 
