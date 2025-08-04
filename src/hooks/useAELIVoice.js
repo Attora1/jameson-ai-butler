@@ -1,75 +1,80 @@
-// src/hooks/useAELIVoice.js
-
 import { useEffect, useRef } from 'react';
 
-export default function useAELIVoice(text, settings) {
-    const audioRef = useRef(null);
+function hashString(str) {
+  let hash = 0, i, chr;
+  if (!str) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0;
+  }
+  return hash;
+}
 
-    useEffect(() => {
-        console.log("✅ useAELIVoice triggered with text:", text);
-        console.log("✅ Voice Enabled:", settings?.voiceEnabled);
-        console.log("✅ Mode:", settings?.mode);
+export default function useAELIVoice(text, settings, poweredDown = false) {
+  const audioRef = useRef(null);
+  const lastHashRef = useRef(null);
 
-        if (!text || typeof text !== 'string') return;
-        if (!settings?.voiceEnabled) return;
+  useEffect(() => {
+    if (poweredDown) {
+      console.log("🔇 AELI is powered down. Skipping voice.");
+      return;
+    }
+    
+    if (!text || typeof text !== 'string') return;
+    if (!settings?.voiceEnabled) return;
 
-        // Pronunciation correction for "AELI"
-        const processedText = text.replace(/AELI/gi, "ay-lee");
+    const cleaned = text.trim();
+    const hash = hashString(cleaned);
 
-        const speak = async () => {
-            try {
-                const response = await fetch(
-                    'https://api.elevenlabs.io/v1/text-to-speech/onwK4e9ZLuTAKqWW03F9/stream',
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'xi-api-key': import.meta.env.VITE_ELEVENLABS_API_KEY
-                        },
-                        body: JSON.stringify({
-                            text: processedText,
-                            voice_settings: {
-                                stability: 0.2,         // less robotic
-                                similarity_boost: 0.8,  // more natural
-                                style: 0.2,             // softer intonation
-                                speed: 1.1              // slightly faster
-                            }
-                        })
-                    }
-                );
+    // 🚫 Block if same as last hash
+    if (hash === lastHashRef.current) return;
+    lastHashRef.current = hash;
 
-                if (!response.ok) {
-                    console.error('ElevenLabs TTS failed:', response.status, response.statusText);
-                    const errorText = await response.text();
-                    console.error('Error details:', errorText);
-                    return;
-                }
+    console.log("🔊 Speaking:", cleaned);
 
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
+    const processedText = cleaned.replace(/AELI/gi, "ay-lee");
 
-                // 🚫 Stop previous playback before playing the new one
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current.src = "";
-                }
+    const speak = async () => {
+      try {
+        const response = await fetch('/api/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: processedText,
+            voiceID: 'onwK4e9ZLuTAKqWW03F9'
+          })
+        });
 
-                const audio = new Audio(audioUrl);
-                audioRef.current = audio;
-                audio.play();
-            } catch (error) {
-                console.error('Error using ElevenLabs TTS:', error);
-            }
-        };
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('TTS Error:', errorText);
+          return;
+        }
 
-        speak();
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
 
-        return () => {
-            // Cleanup to prevent echo on unmount or re-trigger
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.src = "";
-            }
-        };
-    }, [text, settings?.voiceEnabled]);
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.src = "";
+        }
+
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+        audio.play();
+      } catch (error) {
+        console.error('ElevenLabs TTS failed:', error);
+      }
+    };
+
+    speak();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
+  }, [text, settings?.voiceEnabled]);
 }

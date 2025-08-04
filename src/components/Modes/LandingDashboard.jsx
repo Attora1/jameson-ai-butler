@@ -8,7 +8,26 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
   const [showPreferences, setShowPreferences] = useState(false);
   const [greeting, setGreeting] = useState('');
   const [encouragement, setEncouragement] = useState('');
-
+  const [hasSeenIntro, setHasSeenIntro] = useState(() => {
+    return localStorage.getItem("AELI_INTRO_SHOWN") === "true";
+  });
+  
+  useEffect(() => {
+    if (!hasSeenIntro) {
+      const welcomeMessage = "Hello there. You seem new. Would you mind opening the settings so I can calibrate things a bit? Don’t forget to save.";
+      alert(welcomeMessage); // You can replace this with a nicer modal if you want
+  
+      setTimeout(() => {
+        setShowSettings(true);
+        const icon = document.getElementById("settings-icon");
+        if (icon) {
+          icon.style.border = "3px solid red";
+          icon.style.transition = "border 0.5s ease";
+        }
+      }, 1000);
+    }
+  }, []);
+  
   useEffect(() => {
     document.body.classList.remove('focus-theme', 'low_spoon-theme', 'partner_support-theme', 'crisis-theme');
     document.body.classList.add('dashboard-theme');
@@ -57,16 +76,6 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
               <button onClick={() => setSettings(prev => ({ ...prev, mode: 'partner_support' }))}>Open Partner Mode</button>
               <button onClick={() => setShowPreferences(true)}>What AELI Remembers</button>
             </div>
-          </div>
-
-          <div className="made-with-bolt">
-            <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
-              <img
-                src="/src/assets/badge.png"
-                alt="Made with Bolt"
-                className="bolt-badge"
-              />
-            </a>
           </div>
 
 

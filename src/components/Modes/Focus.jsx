@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import MotivQuote from '../MotivQuote';
 import MusicToggle from '../Music.jsx';
-import generateSideQuests from '../genSideQuests';
+import { useCountdown } from '../../hooks/useTimer.js';
+
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import '../../styles/modes-css/Focus.css';
 import { getGreeting, getEncouragement, getWit } from '../../prompts/AELIEngine.js';
@@ -12,16 +13,22 @@ const Focus = ({ settings }) => {
   const [taskSubmitted, setTaskSubmitted] = useState(false);
   const [checklist, setChecklist] = useState([]);
   const [newItem, setNewItem] = useState('');
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  
   const [showMissionModal, setShowMissionModal] = useState(false);
+  const [sideQuests, setSideQuests] = useState([]);
 
   const [greeting, setGreeting] = useState('');
   const [encouragement, setEncouragement] = useState('');
   const [wit, setWit] = useState('');
 
   const checklistInputRef = useRef(null);
-  const alertSound = useRef(new Audio('../../../sounds/level-passed.mp3'));
+
+  const handleTimerComplete = () => {
+    setShowMissionModal(true);
+  };
+
+  const { secondsLeft, isRunning, startCountdown, togglePause, stopCountdown } = useCountdown({ onComplete: handleTimerComplete });
+  
 
   useEffect(() => {
     setGreeting(getGreeting(settings));
@@ -35,26 +42,11 @@ const Focus = ({ settings }) => {
     setTask('');
     setTaskSubmitted(false);
     setChecklist([]);
+    setSideQuests([]); // Clear side quests on mission complete
     setShowMissionModal(false);
+    stopCountdown();
   };
   const cancelCompleteMission = () => setShowMissionModal(false);
-
-  useEffect(() => {
-    let timer;
-    if (isRunning && secondsLeft > 0) {
-      timer = setInterval(() => setSecondsLeft(prev => prev - 1), 1000);
-    } else if (secondsLeft === 0 && isRunning) {
-      setIsRunning(false);
-      alertSound.current.play();
-      setShowMissionModal(true);
-    }
-    return () => clearInterval(timer);
-  }, [isRunning, secondsLeft]);
-
-  const startTimer = (minutes) => {
-    setSecondsLeft(minutes * 60);
-    setIsRunning(true);
-  };
 
   const toggleChecklistItem = (index) => {
     const updated = [...checklist];
@@ -70,20 +62,34 @@ const Focus = ({ settings }) => {
     }
   };
 
-  const hardcodedSideQuests = [
-    "Clear your workspace.",
-    "Refill your water bottle.",
-    "Write down your top 3 priorities.",
-    "Do a quick stretch.",
-    "Take three deep breaths."
-  ];
+  const generateAIQuests = async (mainTask) => {
+    try {
+      const response = await fetch('/api/generate-side-quests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mainTask }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setSideQuests(data.sideQuests);
+      } else {
+        console.error("Failed to generate AI side quests:", data.error);
+        setSideQuests(["Failed to generate side quests. Please try again."]);
+      }
+    } catch (error) {
+      console.error("Error generating AI side quests:", error);
+      setSideQuests(["Error generating side quests. Check console for details."]);
+    }
+  };
+
+  
 
   return (
     <>
       <ModeLayout
         className="focus-theme"
         heading="Focus Mode"
-        subtitle="Let's lock in and move gently."
+        subtitle="Let's lock in, one thing at a time."
         leftColumn={
           <div className="focus-panel">
             {!taskSubmitted ? (
@@ -97,6 +103,7 @@ const Focus = ({ settings }) => {
                     if (e.key === 'Enter' && task.trim()) {
                       e.preventDefault();
                       setTaskSubmitted(true);
+                      generateAIQuests(task); // Generate AI quests on task submission
                     }
                   }}
                   placeholder="What is the mission right now?"
@@ -167,17 +174,17 @@ const Focus = ({ settings }) => {
             <div className="side-quest-section">
               <h4>🗂️ Optional Side Quests</h4>
               <ul className="suggestion-list">
-                {hardcodedSideQuests.map((idea, idx) => (
+                {sideQuests.map((idea, idx) => (
                   <li key={idx}>• {idea}</li>
                 ))}
               </ul>
             </div>
 
             <div className="timer-controls">
-              <button onClick={() => startTimer(10)} className="timer-btn">10 min</button>
-              <button onClick={() => startTimer(20)} className="timer-btn">20 min</button>
-              <button onClick={() => setIsRunning(!isRunning)} className="timer-btn">{isRunning ? 'Pause' : 'Resume'}</button>
-              <button onClick={() => { setIsRunning(false); setSecondsLeft(0); }} className="timer-btn stop-btn">Stop</button>
+              <button onClick={() => startCountdown(10)} className="timer-btn">10 min</button>
+              <button onClick={() => startCountdown(20)} className="timer-btn">20 min</button>
+              <button onClick={togglePause} className="timer-btn">{isRunning ? 'Pause' : 'Resume'}</button>
+              <button onClick={stopCountdown} className="timer-btn stop-btn">Stop</button>
             </div>
 
             {secondsLeft > 0 && (

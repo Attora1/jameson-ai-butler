@@ -44,8 +44,8 @@ export default function TetherCanvas({ onComplete }) {
     let animationFrameId;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth * 0.5;
-      canvas.height = window.innerHeight * 0.5;
+      canvas.width = window.innerWidth * 0.8; // 80% of window width
+      canvas.height = window.innerHeight * 0.6; // 60% of window height
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -164,7 +164,12 @@ export default function TetherCanvas({ onComplete }) {
   }, [playerMode, isFusing, shapeIndex, levelSettings]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => { keysPressed.current[e.key] = true; };
+    const handleKeyDown = (e) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(e.key)) {
+        e.preventDefault(); // Prevent default scroll behavior
+      }
+      keysPressed.current[e.key] = true;
+    };
     const handleKeyUp = (e) => { keysPressed.current[e.key] = false; };
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);

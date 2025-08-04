@@ -1,0 +1,103 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+const notifiedTimers = new Set();
+
+// A generic countdown timer hook
+export function useCountdown({ onComplete }) {
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef(null);
+
+  const startCountdown = useCallback((minutes) => {
+    setSecondsLeft(minutes * 60);
+    setIsRunning(true);
+  }, []);
+
+  const togglePause = useCallback(() => {
+    if (secondsLeft > 0) {
+      setIsRunning(prev => !prev);
+    }
+  }, [secondsLeft]);
+
+  const stopCountdown = useCallback(() => {
+    setIsRunning(false);
+    setSecondsLeft(0);
+  }, []);
+
+  useEffect(() => {
+    if (isRunning && secondsLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setSecondsLeft(prevSeconds => prevSeconds - 1);
+      }, 1000);
+    } else if (isRunning && secondsLeft === 0) {
+      setIsRunning(false);
+      onComplete?.();
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isRunning, secondsLeft, onComplete]);
+
+  return {
+    secondsLeft,
+    isRunning,
+    startCountdown,
+    togglePause,
+    stopCountdown,
+  };
+}
+
+// Hook for polling persistent timers from the server
+export function usePersistentTimerPolling(setMessages, poweredDown) {
+  const setMessagesRef = useRef(setMessages);
+  const alertSound = useRef(new Audio('/sounds/level-passed.mp3'));
+
+  const playSound = useCallback(() => {
+    if (alertSound.current) {
+      alertSound.current.load();
+      alertSound.current.play().catch(error => {
+        console.error('Error playing sound:', error);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    setMessagesRef.current = setMessages;
+  }, [setMessages]);
+
+  useEffect(() => {
+    let pollingInterval;
+
+    if (!poweredDown) {
+      pollingInterval = setInterval(async () => {
+        try {
+          const response = await fetch('/api/check-timers');
+
+          if (response.status === 503) {
+            console.warn("AELI server is asleep. Stopping timer polling.");
+            clearInterval(pollingInterval);
+            return;
+          }
+
+          const data = await response.json();
+
+          if (data.expiredTimers && data.expiredTimers.length > 0) {
+            data.expiredTimers.forEach((id) => {
+              if (!notifiedTimers.has(id)) {
+                notifiedTimers.add(id);
+                playSound?.();
+                if (typeof setMessagesRef.current === 'function') {
+                  setMessagesRef.current(prev => [...prev, { text: '⏰ Your timer just finished.', isUser: false }]);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Error checking timers:', error);
+        }
+      }, 5000);
+    }
+
+    return () => {
+      clearInterval(pollingInterval);
+    };
+  }, [poweredDown, playSound]);
+}

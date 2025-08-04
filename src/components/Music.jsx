@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 // Changed to a different royalty-free music track
-const FOCUS_PLAYLIST_URL = "./public/sounds/AELI Meditation.mp3";
+const FOCUS_PLAYLIST_URL = "./sounds/AELI Meditation.mp3";
 
 export default function MusicToggle() {
   const [isPlaying, setIsPlaying] = useState(false);

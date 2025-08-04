@@ -36,14 +36,17 @@ export default function BreathingRing({ running }) {
 
   return (
     <div className={`breathing-ring-wrapper ${phase}`}>
-      <img
-        src={petalImage}
-        alt="Breathing flower"
-        className={`breathing-petal-image animate-spin-drag ${phase}`}
-        onClick={handleFlowerClick}
-        style={{ cursor: running ? 'default' : 'pointer' }}
-        title={running ? '' : 'Tap to adjust your spoons'}
-      />
-    </div>
+        <div className="spoon-count-display">
+          {spoonCount}
+        </div>
+        <img
+          src={petalImage}
+          alt="Breathing flower"
+          className={`breathing-petal-image animate-spin-drag ${phase}`}
+          onClick={handleFlowerClick}
+          style={{ cursor: running ? 'default' : 'pointer' }}
+          title={running ? '' : 'Tap to adjust your spoons'}
+        />
+      </div>
   );
 }

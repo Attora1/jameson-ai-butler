@@ -4,7 +4,6 @@ import { SpoonContext } from '../../context/SpoonContext.jsx';
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import DimOverlay from './DimOverlay.jsx';
 import { getReturnFromZen, getModeSubtitle } from '../../utils/AELIRemarks.js';
-import getSpoonSuggestionDynamic from '../../utils/spoonReplies.js';
 import { useDebounce } from '../../utils/useDebounce.js';
 import '../../styles/modes-css/LowSpoon.css';
 
@@ -17,19 +16,13 @@ export default function LowSpoon({ settings }) {
   const [timedSession, setTimedSession] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const petalLayerRef = useRef(null);
-  const [currentSuggestion, setCurrentSuggestion] = useState('Gathering your energy readings...');
+  const [currentSuggestion, setCurrentSuggestion] = useState('Take a gentle moment to breathe and rest.');
 
   const debouncedSpoons = useDebounce(spoonCount, 1500);
 
   useEffect(() => {
-    const fetchSuggestion = async () => {
-      const suggestion = await getSpoonSuggestionDynamic("low_spoon", { spoonCount: debouncedSpoons });
-      console.log(`💡 Gemini Suggestion for ${debouncedSpoons} spoons: ${suggestion}`);
-      setCurrentSuggestion(suggestion);
-    };
-    if (debouncedSpoons !== null) {
-      fetchSuggestion();
-    }
+    // The dynamic suggestion functionality has been removed.
+    // The suggestion is now a static message.
   }, [debouncedSpoons]);
 
   const handleStart = () => {

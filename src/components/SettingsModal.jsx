@@ -19,7 +19,7 @@ const isValidZipCode = (zip) => {
   return /^\d{5}(-\d{4})?$/.test(cleanZip);
 };
 
-const SettingsModal = ({ settings, setSettings, onClose }) => {
+const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
   const [localSettings, setLocalSettings] = useState(settings);
   const [zipError, setZipError] = useState('');
 
@@ -39,14 +39,50 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
     }
   };
 
-  const handleSave = () => {
-    // Ensure we have a valid zip code before saving
+  const handleSave = async () => {
     if (!localSettings.zip || !isValidZipCode(localSettings.zip)) {
-      setLocalSettings(prev => ({ ...prev, zip: '48203' })); // Use default
+      setLocalSettings(prev => ({ ...prev, zip: '48203' }));
     }
+  
+    let tone = '';
+  
+    if (settings.mood !== localSettings.mood) {
+      const to = localSettings.mood;
+      tone += `The forecast now reads '${to}'. Adjusting course.`;
+    }
+  
+    if (settings.zip !== localSettings.zip) {
+      tone += (tone ? ' ' : '') + `Location set to ${localSettings.zip}.`;
+    }
+  
+    if (settings.spoonCount !== localSettings.spoonCount) {
+      tone += (tone ? ' ' : '') + `Spoons adjusted from ${settings.spoonCount} to ${localSettings.spoonCount}. Let’s take it ${localSettings.spoonCount < settings.spoonCount ? 'slow' : 'up a notch'}.`;
+    }
+  
+    if (tone) {
+      console.log('[AELI Settings Update]', tone);
+      setMessages(prev => [...prev, { isUser: false, text: `[AELI] ${tone}` }]);
+    }
+  
     setSettings(localSettings);
+  
+    try {
+      await fetch('http://localhost:3001/api/wellness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mood: localSettings.mood,
+          spoonCount: localSettings.spoonCount,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save wellness data:", error);
+    }
+  
     onClose();
   };
+  
+  
 
   return (
     <div className="settings-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="settings-title">
@@ -159,6 +195,20 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
           >
             <option value="formal">Formal</option>
             <option value="casual">Casual</option>
+          </select>
+        </label>
+
+        <label> 
+        Humor Level:
+          <select
+            value={localSettings.humorLevel || 'dry'}
+            onChange={(e) =>
+              setLocalSettings(prev => ({ ...prev, humorLevel: e.target.value }))
+            }
+          >
+            <option value="dry">Dry</option>
+            <option value="light">Light</option>
+            <option value="none">None</option>
           </select>
         </label>
 

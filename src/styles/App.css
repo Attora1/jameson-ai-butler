@@ -24,14 +24,14 @@ html, body, #root, .App {
 .App {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%; /* Use min-height to allow content to expand */
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .header-buttons {
   position: absolute;
   top: 1rem;
-  left: 15vw;
+  left: 0vw;
   display: flex;
   z-index: 2;
   padding: 0.25rem 0.75rem;
@@ -80,7 +80,7 @@ html, body, #root, .App {
   width: 100%;
   box-sizing: border-box;
   overflow: visible;
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 /* 👇 Make mode content NOT eat the whole screen */
@@ -124,19 +124,26 @@ html, body, #root, .App {
   backdrop-filter: blur(6px);
   height: 90%;
 }
+.low_spoon-theme .mode-layout, .low_spoon-theme .mode-layout-container, .low_spoon-theme .mode-layout-columns, .low_spoon-theme .mode-layout-header, .low_spoon-theme .mode-layout-subtitle, .low_spoon-theme .mode-layout-heading{
+  position: relative; 
+  z-index: 2;
+  margin: 1rem;
+  margin-top: 1rem;
+}
+
 
 .focus-theme .chat-container {
   background: linear-gradient(145deg, #1a1b2f6b, #23254a4f);
   border: 1px solid rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(6px);
   box-shadow: 0 0 12px rgba(0, 128, 255, 0.168);
-  height: 90%;
+  height: 85%;
+}
+.focus-theme .mode-layout-subtitle, .mode-layout-heading{
+  margin-top: 0rem;
 }
 
 
-.focus-theme .mode-layout-container {
-  margin-top: -4.5rem;
-}
 
 .partner_support-theme {
   background: linear-gradient(230deg, #d9b086, #f6a05f, #ec5b73);
@@ -147,6 +154,7 @@ html, body, #root, .App {
 .focus-theme {
   background: var(--background-dark);
   color: #DCEFFF;
+  overflow: hidden;
 }
 
 
@@ -285,7 +293,7 @@ color: #fbe0ccde;
   gap: 1.25rem;
   max-width: 800px;
   width: 70%;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
   color: var(--cloud-gray);
   position: relative;
@@ -343,8 +351,8 @@ color: #fbe0ccde;
 
 .save-settings {
   position: absolute;
-  bottom: 1rem;
-  right: 4rem;
+  bottom: 0rem;
+  right: 1rem;
   padding: 0.75rem 1.25rem;
   background-color: var(--navy-deep);
   color: var(--gold-deep);
@@ -363,13 +371,74 @@ color: #fbe0ccde;
 
 
 
-
 .mode-layout-columns {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
   gap: 2rem !important;
   width: 100% !important;
   max-width: 100% !important;
+}
+
+.aeli-poweroff-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: #ccc;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.aeli-poweroff-overlay.fade-in {
+  opacity: 1;
+}
+
+
+/* --- Responsive Design --- */
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr; /* Single column layout */
+    padding: 0.5rem;
+    margin-top: 4rem; /* Adjust for header buttons */
+    align-items: stretch; /* Allow items to fill the space */
+  }
+
+  .chat-container {
+    max-width: 100%;
+    margin-top: 0;
+  }
+
+  /* Override theme heights for mobile to ensure proper layout */
+  .dashboard-theme.chat-container,
+  .low_spoon-theme.chat-container,
+  .focus-theme .chat-container,
+  .partner_support-theme.chat-container {
+    height: 75vh; /* Use viewport height for consistency */
+  }
+
+  .header-buttons {
+    left: 0.5rem;
+    top: 0.5rem;
+    right: 0.5rem;
+    justify-content: space-between;
+  }
+
+  .settings-modal {
+    width: 90%;
+    max-height: 90vh;
+  }
+
+  .save-settings {
+    bottom: 0;
+    right: 0.5rem;
+  }
 }
 
 

@@ -1,13 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import useAELIVoice from '../../hooks/useAELIVoice.js';
 
-export default function MessageList({ messages, settings, hidden }) {
+export default function MessageList({ messages, settings, poweredDown, remainingTime }) {
   const containerRef = useRef(null);
 
-  const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-  const aeliText = lastMessage && !lastMessage.isUser && lastMessage.text ? lastMessage.text.replace(/^(\\[AELI\\] |\\[User\\] )/, '') : '';
+  // Memoize last Aeli message
+  const lastAeliMessage = useMemo(() => {
+    const reversed = [...messages].reverse();
+    return reversed.find((msg) => !msg.isUser && msg.text);
+  }, [messages]);
 
-  useAELIVoice(aeliText, settings);
+  const aeliText = lastAeliMessage?.text?.replace(/^\[AELI\] |\[User\] /, '');
+
+  useAELIVoice(aeliText, settings, poweredDown);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -20,6 +25,11 @@ export default function MessageList({ messages, settings, hidden }) {
 
   return (
     <div className="messages" ref={containerRef} style={{ overflowY: 'auto', maxHeight: '70vh' }}>
+      {remainingTime !== null && remainingTime > 0 && (
+        <div className="message-bubble ai">
+          <p>Timer: {Math.floor(remainingTime / 1000)} seconds remaining</p>
+        </div>
+      )}
       {messages.length === 0 && (
         <div className="message-bubble ai">
           <p>Systems operational. Awaiting instructions. ♦tea sip♦</p>
@@ -30,7 +40,7 @@ export default function MessageList({ messages, settings, hidden }) {
           key={i}
           className={`message-bubble ${msg?.isUser ? 'user' : 'ai'}`}
         >
-          <p>{msg?.text ? msg.text.replace(/^(\\[AELI\\] |\\[User\\] )/, '') : '[Message unavailable]'}</p>
+          <p>{msg?.text ? msg.text.replace(/^\[AELI\] |\[User\] /, '') : '[Message unavailable]'}</p>
         </div>
       ))}
     </div>

@@ -1,43 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../../styles/modes-css/PartnerSupport.css';
+
+const PULSE_INTERVAL = 90 * 60 * 1000; // 90 minutes in milliseconds
+const LAST_PULSE_KEY = 'lastPartnerPulseTime';
 
 export default function PartnerCheckInButton() {
   const [showModal, setShowModal] = useState(false);
-  const [pulse, setPulse] = useState(false);
-  const [timerId, setTimerId] = useState(null);
+  const [isPulsing, setIsPulsing] = useState(false);
+  const pulseTimeoutRef = useRef(null);
+  const intervalRef = useRef(null);
+
+  const startPulse = () => {
+    setIsPulsing(true);
+    localStorage.setItem(LAST_PULSE_KEY, Date.now());
+    if (window.AELI && window.AELI.speak) {
+      window.AELI.speak("It's been a while. Check in on your partner?");
+    }
+    if (window.playSoftPing) {
+      window.playSoftPing();
+    }
+    // Stop pulsing after 10 seconds
+    pulseTimeoutRef.current = setTimeout(() => {
+      setIsPulsing(false);
+    }, 10000); // Pulse for 10 seconds
+  };
+
+  const scheduleNextPulse = () => {
+    const lastPulseTime = parseInt(localStorage.getItem(LAST_PULSE_KEY) || '0', 10);
+    const timeElapsed = Date.now() - lastPulseTime;
+    const timeToNextPulse = PULSE_INTERVAL - timeElapsed;
+
+    if (timeToNextPulse <= 0) {
+      startPulse();
+      intervalRef.current = setInterval(startPulse, PULSE_INTERVAL);
+    } else {
+      intervalRef.current = setTimeout(() => {
+        startPulse();
+        intervalRef.current = setInterval(startPulse, PULSE_INTERVAL);
+      }, timeToNextPulse);
+    }
+  };
 
   useEffect(() => {
-    startAutoPing();
-    return () => clearTimeout(timerId);
+    scheduleNextPulse();
+    return () => {
+      clearTimeout(pulseTimeoutRef.current);
+      clearInterval(intervalRef.current);
+    };
   }, []);
-
-  const startAutoPing = () => {
-    const id = setTimeout(() => {
-      setPulse(true);
-      if (window.AELI && window.AELI.speak) {
-        window.AELI.speak("It's been a while. Check in on your partner?");
-      }
-      if (window.playSoftPing) {
-        window.playSoftPing();
-      }
-    }, 90 * 60 * 1000); // 90 min
-    setTimerId(id);
-  };
 
   const openModal = () => {
     setShowModal(true);
-    setPulse(false);
-    clearTimeout(timerId);
-    startAutoPing();
+    setIsPulsing(false); // Stop pulsing if modal is opened
+    clearTimeout(pulseTimeoutRef.current);
+    clearInterval(intervalRef.current); // Stop the main interval
   };
 
-  const closeModal = () => setShowModal(false);
+  const closeModal = () => {
+    setShowModal(false);
+    scheduleNextPulse(); // Resume the timer based on existing state
+  };
+
+  const handleCheckIn = () => {
+    setShowModal(false);
+    localStorage.setItem(LAST_PULSE_KEY, Date.now()); // Reset timer to now
+    clearInterval(intervalRef.current);
+    scheduleNextPulse(); // Schedule next pulse 90 minutes from now
+  };
+
+  const handleLater = () => {
+    setShowModal(false);
+    localStorage.setItem(LAST_PULSE_KEY, Date.now() - (PULSE_INTERVAL - 10 * 60 * 1000)); // Set timer to 10 mins from now
+    clearInterval(intervalRef.current);
+    scheduleNextPulse(); // Schedule next pulse 10 minutes from now
+  };
 
   return (
     <>
       <button
         onClick={openModal}
-        className={`check-partner-button ${pulse ? 'pulse' : ''}`}
+        className={`check-partner-button ${isPulsing ? 'pulse' : ''}`}
       >
         Check on Partner 💛
       </button>
@@ -52,8 +94,8 @@ export default function PartnerCheckInButton() {
               <li>• Mood check-in: what are you both feeling?</li>
             </ul>
             <div className="partner-checkin-buttons">
-            <button onClick={closeModal}>I'll check in</button>
-            <button onClick={closeModal}>Later</button>
+            <button onClick={handleCheckIn}>I'll check in</button>
+            <button onClick={handleLater}>Later</button>
             <button
                 onClick={() =>
                 window.open('https://unhconnect.unh.edu/s/1518/images/gid4/editor_documents/moodmeter-2020.pdf?gid=4&pgid=61&sessionid=5850552a-a50f-492f-889c-ff269beaa9b8&cc=1', '_blank')

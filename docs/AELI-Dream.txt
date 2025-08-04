@@ -1,0 +1,104 @@
+﻿🧠 Future Updates:
+
+- Local wellness tracker (mood, food, meds, spoons, rest suggestions)
+- Low-energy command system (voice/nudge)
+- Night Wind-Down Mode
+- Crisis Mode: dissociation detection + grounding
+- Social Buffer Mode: text helpers
+- Glitch Gremlin Mode: code tools + stuck timer
+- Cozy Vibes Only Mode
+
+- Goal: Local system awareness + control
+  - Launch apps/music
+  - Real-time spoon tracking
+  - Manage system settings (DND, volume)
+
+- Backend Options:
+  - A: Node.js local server
+  - B: Python script + API
+  - C: Electron app (long-term)
+
+- Mobile Options:
+  - A: Responsive web app (current phase)
+  - B: Native app w/ voice + push (next phase)
+  - C: CarPlay shortcut → app (future)
+
+Add approved Jameson quotes and motto:
+• 1-sentence pitch
+• Core use case MVP options
+• “Know your why” reasoning.
+
+Apple Watch Integration:
+• Update rings and other goals based on spoons
+• Replace standard ring updates with Jameson-style reminders, check-ins, and supportive prompts.
+
+🧩 Jameson: Fusion Mode Planning List (long-term embodied assistant vision)
+
+🎙️ Voice + Audio Awareness:
+• Wake word detection (“Jameson?”), Eleven Labs or Apple voice engine
+• Multi-room mic setup with speaker response
+• Context detection via tone and urgency
+
+👁️ Camera + Sensory Tracking:
+• Room-aware motion and facial recognition
+• Fall detection, expression/mood tracking, posture awareness
+
+🧠 Real-Time Processing + System Memory:
+• Local backend (Node.js/FastAPI)
+• Logs for spoons, mood, symptoms, habits
+• Pattern detection + suggestion engine
+
+🧰 Smart Home Control:
+• Integration with Home Assistant
+• Smart plugs, lights, fans, scent diffusers
+• Spoon-based automation for rest/recovery
+
+🖼️ Visual Interface / Holographic Display:
+• AR overlay (iPhone/Vision Pro)
+• Floating petal/mood UI
+• Jameson avatar projection (optional fun element)
+
+🔐 Privacy + Power Efficiency:
+• Mic/cam toggle via switch or voice
+• Power-saving modes
+• Emergency override always active
+
+🏠 Bonus Home Modules:
+• Kitchen prompts
+• Wellness station (hydrate, meds, rest)
+• Closet/mirror outfit planning
+• Chore automation via spoon tracking
+
+Tagline: “Jameson isn’t just in your system—he is the system
+
+🛡️ Safeguards & Ethics Protocols
+
+👤 User & Household Safety:
+• Overuse detection → auto-pause, disable tasks if no rest/food/breaks
+• Escalating prompts from gentle to firm
+• Emotional state monitoring → back off on high-symptom days
+• Suggests grounding or mode shift if distress detected
+
+🛑 Abuse Detection / Self-Protection:
+• Tone analysis for aggression
+• Abuse response protocol (alerts, environmental cues, sound masking)
+• “Jameson, that’s enough heat” → domestic violence silent response
+• Smart lock + light triggers
+• If user is abusive → restrict functionality, report if configured
+
+🧠 Data Ethics & Boundaries:
+• No always-on surveillance without consent
+• “Forget this” voice command
+• Local-only encrypted logs unless user opts in
+• Explicit consent before using pattern data
+
+🔊 Emergency Simulations (Escape Tools):
+• Fake fire alarm
+• Smart bulb override
+• Discreet contact alerts via fake UI actions
+• Screen “error” disguise
+
+✨ Prime Directive:
+“I exist to support my user’s autonomy, safety, and well-being. If forced to choose, I protect the person, not the task.”.
+
+Has requested a separate chat to 

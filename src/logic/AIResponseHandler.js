@@ -1,12 +1,8 @@
-import { buildPromptWithContext } from '../prompts/buildPromptWithContext';
 import { detectContextualMode } from '../utils/modeDetect.js';
 import { parseSpoonCount } from '../utils/parseSpoonCount.js';
-import getSpoonSuggestionDynamic from '../utils/spoonReplies.js';
 
-export async function generateResponse(userInput, messageHistory, context) {
-  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
-  const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-
+export async function handleAIResponse(userInput, messageHistory, context) {
+  console.log('[AELI DEBUG] mode:', context.mode, '| input:', userInput);
 
   const detectedMode = detectContextualMode(userInput);
   const lastMode = context.mode !== 'chat' ? context.mode : null;
@@ -20,10 +16,9 @@ export async function generateResponse(userInput, messageHistory, context) {
   console.log('[AELI DEBUG] Parsed spoonCount:', spoonCount);
 
   if (newContext.mode === 'low_spoon' && spoonCount !== null) {
-    const suggestion = await getSpoonSuggestionDynamic("low_spoon", context);
     newContext = { ...newContext, spoonCount };
     return {
-      replyText: `Spoons logged: ${spoonCount} 🥄\nHere is a gentle suggestion:\n${suggestion}`,
+      replyText: `Spoons logged: ${spoonCount} 🥄`,
       newContext,
       spoonCount
     };
@@ -45,49 +40,14 @@ export async function generateResponse(userInput, messageHistory, context) {
         lastMessage: userInput,
       },
     };
+
+    return {
+      replyText: `Understood, ${newContext.nameCasual}. Let's chat.`,
+      newContext,
+      spoonCount: null
+    };
   }
 
-  const fullPrompt = await buildPromptWithContext(
-    [...messageHistory, { text: userInput, isUser: true }],
-    newContext
-  );
-
-  const body = {
-    model: "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: fullPrompt },
-      { role: "user", content: userInput }
-    ]
-  };
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    const data = await response.json();
-    let replyText = data.choices?.[0]?.message?.content || "AELI couldn't generate a response right now.";
-
-    if (lastMode === 'chat' && context.chatMode?.lastMessage && newContext.mode === 'chat') {
-      const followUpLines = [
-        `We were discussing "${context.chatMode.lastMessage}", remember?`,
-        `Before we switched gears, you said: "${context.chatMode.lastMessage}". Shall we circle back?`,
-        `Not to pry, but you did mention "${context.chatMode.lastMessage}". Still relevant?`,
-      ];
-      const followUp = followUpLines[Math.floor(Math.random() * followUpLines.length)];
-      replyText += `\n\n${followUp}`;
-    }
-
-    return { replyText, newContext, spoonCount: null };
-  } catch (error) {
-    console.error('[AELI] API Error:', error);
-    return { replyText: "Apologies, the silver polish appears to be tarnished.", newContext, spoonCount: null };
+  console.log('[AELI RETURN FALLBACK]', { newContext, spoonCount: null });
+  return { newContext, spoonCount: null };
   }
-}
-
-export default generateResponse;

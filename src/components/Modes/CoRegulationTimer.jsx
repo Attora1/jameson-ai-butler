@@ -1,57 +1,49 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { useCountdown } from '../../hooks/useTimer.js';
 import '../../styles/modes-css/CoRegulationTimer.css';
 
 export default function CoRegulationTimer({ onComplete }) {
-  const [duration, setDuration] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
 
-  useEffect(() => {
-    if (duration) {
-      setTimeLeft(duration);
-      setIsRunning(true);
-    }
-  }, [duration]);
+  const handleTimerComplete = () => {
+    audioRef.current = new Audio('/sounds/level-passed.mp3');
+    audioRef.current.play().catch(error => {
+      console.error('Error playing sound:', error);
+    });
+    setTimeout(() => {
+      onComplete?.();
+    }, 3000);
+  };
 
-  useEffect(() => {
-    let timer;
-    if (isRunning && timeLeft > 0) {
-      timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-    } else if (isRunning && timeLeft === 0 && duration) {
-      audioRef.current = new Audio('/sounds/level-passed.mp3');
-      audioRef.current.play().catch(() => {});
-      setTimeout(() => {
-        setIsRunning(false);
-        onComplete?.();
-      }, 3000);
-    }
-    return () => clearTimeout(timer);
-  }, [isRunning, timeLeft, duration]);
+  const { secondsLeft, isRunning, startCountdown, stopCountdown } = useCountdown({
+    onComplete: handleTimerComplete,
+  });
 
-  const handleSelectDuration = (seconds) => {
-    setDuration(seconds);
+  const handleSelectDuration = (minutes) => {
+    setDuration(minutes * 60);
+    startCountdown(minutes);
   };
 
   const handleEndSession = () => {
-    setIsRunning(false);
+    stopCountdown();
     onComplete?.();
   };
 
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
-  const progress = duration ? (duration - timeLeft) / duration : 0;
+  const progress = duration ? (duration - secondsLeft) / duration : 0;
   const offset = circumference - progress * circumference;
 
   return (
     <div className="coregulation-timer-wrapper fade-in">
-      {!isRunning ? (
+      {!isRunning && duration === 0 ? (
         <div className="coregulation-timer-setup">
           <h3>Quiet Co-Regulation Timer</h3>
           <p>How long would you like to sit together?</p>
           <div className="duration-buttons">
-            <button onClick={() => handleSelectDuration(300)}>5 Minutes</button>
-            <button onClick={() => handleSelectDuration(600)}>10 Minutes</button>
+            <button onClick={() => handleSelectDuration(5)}>5 Minutes</button>
+            <button onClick={() => handleSelectDuration(10)}>10 Minutes</button>
           </div>
         </div>
       ) : (
