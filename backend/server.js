@@ -13,7 +13,6 @@ import { getAuthUrl, getTokens, listEvents } from './google.js';
 
 
 // Load environment variables
-dotenv.config();
 
 // Initialize Express
 const app = express();
