@@ -10,7 +10,7 @@
   position: fixed;
   inset: 0;
   z-index: 1 !important;
-  background: url('src/assets/leafy-bg.png') center center / cover no-repeat;
+  background: url('../../assets/leafy-bg.png') center center / cover no-repeat;
   background-size: cover; /* or try 'contain' or just 'cover' depending on preference */
   opacity: 0.9; /* soften brightness */
   filter: brightness(0.85) contrast(1.1);

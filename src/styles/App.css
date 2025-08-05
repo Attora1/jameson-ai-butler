@@ -369,6 +369,35 @@ color: #fbe0ccde;
   color: var(--navy-deep);
 }
 
+.integrations-section {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.integrations-section h3 {
+  color: var(--gold-soft);
+  margin-bottom: 1rem;
+}
+
+.google-connect-button {
+  background-color: #4285F4; /* Google Blue */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Make it full width */
+  margin-top: 1rem; /* Add some space */
+}
+
+.google-connect-button:hover {
+  background-color: #357ae8;
+}
+
 
 
 .mode-layout-columns {

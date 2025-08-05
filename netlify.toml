@@ -1,6 +1,7 @@
 [build]
-  command = "npm run build"
+  command = "cd backend && npm install && cd .. && npm run build"
   publish = "src/dist"
+  functions = "netlify/functions"
 
 [dev]
   command = "npm run dev"

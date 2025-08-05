@@ -17,6 +17,7 @@
         "googleapis": "^154.1.0",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
+        "serverless-http": "^3.2.0",
         "vite-plugin-pwa": "^1.0.2"
     },
     "devDependencies": {
