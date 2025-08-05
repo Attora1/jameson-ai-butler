@@ -390,8 +390,9 @@ color: #fbe0ccde;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 100%; /* Make it full width */
-  margin-top: 1rem; /* Add some space */
+  max-width: 250px; /* Make it less wide */
+  margin: 1rem auto 0; /* Center it and add top space */
+  display: block; /* Ensure margin: auto works */
 }
 
 .google-connect-button:hover {

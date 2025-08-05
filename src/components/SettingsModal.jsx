@@ -327,12 +327,22 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         {/* --- Integrations --- */}
         <div className="integrations-section">
           <h3>Integrations</h3>
-          <button 
-            className="google-connect-button" 
-            onClick={() => window.location.href = '/api/auth/google'}
-          >
-            Connect to Google Calendar
-          </button>
+          <label>
+            Select Integration:
+            <select
+              onChange={(e) => {
+                const selectedIntegration = e.target.value;
+                if (selectedIntegration === 'google-calendar') {
+                  window.location.href = '/api/auth/google';
+                }
+                // Add more integration options here
+              }}
+              value=""
+            >
+              <option value="" disabled>Select an option</option>
+              <option value="google-calendar">Google Calendar</option>
+            </select>
+          </label>
         </div>
 
         {/* Save Button */}
