@@ -8,6 +8,7 @@ import db from './db.js';
 import { buildPromptWithContext } from './buildPromptWithContext.js';
 import { getWeather } from './getWeather.js';
 import { analyzeAndSaveFacts } from './autoSaveFacts.js';
+import { getAuthUrl, getTokens, listEvents } from './google.js';
 
 
 
@@ -268,6 +269,49 @@ app.post('/api/chat', express.json(), async (req, res) => {
     res.status(500).json({ error: "Apologies, the silver polish appears to be tarnished." });
   }
 });
+
+// =====================
+// GOOGLE CALENDAR API
+// =====================
+app.get('/api/auth/google', (req, res) => {
+  const url = getAuthUrl();
+  res.redirect(url);
+});
+
+app.get('/api/auth/google/callback', async (req, res) => {
+  try {
+    const { code } = req.query;
+    const tokens = await getTokens(code);
+    // Store tokens securely
+    db.users.update({ userId: 'defaultUser' }, { $set: { googleTokens: tokens } }, { upsert: true });
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error getting Google tokens:', error);
+    res.status(500).send('Error getting Google tokens');
+  }
+});
+
+app.get('/api/calendar/events', async (req, res) => {
+  try {
+    const user = await new Promise((resolve, reject) => {
+      db.users.findOne({ userId: 'defaultUser' }, (err, doc) => {
+        if (err) reject(err);
+        resolve(doc);
+      });
+    });
+
+    if (!user || !user.googleTokens) {
+      return res.status(401).json({ error: 'User not authenticated with Google' });
+    }
+
+    const events = await listEvents(user.googleTokens);
+    res.json(events);
+  } catch (error) {
+    console.error('Error getting calendar events:', error);
+    res.status(500).send('Error getting calendar events');
+  }
+});
+
 
 // =====================
 // SIDE QUEST GENERATION API

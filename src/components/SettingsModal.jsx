@@ -324,6 +324,17 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
           </select>
         </label>
 
+        {/* --- Integrations --- */}
+        <div className="integrations-section">
+          <h3>Integrations</h3>
+          <button 
+            className="google-connect-button" 
+            onClick={() => window.location.href = '/api/auth/google'}
+          >
+            Connect to Google Calendar
+          </button>
+        </div>
+
         {/* Save Button */}
         <div className="settings-footer">
           <button className="save-settings" onClick={handleSave} type="button">
