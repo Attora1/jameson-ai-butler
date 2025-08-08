@@ -1,7 +1,17 @@
 [build]
-  command = "npm run build && cp -r backend/ src/dist/"
+  command = "npm run build && cp -r backend/ netlify/functions/"
   publish = "src/dist"
   functions = "netlify/functions"
+
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [[redirects]]
   from = "/api/*"
