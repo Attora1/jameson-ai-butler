@@ -4,30 +4,7 @@ import axios from 'axios';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-// =====================
-// DATABASE INITIALIZATION (conditional)
-// =====================
-let db;
-if (!process.env.IS_NETLIFY) {
-  const Datastore = require('nedb');
-  const path = require('path');
-  db = {
-    users: new Datastore({ filename: path.join(__dirname, 'data/users.db'), autoload: true }),
-    messages: new Datastore({ filename: path.join(__dirname, 'data/messages.db'), autoload: true }),
-    wellness: new Datastore({ filename: path.join(__dirname, 'data/wellness.db'), autoload: true }),
-    facts: new Datastore({ filename: path.join(__dirname, 'data/facts.db'), autoload: true })
-  };
-  console.log('NeDB databases initialized.');
-} else {
-  console.log('Running in Netlify environment, skipping NeDB initialization.');
-  // Create in-memory stubs for db objects
-  db = {
-    users: { findOne: () => {}, update: () => {} },
-    messages: { find: () => ({ sort: () => ({ exec: (cb) => cb(null, []) }) }), insert: () => {} },
-    wellness: { findOne: (query, cb) => cb(null, null), update: () => {} },
-    facts: { find: () => ({ exec: (cb) => cb(null, []) }) }
-  };
-}
+import db from './db.js';
 import { buildPromptWithContext } from './buildPromptWithContext.js';
 import { getWeather } from './getWeather.js';
 import { analyzeAndSaveFacts } from './autoSaveFacts.js';
@@ -213,7 +190,6 @@ app.get('/api/health', (req, res) => {
 // CHAT API
 // =====================
 app.get('/api/chat/history', (req, res) => {
-  if (!db) return res.status(503).json({ error: 'Database not available.' });
   const userId = req.query.userId || "defaultUser";
   db.messages.find({ userId }).sort({ timestamp: 1 }).exec((err, messages) => {
     if (err) {
@@ -225,10 +201,6 @@ app.get('/api/chat/history', (req, res) => {
 });
 
 app.post('/api/chat', express.json(), async (req, res) => {
-  if (serverPoweredDown) {
-    return res.status(503).json({ message: "AELI is powered down." });
-  }
-  if (!db) return res.status(503).json({ error: 'Database not available.' });
   
   try {
     const { userInput, messageHistory, context } = req.body;
@@ -424,7 +396,6 @@ app.get('/api/weather', async (req, res) => {
 
 // Get current wellness data
 app.get('/api/wellness', async (req, res) => {
-  if (!db) return res.status(503).json({ error: 'Database not available.' });
   try {
     const userId = req.query.userId || "defaultUser";
     const wellness = await db.wellness.findOne({ userId });
@@ -446,7 +417,6 @@ app.get('/api/wellness', async (req, res) => {
 
 // Update wellness data
 app.post('/api/wellness', express.json(), async (req, res) => {
-  if (!db) return res.status(503).json({ error: 'Database not available.' });
   try {
     const { spoonCount, mood, userId } = req.body;
     const userIdentifier = userId || "defaultUser";
@@ -635,10 +605,6 @@ app.post('/api/clear-timer', express.json(), async (req, res) => {
 });
 
 app.get('/api/check-timers', (req, res) => {
-  if (serverPoweredDown) {
-    return res.status(503).json({ message: "AELI is powered down." });
-  }  
-  if (!db) return res.status(503).json({ error: 'Database not available.' });
   res.json({ expiredTimers: recentExpiredTimers });
 });
 
