@@ -14,6 +14,7 @@ export async function handler(event, context) {
 
   return {
     statusCode: 200,
+    headers: { 'Content-Type': 'application/json' }, // ✅ add this
     body: JSON.stringify(mockData),
   };
 }
