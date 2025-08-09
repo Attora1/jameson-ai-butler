@@ -18,9 +18,15 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       try {
         const userId = settings.userId || "defaultUser";
         const response = await fetch(`/api/chat-history?userId=${encodeURIComponent(userId)}`);
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
+
+        // normalize
+        const history = Array.isArray(data?.history) 
+          ? data.history 
+          : (Array.isArray(data) ? data : []);
+
         if (response.ok) {
-          setMessages(data);
+          setMessages(history);
         } else {
           console.error("Failed to fetch chat history:", data.error);
         }
