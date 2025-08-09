@@ -64,7 +64,7 @@ const Focus = ({ settings }) => {
 
   const generateAIQuests = async (mainTask) => {
     try {
-      const response = await fetch('/api/generate-side-quests', {
+      const response = await fetch('/.netlify/functions/generate-side-quests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mainTask }),

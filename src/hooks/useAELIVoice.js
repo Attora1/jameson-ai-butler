@@ -37,7 +37,7 @@ export default function useAELIVoice(text, settings, poweredDown = false) {
 
     const speak = async () => {
       try {
-        const response = await fetch('/api/speak', {
+        const response = await fetch('/.netlify/functions/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -105,7 +105,7 @@ function App() {
     async function updateWellnessData() {
       try {
         const userId = "defaultUser"; // Placeholder for now
-        await fetch('/api/wellness', {
+        await fetch('/.netlify/functions/wellness', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ spoonCount, userId }),

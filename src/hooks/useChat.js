@@ -65,7 +65,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     if (poweredDown) {
       if (startupPhrases.includes(lowerCaseInput)) {
         setMessages(prev => [...prev, { text: "🟢 Power restored. AELI is back online.", isUser: false }]);
-        fetch('/api/power/wake', { method: 'POST' }).catch(() => {});
+        fetch('/.netlify/functions/power/wake', { method: 'POST' }).catch(() => {});
         setPoweredDown(false);
       } else {
         setMessages(prev => [...prev, { text: "🔇 AELI is currently powered down. Say 'wake up' to reactivate.", isUser: false }]);
@@ -75,7 +75,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     
     if (shutdownPhrases.includes(lowerCaseInput)) {
       setMessages(prev => [...prev, { text: "🔌 Powering down. AELI will go quiet now.", isUser: false }]);
-      fetch('/api/power/sleep', { method: 'POST' }).catch(() => {});
+      fetch('/.netlify/functions/power/sleep', { method: 'POST' }).catch(() => {});
       setPoweredDown(true);
       return;
     }
@@ -107,7 +107,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
 
     setIsResponding(true);
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/.netlify/functions/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,7 +145,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
 
             if (typeof finalDuration === 'number' && typeof timerId === 'string' && timerId.length > 0) {
               setActiveTimerId(timerId);
-              fetch('/api/set-timer', {
+              fetch('/.netlify/functions/set-timer', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ duration: finalDuration, timerId }),
@@ -170,7 +170,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         const { duration, timerId } = action.payload;
         if (typeof duration === 'number' && typeof timerId === 'string' && timerId.length > 0) {
           setActiveTimerId(timerId);
-          fetch('/api/set-timer', {
+          fetch('/.netlify/functions/set-timer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ duration, timerId }),

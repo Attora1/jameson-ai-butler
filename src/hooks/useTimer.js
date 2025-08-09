@@ -69,7 +69,7 @@ export function usePersistentTimerPolling(setMessages, poweredDown) {
     if (!poweredDown) {
       pollingInterval = setInterval(async () => {
         try {
-          const response = await fetch('/api/check-timers');
+          const response = await fetch('/.netlify/functions/check-timers');
 
           if (response.status === 503) {
             console.warn("AELI server is asleep. Stopping timer polling.");
