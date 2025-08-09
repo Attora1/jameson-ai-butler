@@ -17,7 +17,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     async function fetchChatHistory() {
       try {
         const userId = settings.userId || "defaultUser";
-        const response = await fetch(`/api/chat/history?userId=${userId}`);
+        const response = await fetch(`/api/chat-history?userId=${encodeURIComponent(userId)}`);
         const data = await response.json();
         if (response.ok) {
           setMessages(data);
