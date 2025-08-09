@@ -1,77 +1,93 @@
 // netlify/functions/chat-history.js
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
-const AIRTABLE_TABLE_CHAT = process.env.AIRTABLE_TABLE_CHAT || 'ChatHistory';
+import { createClient } from '@supabase/supabase-js';
 
-const AT_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_CHAT)}`;
+const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
 
-async function airtableFetch(path = '', opts = {}) {
-  const res = await fetch(`${AT_URL}${path}`, {
-    ...opts,
-    headers: {
-      Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-      'Content-Type': 'application/json',
-      ...(opts.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`Airtable ${res.status}: ${text}`);
-  }
-  return res.json();
-}
+// create a server-side client (service key bypasses RLS; keep this ONLY in functions)
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
+  auth: { persistSession: false },
+});
+
+// tiny helper
+const json = (statusCode, body) => ({
+  statusCode,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body),
+});
 
 export async function handler(event) {
   try {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE) {
+      return json(500, { error: 'Missing Supabase env vars' });
+    }
+
     const method = event.httpMethod;
     const userId = (event.queryStringParameters?.userId || 'defaultUser').trim();
 
-    if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
-      return {
-        statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Missing Airtable env vars' }),
-      };
-    }
-
     if (method === 'GET') {
-      // Find the row by userId
-      const data = await airtableFetch(`?filterByFormula=${encodeURIComponent(`{userId}='${userId}'`)}&maxRecords=1`);
-      const record = data.records?.[0];
-      const history = record?.fields?.history ? JSON.parse(record.fields.history) : [];
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, history }),
-      };
+      // fetch one row by user_id
+      const { data, error } = await supabase
+        .from('chat_history')
+        .select('id, history')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        // "no rows" → return empty history instead of 500
+        if (error.code === 'PGRST116') return json(200, { userId, history: [] });
+        console.error('GET chat-history error:', error);
+        return json(500, { error: 'Fetch failed' });
+      }
+
+      return json(200, { userId, history: Array.isArray(data?.history) ? data.history : [] });
     }
 
     if (method === 'POST') {
-      // Expect { userId, history } in body
-      const body = JSON.parse(event.body || '{}');
+      let body;
+      try {
+        body = JSON.parse(event.body || '{}');
+      } catch {
+        return json(400, { error: 'Invalid JSON body' });
+      }
+
       const incomingUserId = (body.userId || userId).trim();
       const history = Array.isArray(body.history) ? body.history : [];
 
-      // Upsert: check if exists, update; else create
-      const existing = await airtableFetch(`?filterByFormula=${encodeURIComponent(`{userId}='${incomingUserId}'`)}&maxRecords=1`);
-      if (existing.records?.length) {
-        const recId = existing.records[0].id;
-        await airtableFetch(`/${recId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ fields: { userId: incomingUserId, history: JSON.stringify(history) } }),
-        });
-      } else {
-        await airtableFetch('', {
-          method: 'POST',
-          body: JSON.stringify({ records: [{ fields: { userId: incomingUserId, history: JSON.stringify(history) } }] }),
-        });
+      // upsert without requiring a unique constraint:
+      // check for existing row, update if present, else insert
+      const { data: existing, error: fetchErr } = await supabase
+        .from('chat_history')
+        .select('id')
+        .eq('user_id', incomingUserId)
+        .single();
+
+      if (fetchErr && fetchErr.code !== 'PGRST116') {
+        console.error('POST fetch existing error:', fetchErr);
+        return json(500, { error: 'Lookup failed' });
       }
 
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ok: true }),
-      };
+      if (existing?.id) {
+        const { error: updErr } = await supabase
+          .from('chat_history')
+          .update({ history, updated_at: new Date().toISOString() })
+          .eq('id', existing.id);
+
+        if (updErr) {
+          console.error('POST update error:', updErr);
+          return json(500, { error: 'Update failed' });
+        }
+      } else {
+        const { error: insErr } = await supabase
+          .from('chat_history')
+          .insert([{ user_id: incomingUserId, history }]);
+
+        if (insErr) {
+          console.error('POST insert error:', insErr);
+          return json(500, { error: 'Insert failed' });
+        }
+      }
+
+      return json(200, { ok: true });
     }
 
     return {
@@ -80,11 +96,7 @@ export async function handler(event) {
       body: JSON.stringify({ error: 'Method Not Allowed' }),
     };
   } catch (err) {
-    console.error('chat-history error:', err);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Unable to fetch/save chat history' }),
-    };
+    console.error('chat-history fatal:', err);
+    return json(500, { error: 'Server error' });
   }
 }
