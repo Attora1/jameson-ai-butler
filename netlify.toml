@@ -3,20 +3,14 @@
   publish = "src/dist"
   functions = "netlify/functions"
 
-# 1) Let functions pass through untouched
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# 2) (Optional) Map /api/* to your functions for cleaner frontend URLs
+# Map /api/* to serverless functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
 
-# 3) SPA fallback LAST — don't put this above the others
+# SPA fallback LAST
 [[redirects]]
   from = "/*"
   to = "/index.html"
