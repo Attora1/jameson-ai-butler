@@ -64,49 +64,37 @@ export async function handler(event) {
       }
 
       const incomingUserId = (body.userId || userId).trim();
+
       const payload = {
-        // normalise keys coming from the UI
+        user_id: incomingUserId,
         mood: body.mood ?? null,
-        spoons: Number.isFinite(body.spoons) ? body.spoons : (body.spoons == null ? null : Number(body.spoons) || null),
+        spoons: body.spoons === '' || body.spoons == null ? null : Number(body.spoons),
         last_meal: body.lastMeal ?? null,
         last_med: body.lastMed ?? null,
         updated_at: new Date().toISOString(),
       };
 
-      // upsert by presence
-      const { data: existing, error: lookupErr } = await supabase
+      // ✅ single upsert keyed by user_id, and return the saved row
+      const { data, error } = await supabase
         .from('wellness')
-        .select('id')
+        .upsert([payload], { onConflict: 'user_id' })
+        .select('user_id, mood, spoons, last_meal, last_med, updated_at')
         .eq('user_id', incomingUserId)
         .single();
 
-      if (lookupErr && lookupErr.code !== 'PGRST116') {
-        console.error('Lookup wellness error:', lookupErr);
-        return json(500, { error: 'Lookup failed' });
+      if (error) {
+        console.error('wellness upsert error:', error, 'payload:', payload);
+        return json(500, { error: 'Upsert failed' });
       }
 
-      if (existing?.id) {
-        const { error: updErr } = await supabase
-          .from('wellness')
-          .update(payload)
-          .eq('id', existing.id);
-
-        if (updErr) {
-          console.error('Update wellness error:', updErr);
-          return json(500, { error: 'Update failed' });
-        }
-      } else {
-        const { error: insErr } = await supabase
-          .from('wellness')
-          .insert([{ user_id: incomingUserId, ...payload }]);
-
-        if (insErr) {
-          console.error('Insert wellness error:', insErr);
-          return json(500, { error: 'Insert failed' });
-        }
-      }
-
-      return json(200, { ok: true });
+      return json(200, {
+        userId: data.user_id,
+        mood: data.mood,
+        spoons: data.spoons,
+        lastMeal: data.last_meal,
+        lastMed: data.last_med,
+        updatedAt: data.updated_at,
+      });
     }
 
     return {
