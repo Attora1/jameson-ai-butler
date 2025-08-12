@@ -117,14 +117,10 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userInput: input,
-          messageHistory: messages,
-          context: {
-            ...settings,
-            spoonCount,
-            userId: "defaultUser",
-            facts
-          },
+          message: input.trim(),
+          userId: "defaultUser",
+          // threadId: null, // if your function uses it
+          // mode: settings.mode // if you route by mode
         }),
       });
 
