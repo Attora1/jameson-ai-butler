@@ -71,7 +71,7 @@ async function askGemini(history, userMsg) { // Removed userSettings parameter
   // keep it light: last 8 turns max
   const tail = history.slice(-8);
   const parts = [
-    { role: "system", content: AELI_PERSONA }, // Use the AELI_PERSONA constant
+    { text: AELI_PERSONA }, // Use the AELI_PERSONA constant
     ...tail.map(m => ({ text: `${m.sender === 'aeli' ? 'AELI' : 'User'}: ${m.message}` })),
     { text: `User: ${userMsg}` },
     { text: "AELI:" }
