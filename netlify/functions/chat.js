@@ -1,5 +1,5 @@
 // netlify/functions/chat.js
-const { generateAELIPersona } = require('../backend/AELI_PERSONA.cjs');
+const { generateAELIPersona } = require('./AELI_PERSONA.cjs');
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, { auth: { persistSession: false } });
