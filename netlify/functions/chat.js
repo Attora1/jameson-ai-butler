@@ -1,5 +1,5 @@
 // netlify/functions/chat.js
-import { createClient } from '@supabase/supabase-js';
+const { generateAELIPersona } = require('../../AELI_PERSONA.js');
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, { auth: { persistSession: false } });
@@ -11,11 +11,11 @@ const json = (code, body) => ({
 });
 
 // --- 3) Generate reply with Gemini ---
-async function askGemini(history, userMsg) {
+async function askGemini(history, userMsg, userSettings) {
   // keep it light: last 8 turns max
   const tail = history.slice(-8);
   const parts = [
-    { text: "You are AELI, a supportive, dry‑witted assistant. Keep replies concise and helpful." },
+    { text: generateAELIPersona(userSettings) },
     { text: "Conversation so far:" },
     ...tail.map(m => ({ text: `${m.sender === 'aeli' ? 'AELI' : 'User'}: ${m.message}` })),
     { text: `User: ${userMsg}` },
@@ -31,7 +31,7 @@ async function askGemini(history, userMsg) {
   const data = await res.json();
 
   // ultra-defensive extraction
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Understood. What next, miss?";
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Understood. How may I assist you?";
 }
 
 export async function handler(event) {
@@ -58,6 +58,7 @@ export async function handler(event) {
 
     const userId = (body.userId || 'defaultUser').trim();
     const userMsg = message;
+    const userSettings = body.settings || {}; // Extract settings
 
     // 1) Load history
     const { data: existing, error: fetchErr } = await supabase
@@ -75,7 +76,7 @@ export async function handler(event) {
     history.push(userEntry);
 
     // 3) Generate reply (stub for now)
-    const replyText = await askGemini(history, userMsg);
+    const replyText = await askGemini(history, userMsg, userSettings); // Pass settings
     const botEntry = { sender: 'aeli', message: replyText, ts: Date.now() };
     history.push(botEntry);
 

@@ -121,6 +121,12 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
           userId: "defaultUser",
           // threadId: null, // if your function uses it
           // mode: settings.mode // if you route by mode
+          settings: {
+            tone: settings.tone,
+            humorLevel: settings.humorLevel,
+            voiceGender: settings.voiceGender,
+            voiceAccent: settings.voiceAccent,
+          }
         }),
       });
 
@@ -129,7 +135,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
 
       if (!response.ok) {
         // only show the cough on non-2xx
-        setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, madam.", isUser: false }]);
+        setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, friend.", isUser: false }]);
         return;
       }
 
