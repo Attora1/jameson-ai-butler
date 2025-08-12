@@ -6,7 +6,7 @@ import { useCountdown } from '../../hooks/useTimer.js';
 
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import '../../styles/modes-css/Focus.css';
-import { getGreeting, getEncouragement, getWit } from '../../prompts/AELIEngine.js';
+
 
 const Focus = ({ settings }) => {
   const [task, setTask] = useState('');
@@ -17,9 +17,9 @@ const Focus = ({ settings }) => {
   const [showMissionModal, setShowMissionModal] = useState(false);
   const [sideQuests, setSideQuests] = useState([]);
 
-  const [greeting, setGreeting] = useState('');
-  const [encouragement, setEncouragement] = useState('');
-  const [wit, setWit] = useState('');
+  const [greeting, setGreeting] = useState('Focus Mode Activated.');
+  const [encouragement, setEncouragement] = useState('Stay sharp, you\'ve got this.');
+  const [wit, setWit] = useState('Time to conquer, eh?');
 
   const checklistInputRef = useRef(null);
 
@@ -28,13 +28,6 @@ const Focus = ({ settings }) => {
   };
 
   const { secondsLeft, isRunning, startCountdown, togglePause, stopCountdown } = useCountdown({ onComplete: handleTimerComplete });
-  
-
-  useEffect(() => {
-    setGreeting(getGreeting(settings));
-    setEncouragement(getEncouragement());
-    setWit(getWit());
-  }, [settings]);
 
   const handleCompleteMission = () => setShowMissionModal(true);
   const confirmCompleteMission = () => {
