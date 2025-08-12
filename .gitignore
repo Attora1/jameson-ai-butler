@@ -26,3 +26,6 @@ dist-ssr
 node_modules
 backend
 .env
+
+# Exception for AELI_PERSONA.cjs within backend/
+!backend/AELI_PERSONA.cjs
