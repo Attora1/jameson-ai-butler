@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PreferencesModal from './PreferencesModal'; 
 import ModeLayout from './ModeLayout';
-import { getGreeting, getEncouragement } from '../../prompts/AELIEngine';
+
 import '../../styles/modes-css/LandingDashboard.css';
 
 function LandingDashboard({ settings, setSettings, setShowSettings }) {
   const [showPreferences, setShowPreferences] = useState(false);
-  const [greeting, setGreeting] = useState('');
-  const [encouragement, setEncouragement] = useState('');
+  const [greeting, setGreeting] = useState('Welcome back.');
+  const [encouragement, setEncouragement] = useState('How may I assist you today?');
   const [hasSeenIntro, setHasSeenIntro] = useState(() => {
     return localStorage.getItem("AELI_INTRO_SHOWN") === "true";
   });
@@ -32,11 +32,6 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
     document.body.classList.remove('focus-theme', 'low_spoon-theme', 'partner_support-theme', 'crisis-theme');
     document.body.classList.add('dashboard-theme');
   }, []);
-
-  useEffect(() => {
-    setGreeting(getGreeting(settings));
-    setEncouragement(getEncouragement());
-  }, [settings]);
 
   return (
     <ModeLayout
