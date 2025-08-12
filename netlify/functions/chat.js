@@ -10,6 +10,30 @@ const json = (code, body) => ({
   body: JSON.stringify(body),
 });
 
+// --- 3) Generate reply with Gemini ---
+async function askGemini(history, userMsg) {
+  // keep it light: last 8 turns max
+  const tail = history.slice(-8);
+  const parts = [
+    { text: "You are AELI, a supportive, dry‑witted assistant. Keep replies concise and helpful." },
+    { text: "Conversation so far:" },
+    ...tail.map(m => ({ text: `${m.sender === 'aeli' ? 'AELI' : 'User'}: ${m.message}` })),
+    { text: `User: ${userMsg}` },
+    { text: "AELI:" }
+  ];
+
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ role: 'user', parts }] })
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+
+  // ultra-defensive extraction
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Understood. What next, miss?";
+}
+
 export async function handler(event) {
   try {
     if (event.httpMethod === 'GET') return json(200, { ok: true, message: 'Chat endpoint ready' });
@@ -38,7 +62,7 @@ export async function handler(event) {
     history.push(userEntry);
 
     // 3) Generate reply (stub for now)
-    const replyText = `Understood: "${userMsg}". What next, miss?`;
+    const replyText = await askGemini(history, userMsg);
     const botEntry = { sender: 'aeli', message: replyText, ts: Date.now() };
     history.push(botEntry);
 
