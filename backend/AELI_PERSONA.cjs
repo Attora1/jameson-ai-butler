@@ -34,4 +34,4 @@ Protocol Directives:
   return persona;
 };
 
-module.exports = { generateAELIPersona };
+module.exports = generateAELIPersona({});

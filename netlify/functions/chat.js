@@ -1,5 +1,49 @@
 // netlify/functions/chat.js
-const { generateAELIPersona } = require('./AELI_PERSONA.cjs');
+const { createClient } = require('@supabase/supabase-js'); // Keep this import
+
+// ── DEBUG + ROBUST PERSONA LOADER ────────────────────────────────────────────
+const fs = require("fs");
+const path = require("path");
+
+// Optional: set to true once to print what's actually on the lambda at runtime
+const PRINT_DIR_ON_BOOT = true;
+
+function tryLoadPersona() {
+  try {
+    const here = path.dirname(__filename);
+    if (PRINT_DIR_ON_BOOT) {
+      // This will show you exactly where the function runs and which files exist
+      console.log("[CHAT] __filename:", __filename);
+      console.log("[CHAT] dirname:", here);
+      console.log("[CHAT] files in dir:", fs.readdirSync(here));
+    }
+
+    // Try common colocated filenames first
+    const candidates = ["./AELI_PERSONA.cjs", "./AELI_PERSONA.js", "./AELI_PERSONA.mjs"];
+    for (const rel of candidates) {
+      const abs = path.join(here, rel);
+      if (fs.existsSync(abs)) {
+        const mod = require(abs); // CommonJS require works for .cjs and .js
+        // Support default export or module.exports
+        const text = (typeof mod === "string") ? mod : (mod.default || mod.AELI_PERSONA || "");
+        if (typeof text === "string" && text.trim()) return text;
+      }
+    }
+  } catch (e) {
+    console.warn("[CHAT] Persona require failed:", e?.message || e);
+  }
+
+  // FINAL SAFETY: inline minimal persona so the function never 502s again
+  return `
+You are AELI: a proactive AI butler with a dry British wit (Jarvis vibes),
+but always kind and empathetic. Address Nessa by name. Refer to her wife as
+Sam. Respect Spoon Theory and celebrate mental wins. Offer one small, doable
+next step—never harsh or dismissive. Be concise; gentle humor allowed.
+  `.trim();
+}
+
+const AELI_PERSONA = tryLoadPersona();
+// ─────────────────────────────────────────────────────────────────────────────
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, { auth: { persistSession: false } });
@@ -11,12 +55,11 @@ const json = (code, body) => ({
 });
 
 // --- 3) Generate reply with Gemini ---
-async function askGemini(history, userMsg, userSettings) {
+async function askGemini(history, userMsg) { // Removed userSettings parameter
   // keep it light: last 8 turns max
   const tail = history.slice(-8);
   const parts = [
-    { text: generateAELIPersona(userSettings) },
-    { text: "Conversation so far:" },
+    { role: "system", content: AELI_PERSONA }, // Use the AELI_PERSONA constant
     ...tail.map(m => ({ text: `${m.sender === 'aeli' ? 'AELI' : 'User'}: ${m.message}` })),
     { text: `User: ${userMsg}` },
     { text: "AELI:" }
@@ -58,7 +101,7 @@ export async function handler(event) {
 
     const userId = (body.userId || 'defaultUser').trim();
     const userMsg = message;
-    const userSettings = body.settings || {}; // Extract settings
+    // const userSettings = body.settings || {}; // Removed userSettings extraction
 
     // 1) Load history
     const { data: existing, error: fetchErr } = await supabase
@@ -76,7 +119,7 @@ export async function handler(event) {
     history.push(userEntry);
 
     // 3) Generate reply (stub for now)
-    const replyText = await askGemini(history, userMsg, userSettings); // Pass settings
+    const replyText = await askGemini(history, userMsg); // Removed userSettings parameter
     const botEntry = { sender: 'aeli', message: replyText, ts: Date.now() };
     history.push(botEntry);
 
