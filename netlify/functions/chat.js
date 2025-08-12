@@ -39,12 +39,25 @@ export async function handler(event) {
     if (event.httpMethod === 'GET') return json(200, { ok: true, message: 'Chat endpoint ready' });
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: { Allow: 'GET, POST' }, body: 'Method Not Allowed' };
 
-    let body;
-    try { body = JSON.parse(event.body || '{}'); } catch { return json(400, { error: 'Invalid JSON body' }); }
+    const body = event.body ? JSON.parse(event.body) : {};
+
+    // Accept multiple client shapes and trim
+    const message = 
+      (typeof body.message === 'string' && body.message.trim()) ||
+      (typeof body.text === 'string' && body.text.trim()) ||
+      (typeof body.input === 'string' && body.input.trim()) ||
+      '';
+
+    // If something (a boot effect) calls this with no message, just no-op.
+    if (!message) {
+      return {
+        statusCode: 204, // No Content (prevents 400 spam + "technical difficulties")
+        body: '',
+      };
+    }
 
     const userId = (body.userId || 'defaultUser').trim();
-    const userMsg = (body.message || '').toString().trim();
-    if (!userMsg) return json(400, { error: 'Missing message' });
+    const userMsg = message;
 
     // 1) Load history
     const { data: existing, error: fetchErr } = await supabase
