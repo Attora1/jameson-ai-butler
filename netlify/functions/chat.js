@@ -67,26 +67,34 @@ const json = (code, body) => ({
 });
 
 // --- 3) Generate reply with Gemini ---
-async function askGemini(history, userMsg) { // Removed userSettings parameter
-  // keep it light: last 8 turns max
-  const tail = history.slice(-8);
-  const parts = [
-    { text: AELI_PERSONA }, // Use the AELI_PERSONA constant
-    ...tail.map(m => ({ text: `${m.sender === 'aeli' ? 'AELI' : 'User'}: ${m.message}` })),
-    { text: `User: ${userMsg}` },
-    { text: "AELI:" }
+async function askGroq(history, userMsg) {
+  const messages = [
+    { role: "system", content: AELI_PERSONA },
+    ...history.map(m => ({
+      role: m.sender === 'aeli' ? 'assistant' : 'user',
+      content: m.message
+    })),
+    { role: "user", content: userMsg }
   ];
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ role: 'user', parts }] })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: "llama3-70b-8192",
+      messages: messages,
+      temperature: 0.7,
+    }),
   });
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
+
+  if (!res.ok) throw new Error(`Groq ${res.status}: ${await res.text()}`);
   const data = await res.json();
 
   // ultra-defensive extraction
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Understood. How may I assist you?";
+  return data?.choices?.[0]?.message?.content?.trim() || "Understood. How may I assist you?";
 }
 
 export async function handler(event) {
@@ -134,7 +142,7 @@ export async function handler(event) {
     history.push(userEntry);
 
     // 3) Generate reply (stub for now)
-    const replyText = await askGemini(history, userMsg); // Removed userSettings parameter
+    const replyText = await askGroq(history, userMsg); // Changed to askGroq
     const botEntry = { sender: 'aeli', message: replyText, ts: Date.now() };
     history.push(botEntry);
 
