@@ -95,7 +95,19 @@ export async function handler(event) {
 
     return json(200, { userId, reply: replyText, history });
   } catch (err) {
-    console.error('chat fatal:', err);
-    return json(500, { error: 'Server error' });
+    // TEMP DEBUG: surface the real reason for 500s
+    console.error("CHAT FUNC ERROR:", err);
+
+    const details = {
+      message: err?.message || String(err),
+      name: err?.name,
+      stack: (err?.stack || "").split("\n").slice(0, 5), // first lines are enough
+    };
+
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Server error", details }),
+    };
   }
 }
