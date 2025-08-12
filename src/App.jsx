@@ -33,7 +33,7 @@ function App() {
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
   const [temperature, setTemperature] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  usePersistentTimerPolling(setMessages, poweredDown);
+  usePersistentTimerPolling(setMessages, poweredDown, settings);
   const prevSpoonRef = useRef(spoonCount);
 
 

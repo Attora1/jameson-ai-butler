@@ -46,7 +46,7 @@ export function useCountdown({ onComplete }) {
 }
 
 // Hook for polling persistent timers from the server
-export function usePersistentTimerPolling(setMessages, poweredDown) {
+export function usePersistentTimerPolling(setMessages, poweredDown, settings) {
   const setMessagesRef = useRef(setMessages);
   const alertSound = useRef(new Audio('/sounds/level-passed.mp3'));
 
@@ -69,7 +69,7 @@ export function usePersistentTimerPolling(setMessages, poweredDown) {
     if (!poweredDown) {
       pollingInterval = setInterval(async () => {
         try {
-          const response = await fetch('/.netlify/functions/check-timers');
+          const response = await fetch(`/.netlify/functions/check-timers?userId=${encodeURIComponent(settings.userId || 'defaultUser')}`);
 
           if (response.status === 503) {
             console.warn("AELI server is asleep. Stopping timer polling.");
