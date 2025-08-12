@@ -124,45 +124,33 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         }),
       });
 
-      const data = await response.json();
-      console.log('[FULL API DATA]', data);
+      const data = await response.json().catch(() => ({}));
+      console.log("[CHAT] response:", response.status, data);
 
-      const reply = data.replyText?.trim();
-      const action = data.action;
-
-      if (reply) {
-        setMessages(prev => [...prev, { isUser: false, text: reply }]);
-
-        // Attempt to extract timer action from reply text if action is null
-        if (!action) {
-          const timerMatch = reply.match(/(\d+)\s*[-]?\s*(minute|second)s?\s*timer/i);
-          if (timerMatch) {
-            const duration = parseInt(timerMatch[1]);
-            const unit = timerMatch[2].toLowerCase();
-            const timerId = `timer_${Date.now()}`;
-            let finalDuration = duration;
-            if (unit === 'minute') {
-              finalDuration = duration * 60;
-            }
-
-            if (typeof finalDuration === 'number' && typeof timerId === 'string' && timerId.length > 0) {
-              setActiveTimerId(timerId);
-              fetch('/.netlify/functions/set-timer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ duration: finalDuration, timerId }),
-              }).then(response => response.json())
-                .then(data => console.log('Timer API Response (from text parsing):', data))
-                .catch(error => console.error('Error setting timer (from text parsing):', error));
-            } else {
-              console.error('Invalid timer extracted from text:', { finalDuration, timerId });
-            }
-          }
-        }
-
-      } else {
-        setMessages(prev => [...prev, { isUser: false, text: '♦cough♦ Technical difficulties, madam.' }]);
+      if (!response.ok) {
+        // only show the cough on non-2xx
+        setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, madam.", isUser: false }]);
+        return;
       }
+
+      // prefer `reply`, but accept other shapes too
+      const aiText =
+        (typeof data.reply === 'string' && data.reply.trim()) ||
+        (typeof data.replyText === 'string' && data.replyText.trim()) ||
+        (typeof data.message === 'string' && data.message.trim()) ||
+        (typeof data.text === 'string' && data.text.trim()) ||
+        (Array.isArray(data.choices) && data.choices[0]?.message?.content?.trim()) ||
+        "";
+
+      // if nothing usable came back, don’t inject a ghost bubble
+      if (!aiText) {
+        console.warn("[CHAT] No AI text found in response:", data);
+        return;
+      }
+
+      setMessages(prev => [...prev, { text: aiText, isUser: false }]);
+
+      const action = data.action;
 
       if (action?.type === 'switchMode' && typeof action.payload === 'string') {
         console.log('[AELI Action]', action);

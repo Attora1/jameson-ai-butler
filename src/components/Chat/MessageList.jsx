@@ -35,14 +35,16 @@ export default function MessageList({ messages, settings, poweredDown, remaining
           <p>Systems operational. Awaiting instructions. ♦tea sip♦</p>
         </div>
       )}
-      {messages.map((msg, i) => (
-        <div
-          key={i}
-          className={`message-bubble ${msg?.isUser ? 'user' : 'ai'}`}
-        >
-          <p>{msg?.text ? msg.text.replace(/^\[AELI\] |\[User\] /, '') : '[Message unavailable]'}</p>
-        </div>
-      ))}
+      {messages
+        .filter(m => typeof m?.text === "string" && m.text.trim().length > 0)
+        .map((msg, i) => (
+          <div
+            key={i}
+            className={`message-bubble ${msg?.isUser ? 'user' : 'ai'}`}
+          >
+            <p>{msg.text.replace(/^\[AELI\] |\[User\] /, '')}</p>
+          </div>
+        ))}
     </div>
   );
 }
