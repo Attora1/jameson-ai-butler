@@ -1,5 +1,5 @@
 // netlify/functions/chat.js
-const { createClient } = require('@supabase/supabase-js'); // Keep this import
+// No top-level supabase import or client creation
 
 // ── DEBUG + ROBUST PERSONA LOADER ────────────────────────────────────────────
 const fs = require("fs");
@@ -45,8 +45,20 @@ next step—never harsh or dismissive. Be concise; gentle humor allowed.
 const AELI_PERSONA = tryLoadPersona();
 // ─────────────────────────────────────────────────────────────────────────────
 
-const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, { auth: { persistSession: false } });
+async function getSupabaseClient() {
+  // ESM-only library, so import it at runtime:
+  const { createClient } = await import('@supabase/supabase-js');
+
+  const url = process.env.SUPABASE_URL;
+  // Use service role only on server functions, NEVER in the browser.
+  const key = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_* key in environment');
+  }
+
+  return createClient(url, key);
+}
 
 const json = (code, body) => ({
   statusCode: code,
@@ -102,6 +114,9 @@ export async function handler(event) {
     const userId = (body.userId || 'defaultUser').trim();
     const userMsg = message;
     // const userSettings = body.settings || {}; // Removed userSettings extraction
+
+    // Only load Supabase if you truly need it in this request:
+    const supabase = await getSupabaseClient(); // Get client inside handler
 
     // 1) Load history
     const { data: existing, error: fetchErr } = await supabase

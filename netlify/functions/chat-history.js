@@ -1,12 +1,14 @@
 // netlify/functions/chat-history.js
-import { createClient } from '@supabase/supabase-js';
 
-const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
-
-// create a server-side client (service key bypasses RLS; keep this ONLY in functions)
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
-  auth: { persistSession: false },
-});
+async function getSupabaseClient() {
+  const { createClient } = await import('@supabase/supabase-js');
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_* key in environment');
+  }
+  return createClient(url, key);
+}
 
 // tiny helper
 const json = (statusCode, body) => ({
@@ -17,9 +19,7 @@ const json = (statusCode, body) => ({
 
 export async function handler(event) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE) {
-      return json(500, { error: 'Missing Supabase env vars' });
-    }
+    const supabase = await getSupabaseClient(); // Get client inside handler
 
     const method = event.httpMethod;
     const userId = (event.queryStringParameters?.userId || 'defaultUser').trim();
