@@ -45,7 +45,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     if (!activeTimerId) return;
 
     const timer = setInterval(() => {
-      fetch(`/api/timer-status?timerId=${activeTimerId}`)
+      fetch(`/api/timer-status?timerId=${activeTimerId}&userId=${encodeURIComponent(settings.userId)}`)
         .then(res => res.json())
         .then(data => {
           setRemainingTime(data.remaining);
@@ -169,7 +169,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
           fetch('/.netlify/functions/set-timer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ duration, timerId }),
+            body: JSON.stringify({ duration, timerId, userId: settings.userId }),
           }).then(response => response.json())
             .then(data => console.log('Timer API Response:', data))
             .catch(error => console.error('Error setting timer:', error));
