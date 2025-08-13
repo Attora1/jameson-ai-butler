@@ -4,6 +4,7 @@ import { normalizeInput } from '../utils/normalizeInput.js';
 import { styleGovernor } from '../persona/styleGovernor.js';
 import { initTimeContext, markUserMessage, markAeliMessage, getTimeSnapshot } from '../state/timeContext.js';
 import { noteUserInput, learnFromCorrection } from '../state/lexicon.js';
+import { learnPrefsFromInput } from '../state/prefs.js';
 
 export function useChat(
   settings,
@@ -58,6 +59,9 @@ export function useChat(
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim() || isResponding) return;
+
+    // learn style prefs silently from this message (e.g., "don't use my name", "no emoji")
+    learnPrefsFromInput(input, settings?.name);
 
     markUserMessage(settings?.userId || 'defaultUser');
 
