@@ -17,48 +17,56 @@ const json = (statusCode, body) => ({
 });
 
 export async function handler(event) {
-  if (event.httpMethod !== 'POST') {
-    return json(405, { error: 'Method Not Allowed' });
-  }
-
   try {
-    const { duration, userId, timerId } = JSON.parse(event.body);
-
-    if (!duration || !userId || !timerId) {
-      return json(400, { error: 'Missing required fields: duration, userId, timerId' });
+    if (event.httpMethod !== 'POST') {
+      return json(405, { error: 'Method Not Allowed', allow: 'POST' });
     }
 
     const supabase = await getSupabaseClient();
-    const now = new Date();
-    const endTime = new Date(now.getTime() + duration * 60 * 1000);
 
+    let body = {};
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch {
+      return json(400, { error: 'Invalid JSON body' });
+    }
+
+    const userId = (body.userId || '').trim();
+    if (!userId) return json(400, { error: 'Missing userId' });
+
+    // Accept either seconds or minutes
+    const seconds =
+      typeof body.seconds === 'number'
+        ? Math.max(0, Math.floor(body.seconds))
+        : typeof body.minutes === 'number'
+        ? Math.max(0, Math.floor(body.minutes * 60))
+        : 0;
+
+    if (!seconds) return json(400, { error: 'Provide seconds or minutes > 0' });
+
+    // Timer ID (caller can provide, else we generate one)
+    const { randomUUID } = await import('node:crypto');
+    const timerId = (body.timerId || '').trim() || `t_${randomUUID()}`;
+
+    const end_time = new Date(Date.now() + seconds * 1000).toISOString();
+
+    // Upsert timer (schema: timers(user_id text, timer_id text, end_time timestamptz))
     const { data, error } = await supabase
       .from('timers')
-      .insert({
-        user_id: userId,
-        timer_id: timerId,
-        end_time: endTime.toISOString(),
-        created_at: now.toISOString()
+      .upsert([{ user_id: userId, timer_id: timerId, end_time }], {
+        onConflict: 'user_id,timer_id',
       })
-      .select()
+      .select('user_id,timer_id,end_time')
       .single();
 
     if (error) {
-      console.error('[create-timer] Supabase error:', error);
-      // Handle potential duplicate timer_id if it's a unique constraint
-      if (error.code === '23505') { // unique_violation
-          return json(409, { error: 'A timer with this ID already exists.' });
-      }
-      return json(500, { error: 'Failed to create timer in database.' });
+      console.error('[create-timer] upsert error:', error);
+      return json(500, { error: 'Failed to create timer', details: error.message || error });
     }
 
-    return json(200, { message: 'Timer created successfully', timer: data });
-
+    return json(200, { ok: true, timerId: data.timer_id, end_time: data.end_time, seconds });
   } catch (err) {
-    console.error('[create-timer] fatal error:', err);
-    if (err instanceof SyntaxError) {
-        return json(400, { error: 'Invalid JSON body' });
-    }
-    return json(500, { error: 'An unexpected error occurred.' });
+    console.error('[create-timer] fatal:', err);
+    return json(500, { error: 'Server error', details: String(err?.message || err) });
   }
 }
