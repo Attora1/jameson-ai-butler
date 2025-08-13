@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cancelTimerIntent } from '../intents/cancelTimerIntent.js';
 import { normalizeInput } from '../utils/normalizeInput.js';
+import { styleGovernor } from '../persona/styleGovernor.js';
 
 export function useChat(
   settings,
@@ -87,14 +88,14 @@ export function useChat(
               { isUser: true, text: raw },
               {
                 isUser: false,
-                text: `⏱️ Timer set for ${amount} ${/^m/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
+                text: styleGovernor(`⏱️ Timer set for ${amount} ${/^m/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`, { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) })
               }
             ]);
           } else {
             setMessages(prev => [
               ...prev,
               { isUser: true, text: raw },
-              { isUser: false, text: `Sorry, I couldn’t set that timer (${data?.error || res.status}).` }
+              { isUser: false, text: styleGovernor(`Sorry, I couldn’t set that timer (${data?.error || res.status}).`, { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
             ]);
           }
         } catch (err) {
@@ -102,7 +103,7 @@ export function useChat(
           setMessages(prev => [
             ...prev,
             { isUser: true, text: raw },
-            { isUser: false, text: 'Timer hiccup—network error.' }
+            { isUser: false, text: styleGovernor('Timer hiccup—network error.', { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
           ]);
         }
 
@@ -127,19 +128,19 @@ export function useChat(
             setMessages(prev => [
               ...prev,
               { isUser: true, text: input.trim() },
-              { isUser: false, text: parts.join(' ') }
+              { isUser: false, text: styleGovernor(parts.join(' '), { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
             ]);
           } else if (data?.error === 'NO_ACTIVE_TIMERS' || res.status === 404) {
             setMessages(prev => [
               ...prev,
               { isUser: true, text: input.trim() },
-              { isUser: false, text: 'No active timers at the moment.' }
+              { isUser: false, text: styleGovernor('No active timers at the moment.', { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
             ]);
           } else {
             setMessages(prev => [
               ...prev,
               { isUser: true, text: input.trim() },
-              { isUser: false, text: `Hmm—couldn’t fetch time left (${data?.error || res.status}).` }
+              { isUser: false, text: styleGovernor(`Hmm—couldn’t fetch time left (${data?.error || res.status}).`, { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
             ]);
           }
         } catch (err) {
@@ -147,7 +148,7 @@ export function useChat(
           setMessages(prev => [
             ...prev,
             { isUser: true, text: input.trim() },
-            { isUser: false, text: 'Network blip. Try again in a sec.' }
+            { isUser: false, text: styleGovernor('Network blip. Try again in a sec.', { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }) }
           ]);
         }
 
@@ -166,18 +167,18 @@ export function useChat(
 
     if (poweredDown) {
       if (startupPhrases.includes(lowerCaseInput)) {
-        setMessages(prev => [...prev, { text: "🟢 Power restored. AELI is back online.", isUser: false }]);
+        setMessages(prev => [...prev, { text: styleGovernor("🟢 Power restored. AELI is back online.", { userName: settings?.name || 'Nessa', recentAiTexts: messages.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
         fetch('/.netlify/functions/power/wake', { method: 'POST' }).catch(() => {});
         setPoweredDown(false);
       } else {
-        setMessages(prev => [...prev, { text: "🔇 AELI is currently powered down. Say 'wake up' to reactivate.", isUser: false }]);
+        setMessages(prev => [...prev, { text: styleGovernor("🔇 AELI is currently powered down. Say 'wake up' to reactivate.", { userName: settings?.name || 'Nessa', recentAiTexts: messages.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
       }
       setInput('');
       return;
     }
 
     if (shutdownPhrases.includes(lowerCaseInput)) {
-      setMessages(prev => [...prev, { text: "🔌 Powering down. AELI will go quiet now.", isUser: false }]);
+      setMessages(prev => [...prev, { text: styleGovernor("🔌 Powering down. AELI will go quiet now.", { userName: settings?.name || 'Nessa', recentAiTexts: messages.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
       fetch('/.netlify/functions/power/sleep', { method: 'POST' }).catch(() => {});
       setPoweredDown(true);
       setInput('');
@@ -228,7 +229,7 @@ export function useChat(
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, friend.", isUser: false }]);
+        setMessages(prev => [...prev, { text: styleGovernor("♦cough♦ Technical difficulties, friend.", { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
         return;
       }
 
@@ -241,7 +242,7 @@ export function useChat(
         "";
 
       if (aiText) {
-        setMessages(prev => [...prev, { text: aiText, isUser: false }]);
+        setMessages(prev => [...prev, { text: styleGovernor(aiText, { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
       }
 
       // Minimal action handling (mode switch only to avoid undefined imports)
@@ -252,7 +253,7 @@ export function useChat(
 
     } catch (error) {
       console.error('[AELI Chat Error]', error);
-      setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, madam.", isUser: false }]);
+      setMessages(prev => [...prev, { text: styleGovernor("♦cough♦ Technical difficulties, madam.", { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
     } finally {
       setIsResponding(false);
       setMoodMetrics({
