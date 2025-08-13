@@ -1,7 +1,7 @@
 // netlify/functions/chat.mjs
 // ESM entry that wraps your existing CommonJS implementation in chat.cjs
 
-import legacy from './chat.cjs';
+import * as legacy from './chat.cjs';
 
 // Awareness preamble (no need to touch your old file)
 function buildAwarenessPreamble(awareness = {}, settings = {}) {
