@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useCreateTimer } from './useTimer.js';
 import { STORAGE_KEY } from '../constants';
+import { cancelTimerIntent } from '../intents/cancelTimerIntent.js'; // ⬅️ NEW
 
 export function useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown, startupPhrases) {
   const [messages, setMessages] = useState([]);
@@ -41,70 +42,71 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
-  
-
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim() || isResponding) return;
 
+    // 🛑 cancel timer (helper) — runs before anything goes to the model
+    if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return; // ⬅️ NEW
+
     // ⏱️ TIMER INTENT (intercepts "set a 1 minute/second timer")
-// Examples it catches: "set a 10 second timer", "can you set a 1 minute timer", "start 5m timer"
-{
-  const raw = input.trim();
-  const lower = raw.toLowerCase();
+    // Examples it catches: "set a 10 second timer", "can you set a 1 minute timer", "start 5m timer"
+    {
+      const raw = input.trim();
+      const lower = raw.toLowerCase();
 
-  const match = lower.match(
-    /(?:^|\b)(?:can you|could you|would you|please|pls)?\s*(?:set|start|create|begin|make)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?\b/
-  );
+      const match = lower.match(
+        /(?:^|\b)(?:can you|could you|would you|please|pls)?\s*(?:set|start|create|begin|make)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?\b/
+      );
 
-  if (match) {
-    const amount = parseInt(match[1], 10);
-    const unit = match[2];
-    const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
+      if (match) {
+        const amount = parseInt(match[1], 10);
+        const unit = match[2];
+        const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
 
-    try {
-      const res = await fetch('/.netlify/functions/create-timer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: (settings?.userId || 'defaultUser'),
-          seconds
-        }),
-      });
-      const data = await res.json();
+        try {
+          const res = await fetch('/.netlify/functions/create-timer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: (settings?.userId || 'defaultUser'),
+              seconds
+            }),
+          });
+          const data = await res.json();
 
-      if (res.ok && (data.ok || data.result)) {
-        setMessages(prev => [
-          ...prev,
-          { isUser: true, text: raw },
-          {
-            isUser: false,
-            text: `⏱️ Timer set for ${amount} ${/(min|m)/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
+          if (res.ok && (data.ok || data.result)) {
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: raw },
+              {
+                isUser: false,
+                text: `⏱️ Timer set for ${amount} ${/(min|m)/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
+              }
+            ]);
+            // Optional: track server timer id if your UI needs it:
+            // const newId = data.result?.timerId || data.timerId;
+            // setActiveTimerId?.(newId);
+          } else {
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: raw },
+              { isUser: false, text: `Sorry, I couldn’t set that timer (${data?.error || res.status}).` }
+            ]);
           }
-        ]);
-        // Optional: track server timer id if your UI needs it:
-        // const newId = data.result?.timerId || data.timerId;
-        // setActiveTimerId?.(newId);
-      } else {
-        setMessages(prev => [
-          ...prev,
-          { isUser: true, text: raw },
-          { isUser: false, text: `Sorry, I couldn’t set that timer (${data?.error || res.status}).` }
-        ]);
-      }
-    } catch (err) {
-      console.error('[timer intent] create failed:', err);
-      setMessages(prev => [
-        ...prev,
-        { isUser: true, text: raw },
-        { isUser: false, text: 'Timer hiccup—network error.' }
-      ]);
-    }
+        } catch (err) {
+          console.error('[timer intent] create failed:', err);
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: raw },
+            { isUser: false, text: 'Timer hiccup—network error.' }
+          ]);
+        }
 
-    setInput('');
-    return; // ✅ don’t send this prompt to the model
-  }
-}
+        setInput('');
+        return; // ✅ don’t send this prompt to the model
+      }
+    }
 
     // ⏱️ "How much time is left?" / "How long has it been?"
     const timeLeftIntent = /^(how (much )?time (is )?left( on (my|the) timer)?\??|time left\??|how long has it been\??)$/i;
@@ -151,10 +153,10 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       setInput('');
       return; // don't pass this to the model
     }
+
     const shutdownPhrases = ["power down", "shut down", "go to sleep", "power off"];
     const startupPhrases = ["wake up", "power up", "turn on"];
     const lowerCaseInput = input.toLowerCase().trim();
-
 
     if (poweredDown) {
       if (startupPhrases.includes(lowerCaseInput)) {
@@ -173,7 +175,6 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       setPoweredDown(true);
       return;
     }
-    
 
     const conversationEnders = [
       "ok", "okay", "perfect", "great", "thanks", "thank you", "got it", "understood",
@@ -291,7 +292,6 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       setPoweredDown(false);
       return;
     }
-    
 
   }, [input, isResponding, messages, settings, facts, addFact, setSettings, skipNextResponse, spoonCount, setMessages, setIsResponding]);
 
