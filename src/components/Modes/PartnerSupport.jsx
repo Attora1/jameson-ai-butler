@@ -4,6 +4,7 @@ import CoRegulationTimer from '../Modes/CoRegulationTimer.jsx';
 import PartnerCheckInButton from './PartnerCheckInButton';
 import '../../styles/modes-css/PartnerSupport.css';
 
+// eslint-disable-next-line no-unused-vars
 export default function PartnerSupport({ settings }) {
   const [showTether, setShowTether] = useState(false);
   const [showTimer, setShowTimer] = useState(false);

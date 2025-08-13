@@ -142,7 +142,7 @@ export default function LowSpoon({ settings }) {
             <section className="suggestions" aria-labelledby="suggestions-heading">
               <h3 id="suggestions-heading">Gentle Suggestions</h3>
               <p className="suggestion-text">{currentSuggestion}</p>
-              <button className="refresh-suggestion-button" onClick={() => setCurrentSuggestion('Fetching new suggestion...') || fetchSuggestion()} title="Show another suggestion" aria-label="Refresh suggestion">
+              <button className="refresh-suggestion-button" onClick={() => setCurrentSuggestion('Fetching new suggestion...')} title="Show another suggestion" aria-label="Refresh suggestion">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold-soft)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="refresh-icon" > <polyline points="23 4 23 10 17 10"></polyline> <polyline points="1 20 1 14 7 14"></polyline> <path d="M3.51 9a9 9 0 0114.13-3.36L23 10M1 14l5.36 5.36A9 9 0 0020.49 15"></path> </svg>
               </button>
             </section>

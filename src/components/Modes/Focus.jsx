@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import MotivQuote from '../MotivQuote';
 import MusicToggle from '../Music.jsx';
@@ -8,6 +8,7 @@ import ModeLayout from '../Modes/ModeLayout.jsx';
 import '../../styles/modes-css/Focus.css';
 
 
+// eslint-disable-next-line no-unused-vars
 const Focus = ({ settings }) => {
   const [task, setTask] = useState('');
   const [taskSubmitted, setTaskSubmitted] = useState(false);
@@ -17,11 +18,12 @@ const Focus = ({ settings }) => {
   const [showMissionModal, setShowMissionModal] = useState(false);
   const [sideQuests, setSideQuests] = useState([]);
 
+  // eslint-disable-next-line no-unused-vars
   const [greeting, setGreeting] = useState('Focus Mode Activated.');
+  // eslint-disable-next-line no-unused-vars
   const [encouragement, setEncouragement] = useState('Stay sharp, you\'ve got this.');
+  // eslint-disable-next-line no-unused-vars
   const [wit, setWit] = useState('Time to conquer, eh?');
-
-  const checklistInputRef = useRef(null);
 
   const handleTimerComplete = () => {
     setShowMissionModal(true);

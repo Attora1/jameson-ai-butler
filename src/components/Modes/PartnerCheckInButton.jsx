@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../../styles/modes-css/PartnerSupport.css';
 
 const PULSE_INTERVAL = 90 * 60 * 1000; // 90 minutes in milliseconds
@@ -10,7 +10,7 @@ export default function PartnerCheckInButton() {
   const pulseTimeoutRef = useRef(null);
   const intervalRef = useRef(null);
 
-  const startPulse = () => {
+  const startPulse = useCallback(() => {
     setIsPulsing(true);
     localStorage.setItem(LAST_PULSE_KEY, Date.now());
     if (window.AELI && window.AELI.speak) {
@@ -23,9 +23,9 @@ export default function PartnerCheckInButton() {
     pulseTimeoutRef.current = setTimeout(() => {
       setIsPulsing(false);
     }, 10000); // Pulse for 10 seconds
-  };
+  }, []);
 
-  const scheduleNextPulse = () => {
+  const scheduleNextPulse = useCallback(() => {
     const lastPulseTime = parseInt(localStorage.getItem(LAST_PULSE_KEY) || '0', 10);
     const timeElapsed = Date.now() - lastPulseTime;
     const timeToNextPulse = PULSE_INTERVAL - timeElapsed;
@@ -39,7 +39,7 @@ export default function PartnerCheckInButton() {
         intervalRef.current = setInterval(startPulse, PULSE_INTERVAL);
       }, timeToNextPulse);
     }
-  };
+  }, [startPulse]);
 
   useEffect(() => {
     scheduleNextPulse();
@@ -47,7 +47,7 @@ export default function PartnerCheckInButton() {
       clearTimeout(pulseTimeoutRef.current);
       clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [scheduleNextPulse]);
 
   const openModal = () => {
     setShowModal(true);
@@ -56,6 +56,7 @@ export default function PartnerCheckInButton() {
     clearInterval(intervalRef.current); // Stop the main interval
   };
 
+  // eslint-disable-next-line no-unused-vars
   const closeModal = () => {
     setShowModal(false);
     scheduleNextPulse(); // Resume the timer based on existing state

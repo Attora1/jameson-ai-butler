@@ -6,8 +6,11 @@ import '../../styles/modes-css/LandingDashboard.css';
 
 function LandingDashboard({ settings, setSettings, setShowSettings }) {
   const [showPreferences, setShowPreferences] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [greeting, setGreeting] = useState('Welcome back.');
+  // eslint-disable-next-line no-unused-vars
   const [encouragement, setEncouragement] = useState('How may I assist you today?');
+  // eslint-disable-next-line no-unused-vars
   const [hasSeenIntro, setHasSeenIntro] = useState(() => {
     return localStorage.getItem("AELI_INTRO_SHOWN") === "true";
   });
@@ -26,7 +29,7 @@ function LandingDashboard({ settings, setSettings, setShowSettings }) {
         }
       }, 1000);
     }
-  }, []);
+  }, [hasSeenIntro, setShowSettings]);
   
   useEffect(() => {
     document.body.classList.remove('focus-theme', 'low_spoon-theme', 'partner_support-theme', 'crisis-theme');

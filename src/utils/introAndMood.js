@@ -1,4 +1,4 @@
-export function getAELIIntro(mode, mood = "neutral") {
+export function getAELIIntro(mode) {
   const intros = {
     focus: [
       "Right then. Let’s cut through the noise. What’s top priority?",

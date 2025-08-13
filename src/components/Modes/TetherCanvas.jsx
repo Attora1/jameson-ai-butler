@@ -8,10 +8,12 @@ export default function TetherCanvas({ onComplete }) {
   const tetherAudio = useRef(null);
   const [playerMode, setPlayerMode] = useState('single');
   const [isComplete, setIsComplete] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [orbsCollected, setOrbsCollected] = useState(0);
   const [showIntro, setShowIntro] = useState(true);
   const [showReflection, setShowReflection] = useState(false);
   const [reflectionText, setReflectionText] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [reflectionSaved, setReflectionSaved] = useState(false);
   const [isFusing, setIsFusing] = useState(false);
   const [shapeIndex, setShapeIndex] = useState(() => {
@@ -161,7 +163,7 @@ export default function TetherCanvas({ onComplete }) {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [playerMode, isFusing, shapeIndex, levelSettings]);
+  }, [playerMode, isFusing, shapeIndex, levelSettings, isComplete, shapes.length]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

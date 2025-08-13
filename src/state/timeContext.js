@@ -5,11 +5,10 @@
 const LS_KEY = 'AELI_TIME_CTX_v1';
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }
-  catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { /* no-op */ return {}; }
 }
 function save(obj) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch { /* no-op */ }
 }
 
 function now() { return Date.now(); }

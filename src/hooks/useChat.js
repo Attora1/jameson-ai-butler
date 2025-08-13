@@ -21,6 +21,7 @@ export function useChat(
   const [input, setInput] = useState('');
   const [isResponding, setIsResponding] = useState(false);
   const [skipNextResponse, setSkipNextResponse] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [moodMetrics, setMoodMetrics] = useState({
     shortMessageCount: 0,
     lastFrustrationCheck: Date.now(),
@@ -53,7 +54,7 @@ export function useChat(
   useEffect(() => {
     try {
       localStorage.setItem('AELI_CHAT_HISTORY', JSON.stringify(messages));
-    } catch {}
+    } catch { /* no-op */ }
   }, [messages]);
 
   // ---- Submit handler ----
@@ -343,13 +344,12 @@ export function useChat(
     isResponding,
     messages,
     settings,
-    facts,
-    addFact,
     setSettings,
+    addFact,
     skipNextResponse,
-    spoonCount,
     poweredDown,
-    setPoweredDown
+    setPoweredDown,
+    startupPhrasesParam
   ]);
 
   return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown };

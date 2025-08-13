@@ -16,11 +16,10 @@ const DEFAULTS = {
 };
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }
-  catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { /* no-op */ return {}; }
 }
 function save(obj) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch { /* no-op */ }
 }
 
 export function getPrefs() {
@@ -42,11 +41,11 @@ export function learnPrefsFromInput(input, userName) {
   let changed = {};
 
   // Name usage
-  if (/(don't|do not|stop)\s+(using|say(ing)?)?\s+(my\s+)?name\b/.test(s) ||
-      /(no\s+names?|use\s+less\s+names?)\b/.test(s)) {
+  if (/\b(don't|do not|stop)\s+(using|say(ing)?)?\s+(my\s+)?name\b/.test(s) ||
+      /\b(no\s+names?|use\s+less\s+names?)\b/.test(s)) {
     changed.useName = false;
   }
-  if (/(use|say)\s+(my\s+)?name\b/.test(s)) {
+  if (/\b(use|say)\s+(my\s+)?name\b/.test(s)) {
     changed.useName = true;
   }
   if (userName) {
@@ -55,24 +54,24 @@ export function learnPrefsFromInput(input, userName) {
   }
 
   // Brevity
-  if (/(keep|be)\s+(it\s+)?(short|brief|concise)\b/.test(s) || /\bshort(er)?\s+repl(ies|y)\b/.test(s)) {
+  if (/\b(keep|be)\s+(it\s+)?(short|brief|concise)\b/.test(s) || /\bshort(er)?\s+repl(ies|y)\b/.test(s)) {
     changed.brevity = 'short';
   }
-  if (/(normal|default)\s+(length|repl(ies|y))\b/.test(s) || /\bbe\s+normal\b/.test(s)) {
+  if (/\b(normal|default)\s+(length|repl(ies|y))\b/.test(s) || /\bbe\s+normal\b/.test(s)) {
     changed.brevity = 'normal';
   }
-  if (/(long(er)?|more\s+detail)\b/.test(s) && /\brepl(ies|y)\b/.test(s)) {
+  if (/\b(long(er)?|more\s+detail)\b/.test(s) && /\brepl(ies|y)\b/.test(s)) {
     changed.brevity = 'long';
   }
 
   // Emoji
-  if (/(no|avoid|stop)\s+emoji\b/.test(s) || /emoji\s*(off|none)\b/.test(s)) {
+  if (/\b(no|avoid|stop)\s+emoji\b/.test(s) || /\bemoji\s*(off|none)\b/.test(s)) {
     changed.emoji = 'none';
   }
-  if (/(use|allow)\s+emoji\b/.test(s) || /emoji\s*(ok|okay|on|sparingly)\b/.test(s)) {
+  if (/\b(use|allow)\s+emoji\b/.test(s) || /\bemoji\s*(ok|okay|on|sparingly)\b/.test(s)) {
     changed.emoji = 'sparingly';
   }
-  if (/more\s+emoji\b/.test(s) || /emoji\s*free\b/.test(s)) {
+  if (/\bmore\s+emoji\b/.test(s) || /\bemoji\s*free\b/.test(s)) {
     changed.emoji = 'free';
   }
 

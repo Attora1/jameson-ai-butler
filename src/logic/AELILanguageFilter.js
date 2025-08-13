@@ -10,7 +10,7 @@ import { getWit } from '../prompts/AELIEngine.js';
  * @param {object} options           { spoonCount, timeOfDay, failMode }
  * @returns {string}                 Enriched, context-aware reply
  */
-export function applyAELIPersonality(rawReply, settings = {}, options = {}) {
+export function applyAELIPersonality(rawReply, settings = {}) {
     let result = rawReply ? rawReply.trim() : '';
     const {
       humorLevel = 'dry',

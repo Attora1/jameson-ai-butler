@@ -2,7 +2,6 @@ import React from 'react';
 
 export default function SpoonLeaf({ width = 30, height = 60, color = 'rgba(255,210,150,0.7)' }) {
   const circleRadius = width / 2;
-  const triangleHeight = height - width;
 
   return (
     <svg

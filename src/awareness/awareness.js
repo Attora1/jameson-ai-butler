@@ -10,10 +10,10 @@ const LS_KEY = 'AELI_AWARE_FLAGS_v1';
 
 // simple local cache to rate-limit repeating the same nudge
 function loadFlags() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { /* no-op */ return {}; }
 }
 function saveFlags(obj) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch { /* no-op */ }
 }
 
 function hoursLocal() {

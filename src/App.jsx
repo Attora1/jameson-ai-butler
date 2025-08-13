@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './styles/App.css';
 
 import { useFacts } from './hooks/useFacts.js';
@@ -10,14 +10,13 @@ import MessageList from './components/Chat/MessageList.jsx';
 import ChatInput from './components/Chat/ChatInput.jsx';
 import WakeUpInput from './components/Chat/WakeUpInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
-import { handleAIResponse } from './logic/AIResponseHandler.js';
 import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import Focus from './components/Modes/Focus.jsx';
 import LowSpoon from './components/Modes/LowSpoon.jsx';
 import PartnerSupport from './components/Modes/PartnerSupport.jsx';
 import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonProvider } from './context/SpoonContext.jsx';
-import { getAELIIntro, getMoodReflection } from './utils/introAndMood.js';  
+import { getMoodReflection } from './utils/introAndMood.js';  
 
 
 function App() {
@@ -31,10 +30,8 @@ function App() {
   
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
-  const [temperature, setTemperature] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   usePersistentTimerPolling(setMessages, poweredDown, settings);
-  const prevSpoonRef = useRef(spoonCount);
 
 
   useEffect(() => {
@@ -79,7 +76,7 @@ function App() {
       window.removeEventListener('keydown', resetActivity);
       window.removeEventListener('click', resetActivity);
     };
-  }, [poweredDown, lastActivityTime, inactivityMessageSent]);
+  }, [poweredDown, lastActivityTime, inactivityMessageSent, setMessages]);
 
   useEffect(() => {
     // Fetch initial wellness data from the server
@@ -124,7 +121,7 @@ function App() {
           const response = await fetch(`/api/weather?zip=${settings.zip}`);
           const weather = await response.json();
           if (response.ok) {
-            setTemperature(weather.temperature);
+            // setTemperature(weather.temperature);
           } else {
             console.error("Error fetching weather:", weather.error);
           }
@@ -134,7 +131,7 @@ function App() {
       }
     }
     fetchInitialWeather();
-  }, [settings.zip]);
+  }, [settings.zip, settings.enableWeather]);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("AELI_INTRO_SHOWN") === "true";
@@ -154,7 +151,7 @@ function App() {
       setMessages((prev) => [...prev, { isUser: false, text: line }]);
       localStorage.setItem("AELI_INTRO_SHOWN", "true");
     }
-  }, [settings]);
+  }, [settings, messages.length, setMessages]);
   
   const renderModeContent = () => {
     switch (settings.mode) {

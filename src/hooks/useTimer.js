@@ -137,7 +137,7 @@ export function usePersistentTimerPolling(setMessages, poweredDown, settings) {
 
 // Hook for creating a new timer
 export function useCreateTimer() {
-  const [isCreating, setIsRunning] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
 
   const createTimer = async (durationMinutes, userId, timerId) => {

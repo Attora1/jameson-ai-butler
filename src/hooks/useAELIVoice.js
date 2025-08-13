@@ -76,7 +76,7 @@ export default function useAELIVoice(text, settings, poweredDown = false) {
         audioRef.current.src = "";
       }
     };
-  }, [text, settings?.voiceEnabled]);
+  }, [text, settings?.voiceEnabled, poweredDown]);
 }
 
 
