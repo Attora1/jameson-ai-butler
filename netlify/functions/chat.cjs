@@ -157,14 +157,13 @@ export async function handler(event, context) {
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: { Allow: 'GET, POST' }, body: 'Method Not Allowed' };
 
     const body = event.body ? JSON.parse(event.body) : {};
-    const { message, userId, awareness, settings } = body;
-
-    // Accept multiple client shapes and trim
+    const userId = (body.userId || 'defaultUser').trim();
     const userMsg =
-      (typeof message === 'string' && message.trim()) ||
+      (typeof body.message === 'string' && body.message.trim()) ||
       (typeof body.text === 'string' && body.text.trim()) ||
       (typeof body.input === 'string' && body.input.trim()) ||
       '';
+    const { awareness, settings } = body;
 
     // If something (a boot effect) calls this with no message, just no-op.
     if (!userMsg) {
@@ -188,8 +187,7 @@ export async function handler(event, context) {
       });
     }
 
-    const userId = (body.userId || 'defaultUser').trim();
-    const userMsg = message;
+    
     // const userSettings = body.settings || {}; // Removed userSettings extraction
 
     // Only load Supabase if you truly need it in this request:
