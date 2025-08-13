@@ -3,6 +3,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const notifiedTimers = new Set();
 
 // A generic countdown timer hook
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { say } from './useAELIVoice.js';
+
+const notifiedTimers = new Set();
+
+// A generic countdown timer hook
 export function useCountdown({ onComplete }) {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -44,6 +50,97 @@ export function useCountdown({ onComplete }) {
     stopCountdown,
   };
 }
+
+// Hook for polling persistent timers from the server
+export function usePersistentTimerPolling(setMessages, poweredDown, settings) {
+  const setMessagesRef = useRef(setMessages);
+  const alertSound = useRef(new Audio('/sounds/level-passed.mp3'));
+
+  const playSound = useCallback(() => {
+    if (alertSound.current) {
+      alertSound.current.load();
+      alertSound.current.play().catch(error => {
+        console.error('Error playing sound:', error);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    setMessagesRef.current = setMessages;
+  }, [setMessages]);
+
+  useEffect(() => {
+    let pollingInterval;
+
+    if (!poweredDown) {
+      pollingInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`/.netlify/functions/check-timers?userId=${encodeURIComponent(settings.userId || 'defaultUser')}`);
+
+          if (response.status === 503) {
+            console.warn("AELI server is asleep. Stopping timer polling.");
+            clearInterval(pollingInterval);
+            return;
+          }
+
+          const data = await response.json();
+
+          if (data.expiredTimers && data.expiredTimers.length > 0) {
+            data.expiredTimers.forEach((id) => {
+              if (!notifiedTimers.has(id)) {
+                notifiedTimers.add(id);
+                playSound?.();
+                say('Your timer is complete.', settings);
+                if (typeof setMessagesRef.current === 'function') {
+                  setMessagesRef.current(prev => [...prev, { text: '⏰ Your timer just finished.', isUser: false }]);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Error checking timers:', error);
+        }
+      }, 5000);
+    }
+
+    return () => {
+      clearInterval(pollingInterval);
+    };
+  }, [poweredDown, playSound, settings]);
+}
+
+
+// Hook for creating a new timer
+export function useCreateTimer() {
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState(null);
+
+  const createTimer = async (durationMinutes, userId, timerId) => {
+    setIsCreating(true);
+    setError(null);
+    try {
+      const response = await fetch('/.netlify/functions/create-timer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ duration: durationMinutes, userId, timerId }),
+      });
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to create timer');
+      }
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  return { createTimer, isCreating, error };
+}
+
 
 // Hook for polling persistent timers from the server
 export function usePersistentTimerPolling(setMessages, poweredDown, settings) {
