@@ -5,6 +5,7 @@ import { styleGovernor } from '../persona/styleGovernor.js';
 import { initTimeContext, markUserMessage, markAeliMessage, getTimeSnapshot } from '../state/timeContext.js';
 import { noteUserInput, learnFromCorrection } from '../state/lexicon.js';
 import { learnPrefsFromInput } from '../state/prefs.js';
+import { getAwareness } from '../awareness/awareness.js';
 
 export function useChat(
   settings,
@@ -280,12 +281,17 @@ export function useChat(
     // ---- Call the chat function ----
     setIsResponding(true);
     try {
+      const awareness = getAwareness({
+        userId: settings?.userId || 'defaultUser',
+        lastInput: input
+      });
       const response = await fetch('/.netlify/functions/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input.trim(),
           userId: settings?.userId || 'defaultUser',
+          awareness,                                // ⬅️ add this
           settings: {
             tone: settings?.tone,
             humorLevel: settings?.humorLevel,
