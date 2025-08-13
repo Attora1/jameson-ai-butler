@@ -78,3 +78,60 @@ export default function useAELIVoice(text, settings, poweredDown = false) {
     };
   }, [text, settings?.voiceEnabled]);
 }
+
+
+// Standalone `say` function
+let audioRef = null;
+let lastHash = null;
+
+export async function say(text, settings, poweredDown = false) {
+  if (poweredDown) {
+    console.log("🔇 AELI is powered down. Skipping voice.");
+    return;
+  }
+  
+  if (!text || typeof text !== 'string') return;
+  if (!settings?.voiceEnabled) return;
+
+  const cleaned = text.trim();
+  const hash = hashString(cleaned);
+
+  // 🚫 Block if same as last hash
+  if (hash === lastHash) return;
+  lastHash = hash;
+
+  console.log("🔊 Speaking:", cleaned);
+
+  const processedText = cleaned.replace(/AELI/gi, "ay-lee");
+
+  try {
+    const response = await fetch('/.netlify/functions/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: processedText,
+        voiceID: 'onwK4e9ZLuTAKqWW03F9'
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('TTS Error:', errorText);
+      return;
+    }
+
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    if (audioRef) {
+      audioRef.pause();
+      audioRef.src = "";
+    }
+
+    const audio = new Audio(audioUrl);
+    audioRef = audio;
+    audio.play();
+  } catch (error) {
+    console.error('ElevenLabs TTS failed:', error);
+  }
+}
