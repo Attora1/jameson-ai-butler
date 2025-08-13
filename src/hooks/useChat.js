@@ -79,6 +79,7 @@ export function useChat(
 
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
+    if (await wellnessIntent({ input, settings, setMessages, setInput })) return;
 
     //  VERSION / UPDATE INTENT (e.g., "version?", "update?", "what build am I on")
     {
