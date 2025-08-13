@@ -190,5 +190,5 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
 
   }, [input, isResponding, messages, settings, facts, addFact, setSettings, skipNextResponse, spoonCount, setMessages, setIsResponding]);
 
-  return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown, remainingTime };
+  return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown };
 }

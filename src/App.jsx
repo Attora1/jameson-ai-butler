@@ -27,7 +27,7 @@ function App() {
   const [spoonCount, setSpoonCount] = useState(12);
   const [poweredDown, setPoweredDown] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const { messages, setMessages, input, setInput, isResponding, handleSubmit, remainingTime } = useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown);
+  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown);
   
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);

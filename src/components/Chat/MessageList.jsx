@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import useAELIVoice from '../../hooks/useAELIVoice.js';
 
-export default function MessageList({ messages, settings, poweredDown, remainingTime }) {
+export default function MessageList({ messages, settings, poweredDown }) {
   const containerRef = useRef(null);
 
   // Memoize last Aeli message
@@ -25,11 +25,7 @@ export default function MessageList({ messages, settings, poweredDown, remaining
 
   return (
     <div className="messages" ref={containerRef} style={{ overflowY: 'auto', maxHeight: '70vh' }}>
-      {remainingTime !== null && remainingTime > 0 && (
-        <div className="message-bubble ai">
-          <p>Timer: {Math.floor(remainingTime / 1000)} seconds remaining</p>
-        </div>
-      )}
+      
       {messages.length === 0 && (
         <div className="message-bubble ai">
           <p>Systems operational. Awaiting instructions. ♦tea sip♦</p>
