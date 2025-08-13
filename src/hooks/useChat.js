@@ -3,6 +3,7 @@ import { cancelTimerIntent } from '../intents/cancelTimerIntent.js';
 import { normalizeInput } from '../utils/normalizeInput.js';
 import { styleGovernor } from '../persona/styleGovernor.js';
 import { initTimeContext, markUserMessage, markAeliMessage, getTimeSnapshot } from '../state/timeContext.js';
+import { noteUserInput, learnFromCorrection } from '../state/lexicon.js';
 
 export function useChat(
   settings,
@@ -60,7 +61,14 @@ export function useChat(
 
     markUserMessage(settings?.userId || 'defaultUser');
 
-    // Normalized, typo-forgiving copy for intent matching
+    // learn from correction messages like "*timer" or "tiemr -> timer"
+    const learned = learnFromCorrection(input);
+    if (learned) { setInput(''); return; } // silent; no hardcoded reply
+
+    // remember this raw input so a following "*word" can reference it
+    noteUserInput(input);
+
+    // now normalize for intent matching
     const norm = normalizeInput(input).normalized;
 
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model

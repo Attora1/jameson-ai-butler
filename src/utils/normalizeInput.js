@@ -1,5 +1,7 @@
 // src/utils/normalizeInput.js
-// Lightweight, app-wide input normalizer for typo forgiveness + consistency.
+// Lightweight, app-wide input normalizer with learned typo forgiveness.
+
+import { applyLexicon } from '../state/lexicon.js';
 
 export function normalizeInput(text) {
   if (typeof text !== 'string') return { raw: '', normalized: '' };
@@ -13,10 +15,13 @@ export function normalizeInput(text) {
     .replace(/\s+/g, ' ')
     .trim();
 
+  // Apply learned replacements first
+  s = applyLexicon(s);
+
   // Lowercase working copy for intent matching
   let lower = s.toLowerCase();
 
-  // Common typo/alias fixes (expand as needed)
+  // Common typo/alias fixes (static baseline)
   const fixes = [
     [/\btiemr\b/g, 'timer'],
     [/\btimr\b/g, 'timer'],
