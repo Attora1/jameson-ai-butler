@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useCreateTimer } from './useTimer.js';
 import { STORAGE_KEY } from '../constants';
 
 export function useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown, startupPhrases) {
@@ -6,12 +7,11 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
   const [input, setInput] = useState('');
   const [isResponding, setIsResponding] = useState(false);
   const [skipNextResponse, setSkipNextResponse] = useState(false);
-  const [activeTimerId, setActiveTimerId] = useState(null);
-  const [remainingTime, setRemainingTime] = useState(null);
   const [moodMetrics, setMoodMetrics] = useState({
     shortMessageCount: 0,
     lastFrustrationCheck: Date.now(),
   });
+  const { createTimer } = useCreateTimer();
 
   useEffect(() => {
     async function fetchChatHistory() {
@@ -41,24 +41,7 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
-  useEffect(() => {
-    if (!activeTimerId) return;
-
-    const timer = setInterval(() => {
-      fetch(`/api/timer-status?timerId=${activeTimerId}&userId=${encodeURIComponent(settings.userId)}`)
-        .then(res => res.json())
-        .then(data => {
-          setRemainingTime(data.remaining);
-          if (data.remaining <= 0) {
-            setMessages(prev => [...prev, { text: "Timer finished!", isUser: false }]);
-            setActiveTimerId(null);
-            clearInterval(timer);
-          }
-        });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [activeTimerId]);
+  
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
@@ -158,7 +141,13 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
 
       const action = data.action;
 
-      if (action?.type === 'switchMode' && typeof action.payload === 'string') {
+      if (action?.type === 'createTimer' && typeof action.payload === 'object') {
+        const { duration } = action.payload;
+        if (typeof duration === 'number') {
+          const timerId = Date.now().toString();
+          createTimer(duration, settings.userId || 'defaultUser', timerId);
+        }
+      } else if (action?.type === 'switchMode' && typeof action.payload === 'string') {
         console.log('[AELI Action]', action);
         setSettings(prev => ({ ...prev, mode: action.payload }));
       } else if (action?.type === 'setTimer' && typeof action.payload === 'object') {

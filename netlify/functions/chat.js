@@ -66,6 +66,27 @@ const json = (code, body) => ({
   body: JSON.stringify(body),
 });
 
+function parseTimerRequest(text) {
+  if (!text || typeof text !== 'string') {
+    return null;
+  }
+  const patterns = [
+    /(?:set|start|create|add) a timer for (\d+)\s*(?:minutes?|mins?)/i,
+    /timer (?:for )?(\d+)\s*(?:minutes?|mins?)/i,
+    /(\d+)\s*(?:minute|min) timer/i,
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match && match[1]) {
+      const duration = parseInt(match[1], 10);
+      if (!isNaN(duration) && duration > 0) {
+        return { duration };
+      }
+    }
+  }
+  return null;
+}
+
 // --- 3) Generate reply with Gemini ---
 async function askGroq(history, userMsg) {
   const messages = [
@@ -117,6 +138,18 @@ export async function handler(event) {
         statusCode: 204, // No Content (prevents 400 spam + "technical difficulties")
         body: '',
       };
+    }
+
+    const timerRequest = parseTimerRequest(message);
+    if (timerRequest) {
+      const replyText = `Of course. Starting a timer for ${timerRequest.duration} minute${timerRequest.duration > 1 ? 's' : ''}.`;
+      return json(200, {
+        reply: replyText,
+        action: {
+          type: 'createTimer',
+          payload: { duration: timerRequest.duration },
+        },
+      });
     }
 
     const userId = (body.userId || 'defaultUser').trim();
