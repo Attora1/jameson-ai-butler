@@ -151,7 +151,7 @@ async function askGroq(history, userMsg, systemAwareness) {
   return data?.choices?.[0]?.message?.content?.trim() || "Understood. How may I assist you?";
 }
 
-export async function handler(event) {
+export async function handler(event, context) {
   try {
     if (event.httpMethod === 'GET') return json(200, { ok: true, message: 'Chat endpoint ready' });
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: { Allow: 'GET, POST' }, body: 'Method Not Allowed' };
