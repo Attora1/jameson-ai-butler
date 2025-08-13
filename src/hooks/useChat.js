@@ -66,6 +66,44 @@ export function useChat(
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
 
+    //  TIME AWARENESS INTENT (clock / uptime / last activity)
+    {
+      const askClock =
+        /\b(what('?s)? the time|what time is it|current time|time now)\b/i.test(norm);
+      const askUptime =
+        /\b(how long (have we been|has it been)|how long have we been at (this|it))\b/i.test(norm);
+      const askSinceUser =
+        /\b(when did you last hear from me|when was my last message|since last user|last user message)\b/i.test(norm);
+      const askSinceAeli =
+        /\b(when was your last message|since last aeli|since you last spoke|your last reply)\b/i.test(norm);
+
+      if (askClock || askUptime || askSinceUser || askSinceAeli) {
+        const snap = getTimeSnapshot(settings?.userId || 'defaultUser');
+
+        const lines = [];
+        if (askClock) lines.push(`Time: ${snap.human.clock}`);
+        if (askUptime) lines.push(`Session: ${snap.human.uptime || '—'}`);
+        if (askSinceUser) lines.push(`Since you: ${snap.human.sinceLastUser || '—'}`);
+        if (askSinceAeli) lines.push(`Since me: ${snap.human.sinceLastAeli || '—'}`);
+
+        // If the ask was vague (e.g., “time?”), provide a compact summary.
+        if (lines.length === 0) {
+          lines.push(`Time: ${snap.human.clock}`);
+          lines.push(`Session: ${snap.human.uptime || '—'}`);
+          if (snap.human.sinceLastUser) lines.push(`Since you: ${snap.human.sinceLastUser}`);
+        }
+
+        setMessages(prev => [
+          ...prev,
+          { isUser: true, text: input.trim() },
+          { isUser: false, text: lines.join(' · ') }
+        ]);
+        setInput('');
+        markAeliMessage(settings?.userId || 'defaultUser');
+        return;
+      }
+    }
+
     // ⏱️ SET TIMER INTENT (digits or words; typo-friendly via normalizeInput)
     {
       // Matches: "set/start/make ... <amount> <minutes/seconds> [timer]"
