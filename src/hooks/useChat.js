@@ -98,6 +98,52 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       setInput('');
       return; // ⬅️ don’t send this prompt to the chat model
     }
+
+    // ⏱️ "How much time is left?" / "How long has it been?"
+    const timeLeftIntent = /^(how (much )?time (is )?left( on (my|the) timer)?\??|time left\??|how long has it been\??)$/i;
+    if (timeLeftIntent.test(input.trim())) {
+      try {
+        const res = await fetch(`/.netlify/functions/time-left?userId=${encodeURIComponent(settings.userId || 'defaultUser')}`);
+        const data = await res.json();
+
+        if (res.ok && data && (data.remainingSeconds != null)) {
+          // Prefer the human-friendly fields if present
+          const remaining = data.humanRemaining || `${data.remainingSeconds}s`;
+          const elapsed   = data.humanElapsed   || (data.elapsedSeconds != null ? `${data.elapsedSeconds}s` : null);
+
+          const parts = [`⏱️ Time left: ${remaining}.`];
+          if (elapsed != null) parts.push(`Elapsed: ${elapsed}.`);
+
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: parts.join(' ') }
+          ]);
+        } else if (data?.error === 'NO_ACTIVE_TIMERS' || res.status === 404) {
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: "No active timers at the moment." }
+          ]);
+        } else {
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: `Hmm—couldn’t fetch time left (${data?.error || res.status}).` }
+          ]);
+        }
+      } catch (err) {
+        console.error('[time-left intent] failed:', err);
+        setMessages(prev => [
+          ...prev,
+          { isUser: true, text: input.trim() },
+          { isUser: false, text: "Network blip. Try again in a sec." }
+        ]);
+      }
+
+      setInput('');
+      return; // don't pass this to the model
+    }
     const shutdownPhrases = ["power down", "shut down", "go to sleep", "power off"];
     const startupPhrases = ["wake up", "power up", "turn on"];
     const lowerCaseInput = input.toLowerCase().trim();
