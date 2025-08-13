@@ -1,111 +1,106 @@
 // netlify/functions/wellness.js
+// ESM handler. Read/write a user's wellness state.
+// Fields: spoons (0–10), mood (string), last_meal (timestamptz), last_med (timestamptz)
 
-async function getSupabaseClient() {
-  const { createClient } = await import('@supabase/supabase-js');
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error('Missing SUPABASE_URL or SUPABASE_* key in environment');
-  }
-  return createClient(url, key);
-}
-
-const json = (code, body, extraHeaders = {}) => ({
+const json = (code, body) => ({
   statusCode: code,
-  headers: { 'Content-Type': 'application/json', ...extraHeaders },
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify(body),
 });
 
+async function getSupabase() {
+  const { createClient } = await import("@supabase/supabase-js");
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_ANON_KEY;
+  if (!url || !key) throw new Error("Missing SUPABASE_URL or key");
+  return createClient(url, key);
+}
+
 export async function handler(event) {
   try {
-    const supabase = await getSupabaseClient(); // Get client inside handler
+    const supabase = await getSupabase();
+    const method = event.httpMethod.toUpperCase();
 
-    const method = event.httpMethod;
-    const userId = (event.queryStringParameters?.userId || 'defaultUser').trim();
-
-    if (method === 'GET') {
-      // fetch current wellness row for user
+    if (method === "GET") {
+      const userId = (event.queryStringParameters?.userId || "").trim() || "defaultUser";
       const { data, error } = await supabase
-        .from('wellness')
-        .select('id, mood, spoons, last_meal, last_med, updated_at')
-        .eq('user_id', userId)
+        .from("wellness")
+        .select("user_id, spoons, mood, last_meal, last_med, updated_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) return json(500, { error: "READ_FAILED", message: error.message });
+      return json(200, { ok: true, userId, state: data || null });
+    }
+
+    if (method === "POST") {
+      let body = {};
+      try { body = JSON.parse(event.body || "{}"); } catch {
+        return json(400, { error: "INVALID_JSON" });
+      }
+
+      const userId = (body.userId || "").trim() || "defaultUser";
+      const patch = {};
+      if (Number.isFinite(body.spoons)) {
+        patch.spoons = Math.max(0, Math.min(10, Math.round(body.spoons)));
+      }
+      if (typeof body.mood === "string") {
+        patch.mood = body.mood.slice(0, 64);
+      }
+      if (body.last_meal === true) {
+        patch.last_meal = new Date().toISOString();
+      } else if (typeof body.last_meal === "string") {
+        patch.last_meal = new Date(body.last_meal).toISOString();
+      }
+      if (body.last_med === true) {
+        patch.last_med = new Date().toISOString();
+      } else if (typeof body.last_med === "string") {
+        patch.last_med = new Date(body.last_med).toISOString();
+      }
+      patch.updated_at = new Date().toISOString();
+
+      const row = { user_id: userId, ...patch };
+
+      // Upsert; requires a PK or unique on user_id
+      const { data, error } = await supabase
+        .from("wellness")
+        .upsert([row], { onConflict: "user_id" })
+        .select("user_id, spoons, mood, last_meal, last_med, updated_at")
         .single();
 
       if (error) {
-        // PGRST116 = no rows found → return an empty/default payload
-        if (error.code === 'PGRST116') {
-          return json(200, {
-            userId,
-            mood: null,
-            spoons: null,
-            lastMeal: null,
-            lastMed: null,
-            updatedAt: null,
-          });
-        }
-        console.error('GET wellness error:', error);
-        return json(500, { error: 'Fetch failed' });
+        return json(500, {
+          error: "WRITE_FAILED",
+          code: error.code || null,
+          message: error.message || String(error),
+          hint: error.hint || null,
+          details: error.details || null
+        });
       }
-
-      return json(200, {
-        userId,
-        mood: data?.mood ?? null,
-        spoons: data?.spoons ?? null,
-        lastMeal: data?.last_meal ?? null,
-        lastMed: data?.last_med ?? null,
-        updatedAt: data?.updated_at ?? null,
-      });
+      return json(200, { ok: true, userId, state: data });
     }
 
-    if (method === 'POST' || method === 'PATCH' || method === 'PUT') {
-      let body;
-      try {
-        body = JSON.parse(event.body || '{}');
-      } catch {
-        return json(400, { error: 'Invalid JSON body' });
-      }
-
-      const incomingUserId = (body.userId || userId).trim();
-
-      const payload = {
-        user_id: incomingUserId,
-        mood: body.mood ?? null,
-        spoons: body.spoons === '' || body.spoons == null ? null : Number(body.spoons),
-        last_meal: body.lastMeal ?? null,
-        last_med: body.lastMed ?? null,
-        updated_at: new Date().toISOString(),
-      };
-
-      // ✅ single upsert keyed by user_id, and return the saved row
-      const { data, error } = await supabase
-        .from('wellness')
-        .upsert([payload], { onConflict: 'user_id' })
-        .select('user_id, mood, spoons, last_meal, last_med, updated_at')
-        .eq('user_id', incomingUserId)
-        .single();
-
-      if (error) {
-        console.error('wellness upsert error:', error, 'payload:', payload);
-        return json(500, { error: 'Upsert failed' });
-      }
-
-      return json(200, {
-        userId: data.user_id,
-        mood: data.mood,
-        spoons: data.spoons,
-        lastMeal: data.last_meal,
-        lastMed: data.last_med,
-        updatedAt: data.updated_at,
-      });
-    }
-
-    return {
-      statusCode: 405,
-      headers: { 'Content-Type': 'application/json', Allow: 'GET, POST, PATCH, PUT' },
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
-    };
+    return json(405, { error: "METHOD_NOT_ALLOWED", allow: "GET,POST" });
   } catch (err) {
-    console.error('wellness fatal:', err);
-    return json(500, { error: 'Server error' });
+    return json(500, { error: "SERVER_ERROR", message: String(err?.message || err) });
   }
 }
+
+/*
+SQL once per project (run in Supabase SQL editor):
+
+create table if not exists public.wellness (
+  user_id text primary key,
+  spoons int,
+  mood text,
+  last_meal timestamptz,
+  last_med timestamptz,
+  updated_at timestamptz default now()
+);
+
+-- optional RLS (keep disabled if all writes go through service functions)
+-- alter table public.wellness enable row level security;
+-- create policy "read own wellness"  on public.wellness for select using (auth.uid()::text = user_id);
+-- create policy "update own wellness" on public.wellness for insert with check (auth.uid()::text = user_id);
+-- create policy "update own wellness" on public.wellness for update using (auth.uid()::text = user_id);
+*/
