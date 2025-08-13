@@ -45,7 +45,39 @@ next step—never harsh or dismissive. Be concise; gentle humor allowed.
 const AELI_PERSONA = tryLoadPersona();
 // ─────────────────────────────────────────────────────────────────────────────
 
+// --- Awareness preamble helper (paste near top) ---
+function buildAwarenessPreamble(awareness = {}, settings = {}) {
+  // Compose a compact, factual context block for the model.
+  const bits = [];
+
+  if (awareness.clock) bits.push(`Local time: ${awareness.clock}.`);
+  if (awareness.isLateNight) bits.push(`It's late night for the user.`);
+  if (awareness.sessionLong) bits.push(`The current session has been going for a while.`);
+  if (awareness.sinceLastUser) bits.push(`Last user message: ${awareness.sinceLastUser} ago.`);
+  if (awareness.sinceLastAeli) bits.push(`Last assistant message: ${awareness.sinceLastAeli} ago.`);
+
+  if (awareness.saysNotSleepy) bits.push(`User implied they are not sleepy yet.`);
+  if (awareness.asksFocus)     bits.push(`User asked about focus / deep work.`);
+
+  // Minimal style guidance the model can interpret without hardcoding phrasing
+  const style = [];
+  style.push(`Avoid overusing the user's name.`);
+  style.push(`Be succinct unless the user asks for detail.`);
+
+  // If it’s late night and not sleepy, prefer calming / practical tone.
+  if (awareness.isLateNight && awareness.saysNotSleepy) {
+    style.push(`Prefer a calming, practical tone; suggest tiny next steps only if asked or obviously helpful.`);
+  }
+
+  return [
+    `You are AELI, a compassionate, capable assistant.`,
+    bits.length ? `Context: ${bits.join(' ')}` : ``, // Corrected: Removed unnecessary backtick and space, added empty string for clarity
+    `Style: ${style.join(' ')}`,
+  ].filter(Boolean).join('\n');
+}
+
 async function getSupabaseClient() {
+
   // ESM-only library, so import it at runtime:
   const { createClient } = await import('@supabase/supabase-js');
 
@@ -88,9 +120,10 @@ function parseTimerRequest(text) {
 }
 
 // --- 3) Generate reply with Gemini ---
-async function askGroq(history, userMsg) {
+async function askGroq(history, userMsg, systemAwareness) {
   const messages = [
-    { role: "system", content: AELI_PERSONA },
+    { role: "system", content: systemAwareness }, // New system message
+    { role: "system", content: AELI_PERSONA }, // Existing persona
     ...history.map(m => ({
       role: m.sender === 'aeli' ? 'assistant' : 'user',
       content: m.message
@@ -124,23 +157,26 @@ export async function handler(event) {
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: { Allow: 'GET, POST' }, body: 'Method Not Allowed' };
 
     const body = event.body ? JSON.parse(event.body) : {};
+    const { message, userId, awareness, settings } = body;
 
     // Accept multiple client shapes and trim
-    const message = 
-      (typeof body.message === 'string' && body.message.trim()) ||
+    const userMsg =
+      (typeof message === 'string' && message.trim()) ||
       (typeof body.text === 'string' && body.text.trim()) ||
       (typeof body.input === 'string' && body.input.trim()) ||
       '';
 
     // If something (a boot effect) calls this with no message, just no-op.
-    if (!message) {
+    if (!userMsg) {
       return {
         statusCode: 204, // No Content (prevents 400 spam + "technical difficulties")
         body: '',
       };
     }
 
-    const timerRequest = parseTimerRequest(message);
+    const systemAwareness = buildAwarenessPreamble(awareness || {}, settings || {});
+
+    const timerRequest = parseTimerRequest(userMsg);
     if (timerRequest) {
       const replyText = `Of course. Starting a timer for ${timerRequest.duration} minute${timerRequest.duration > 1 ? 's' : ''}.`;
       return json(200, {
@@ -175,7 +211,7 @@ export async function handler(event) {
     history.push(userEntry);
 
     // 3) Generate reply (stub for now)
-    const replyText = await askGroq(history, userMsg); // Changed to askGroq
+    const replyText = await askGroq(history, userMsg, systemAwareness); // Changed to askGroq
     const botEntry = { sender: 'aeli', message: replyText, ts: Date.now() };
     history.push(botEntry);
 
