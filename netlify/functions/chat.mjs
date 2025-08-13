@@ -1,8 +1,9 @@
-// netlify/functions/chat.js  (ESM wrapper around your existing CJS handler)
+// netlify/functions/chat.mjs
+// ESM entry that wraps your existing CommonJS implementation in chat.cjs
 
-import cjs from './chat.cjs';
+import legacy from './chat.cjs';
 
-// Awareness preamble (keeps what we added, but does it here so you don't edit the old file)
+// Awareness preamble (no need to touch your old file)
 function buildAwarenessPreamble(awareness = {}, settings = {}) {
   const bits = [];
   if (awareness.clock) bits.push(`Local time: ${awareness.clock}.`);
@@ -22,18 +23,16 @@ function buildAwarenessPreamble(awareness = {}, settings = {}) {
   }
 
   return [
-    `You are AELI, a compassionate, capable assistant.`,
-    bits.length ? `Context: ${bits.join(' ')}` : `
-`,
+    `You are AELI, a compassionate, capable assistant.`, 
+    bits.length ? `Context: ${bits.join(' ')}` : ``, 
     `Style: ${style.join(' ')}`,
   ].filter(Boolean).join('\n');
 }
 
 export async function handler(event, context) {
   try {
-    // Inject awareness preamble into the message (no changes to your CJS file)
     let body = {};
-    try { body = JSON.parse(event.body || '{}'); } catch { body = {}; }
+    try { body = JSON.parse(event.body || '{}'); } catch { body = {}; } 
 
     if (typeof body.message === 'string' && body.awareness && Object.keys(body.awareness).length) {
       const pre = buildAwarenessPreamble(body.awareness || {}, body.settings || {});
@@ -41,9 +40,9 @@ export async function handler(event, context) {
       event = { ...event, body: JSON.stringify(body) };
     }
   } catch {
-    // ignore and fall through with the original event
+    // ignore; fall through with original event if anything goes wrong here
   }
 
-  // Call your original CommonJS function
-  return cjs.handler(event, context);
+  // Call your original CommonJS function (exported as module.exports = { handler })
+  return legacy.handler(event, context);
 }
