@@ -1,9 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useCreateTimer } from './useTimer.js';
-import { STORAGE_KEY } from '../constants';
-import { cancelTimerIntent } from '../intents/cancelTimerIntent.js'; // ⬅️ NEW
+import { cancelTimerIntent } from '../intents/cancelTimerIntent.js';
+import { normalizeInput } from '../utils/normalizeInput.js';
 
-export function useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown, startupPhrases) {
+export function useChat(
+  settings,
+  setSettings,
+  facts,
+  addFact,
+  spoonCount,
+  poweredDown,
+  setPoweredDown,
+  startupPhrasesParam
+) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isResponding, setIsResponding] = useState(false);
@@ -12,57 +20,55 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     shortMessageCount: 0,
     lastFrustrationCheck: Date.now(),
   });
-  const { createTimer } = useCreateTimer();
 
+  // ---- Load chat history (if function exists) ----
   useEffect(() => {
     async function fetchChatHistory() {
       try {
-        const userId = settings.userId || "defaultUser";
+        const userId = settings?.userId || 'defaultUser';
         const response = await fetch(`/api/chat-history?userId=${encodeURIComponent(userId)}`);
         const data = await response.json().catch(() => ({}));
-
-        // normalize
-        const history = Array.isArray(data?.history) 
-          ? data.history 
+        const history = Array.isArray(data?.history)
+          ? data.history
           : (Array.isArray(data) ? data : []);
-
-        if (response.ok) {
-          setMessages(history);
-        } else {
-          console.error("Failed to fetch chat history:", data.error);
-        }
-      } catch (error) {
-        console.error("Failed to fetch chat history:", error);
+        if (response.ok && history) setMessages(history);
+      } catch (err) {
+        console.warn('[chat-history] skip:', err?.message || err);
       }
     }
     fetchChatHistory();
-  }, [settings.userId]);
+  }, [settings?.userId]);
 
+  // ---- Persist locally (lightweight) ----
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    try {
+      localStorage.setItem('AELI_CHAT_HISTORY', JSON.stringify(messages));
+    } catch {}
   }, [messages]);
 
+  // ---- Submit handler ----
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim() || isResponding) return;
 
-    // 🛑 cancel timer (helper) — runs before anything goes to the model
-    if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return; // ⬅️ NEW
+    // Normalized, typo-forgiving copy for intent matching
+    const norm = normalizeInput(input).normalized;
 
-    // ⏱️ TIMER INTENT (intercepts "set a 1 minute/second timer")
-    // Examples it catches: "set a 10 second timer", "can you set a 1 minute timer", "start 5m timer"
+    // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
+    if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
+
+    // ⏱️ SET TIMER INTENT (digits or words; typo-friendly via normalizeInput)
     {
-      const raw = input.trim();
-      const lower = raw.toLowerCase();
-
-      const match = lower.match(
-        /(?:^|\b)(?:can you|could you|would you|please|pls)?\s*(?:set|start|create|begin|make)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?\b/
+      // Matches: "set/start/make ... <amount> <minutes/seconds> [timer]"
+      // Supports 1m/30s via normalizeInput (we normalized 1m→1 minutes, 30s→30 seconds).
+      const match = norm.match(
+        /(?:^|\b)(?:can you|could you|would you|please|pls)?\s*(?:set|start|create|begin|make)\s+(?:a\s+)?(\d+)\s*(minutes?|m|seconds?|s)\s*(?:timer)?\b/
       );
-
       if (match) {
+        const raw = input.trim();
         const amount = parseInt(match[1], 10);
         const unit = match[2];
-        const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
+        const seconds = /^m/.test(unit) ? amount * 60 : amount;
 
         try {
           const res = await fetch('/.netlify/functions/create-timer', {
@@ -81,12 +87,9 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
               { isUser: true, text: raw },
               {
                 isUser: false,
-                text: `⏱️ Timer set for ${amount} ${/(min|m)/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
+                text: `⏱️ Timer set for ${amount} ${/^m/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
               }
             ]);
-            // Optional: track server timer id if your UI needs it:
-            // const newId = data.result?.timerId || data.timerId;
-            // setActiveTimerId?.(newId);
           } else {
             setMessages(prev => [
               ...prev,
@@ -108,55 +111,58 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       }
     }
 
-    // ⏱️ "How much time is left?" / "How long has it been?"
-    const timeLeftIntent = /^(how (much )?time (is )?left( on (my|the) timer)?\??|time left\??|how long has it been\??)$/i;
-    if (timeLeftIntent.test(input.trim())) {
-      try {
-        const res = await fetch(`/.netlify/functions/time-left?userId=${encodeURIComponent(settings.userId || 'defaultUser')}`);
-        const data = await res.json();
+    // ⏱️ "TIME LEFT?" / "HOW LONG HAS IT BEEN?"
+    {
+      const askTimeLeft = /^(how (much )?time (is )?left( on (my|the) timer)?\??|time left\??|how long has it been\??)$/i;
+      if (askTimeLeft.test(norm)) {
+        try {
+          const res = await fetch(`/.netlify/functions/time-left?userId=${encodeURIComponent(settings?.userId || 'defaultUser')}`);
+          const data = await res.json();
 
-        if (res.ok && data && (data.remainingSeconds != null)) {
-          // Prefer the human-friendly fields if present
-          const remaining = data.humanRemaining || `${data.remainingSeconds}s`;
-          const elapsed   = data.humanElapsed   || (data.elapsedSeconds != null ? `${data.elapsedSeconds}s` : null);
-
-          const parts = [`⏱️ Time left: ${remaining}.`];
-          if (elapsed != null) parts.push(`Elapsed: ${elapsed}.`);
-
+          if (res.ok && data && (data.remainingSeconds != null)) {
+            const remaining = data.humanRemaining || `${data.remainingSeconds}s`;
+            const elapsed   = data.humanElapsed   || (data.elapsedSeconds != null ? `${data.elapsedSeconds}s` : null);
+            const parts = [`⏱️ Time left: ${remaining}.`];
+            if (elapsed != null) parts.push(`Elapsed: ${elapsed}.`);
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: input.trim() },
+              { isUser: false, text: parts.join(' ') }
+            ]);
+          } else if (data?.error === 'NO_ACTIVE_TIMERS' || res.status === 404) {
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: input.trim() },
+              { isUser: false, text: 'No active timers at the moment.' }
+            ]);
+          } else {
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: input.trim() },
+              { isUser: false, text: `Hmm—couldn’t fetch time left (${data?.error || res.status}).` }
+            ]);
+          }
+        } catch (err) {
+          console.error('[time-left intent] failed:', err);
           setMessages(prev => [
             ...prev,
             { isUser: true, text: input.trim() },
-            { isUser: false, text: parts.join(' ') }
-          ]);
-        } else if (data?.error === 'NO_ACTIVE_TIMERS' || res.status === 404) {
-          setMessages(prev => [
-            ...prev,
-            { isUser: true, text: input.trim() },
-            { isUser: false, text: "No active timers at the moment." }
-          ]);
-        } else {
-          setMessages(prev => [
-            ...prev,
-            { isUser: true, text: input.trim() },
-            { isUser: false, text: `Hmm—couldn’t fetch time left (${data?.error || res.status}).` }
+            { isUser: false, text: 'Network blip. Try again in a sec.' }
           ]);
         }
-      } catch (err) {
-        console.error('[time-left intent] failed:', err);
-        setMessages(prev => [
-          ...prev,
-          { isUser: true, text: input.trim() },
-          { isUser: false, text: "Network blip. Try again in a sec." }
-        ]);
-      }
 
-      setInput('');
-      return; // don't pass this to the model
+        setInput('');
+        return; // ✅ don’t send to the model
+      }
     }
 
+    // ---- Power state phrases ----
+    const defaultStartupPhrases = ["wake up", "power up", "turn on"];
+    const startupPhrases = Array.isArray(startupPhrasesParam) && startupPhrasesParam.length
+      ? startupPhrasesParam
+      : defaultStartupPhrases;
     const shutdownPhrases = ["power down", "shut down", "go to sleep", "power off"];
-    const startupPhrases = ["wake up", "power up", "turn on"];
-    const lowerCaseInput = input.toLowerCase().trim();
+    const lowerCaseInput = norm;
 
     if (poweredDown) {
       if (startupPhrases.includes(lowerCaseInput)) {
@@ -165,17 +171,20 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         setPoweredDown(false);
       } else {
         setMessages(prev => [...prev, { text: "🔇 AELI is currently powered down. Say 'wake up' to reactivate.", isUser: false }]);
-        return;
       }
+      setInput('');
+      return;
     }
-    
+
     if (shutdownPhrases.includes(lowerCaseInput)) {
       setMessages(prev => [...prev, { text: "🔌 Powering down. AELI will go quiet now.", isUser: false }]);
       fetch('/.netlify/functions/power/sleep', { method: 'POST' }).catch(() => {});
       setPoweredDown(true);
+      setInput('');
       return;
     }
 
+    // ---- Light memory hook ----
     const conversationEnders = [
       "ok", "okay", "perfect", "great", "thanks", "thank you", "got it", "understood",
       "alright", "cool", "yep", "yup", "done", "finished", "that's all", "nothing else",
@@ -194,12 +203,12 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
       setSkipNextResponse(true);
       return;
     }
-
     if (skipNextResponse) {
       setSkipNextResponse(false);
       return;
     }
 
+    // ---- Call the chat function ----
     setIsResponding(true);
     try {
       const response = await fetch('/.netlify/functions/chat', {
@@ -207,28 +216,22 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input.trim(),
-          userId: "defaultUser",
-          // threadId: null, // if your function uses it
-          // mode: settings.mode // if you route by mode
+          userId: settings?.userId || 'defaultUser',
           settings: {
-            tone: settings.tone,
-            humorLevel: settings.humorLevel,
-            voiceGender: settings.voiceGender,
-            voiceAccent: settings.voiceAccent,
+            tone: settings?.tone,
+            humorLevel: settings?.humorLevel,
+            voiceGender: settings?.voiceGender,
+            voiceAccent: settings?.voiceAccent,
           }
         }),
       });
 
       const data = await response.json().catch(() => ({}));
-      console.log("[CHAT] response:", response.status, data);
-
       if (!response.ok) {
-        // only show the cough on non-2xx
         setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, friend.", isUser: false }]);
         return;
       }
 
-      // prefer `reply`, but accept other shapes too
       const aiText =
         (typeof data.reply === 'string' && data.reply.trim()) ||
         (typeof data.replyText === 'string' && data.replyText.trim()) ||
@@ -237,48 +240,19 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         (Array.isArray(data.choices) && data.choices[0]?.message?.content?.trim()) ||
         "";
 
-      // if nothing usable came back, don’t inject a ghost bubble
-      if (!aiText) {
-        console.warn("[CHAT] No AI text found in response:", data);
-        return;
+      if (aiText) {
+        setMessages(prev => [...prev, { text: aiText, isUser: false }]);
       }
 
-      setMessages(prev => [...prev, { text: aiText, isUser: false }]);
-
+      // Minimal action handling (mode switch only to avoid undefined imports)
       const action = data.action;
-
-      if (action?.type === 'createTimer' && typeof action.payload === 'object') {
-        const { duration } = action.payload;
-        if (typeof duration === 'number') {
-          const timerId = Date.now().toString();
-          createTimer(duration, settings.userId || 'defaultUser', timerId);
-        }
-      } else if (action?.type === 'switchMode' && typeof action.payload === 'string') {
-        console.log('[AELI Action]', action);
+      if (action?.type === 'switchMode' && typeof action.payload === 'string') {
         setSettings(prev => ({ ...prev, mode: action.payload }));
-      } else if (action?.type === 'setTimer' && typeof action.payload === 'object') {
-        console.log('[AELI Action] Set Timer:', action.payload);
-        const { duration, timerId } = action.payload;
-        if (typeof duration === 'number' && typeof timerId === 'string' && timerId.length > 0) {
-          setActiveTimerId(timerId);
-          fetch('/.netlify/functions/set-timer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ duration, timerId, userId: settings.userId }),
-          }).then(response => response.json())
-            .then(data => console.log('Timer API Response:', data))
-            .catch(error => console.error('Error setting timer:', error));
-        } else {
-          console.error('Invalid setTimer action payload:', action.payload);
-        }
       }
 
     } catch (error) {
       console.error('[AELI Chat Error]', error);
-      setMessages(prev => [...prev, {
-        text: "♦cough♦ Technical difficulties, madam.",
-        isUser: false
-      }]);
+      setMessages(prev => [...prev, { text: "♦cough♦ Technical difficulties, madam.", isUser: false }]);
     } finally {
       setIsResponding(false);
       setMoodMetrics({
@@ -286,14 +260,19 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
         lastFrustrationCheck: Date.now(),
       });
     }
-    
-    if (startupPhrases.includes(lowerCaseInput)) {
-      setMessages(prev => [...prev, { text: "🟢 Power restored. AELI is back online.", isUser: false }]);
-      setPoweredDown(false);
-      return;
-    }
-
-  }, [input, isResponding, messages, settings, facts, addFact, setSettings, skipNextResponse, spoonCount, setMessages, setIsResponding]);
+  }, [
+    input,
+    isResponding,
+    messages,
+    settings,
+    facts,
+    addFact,
+    setSettings,
+    skipNextResponse,
+    spoonCount,
+    poweredDown,
+    setPoweredDown
+  ]);
 
   return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown };
 }
