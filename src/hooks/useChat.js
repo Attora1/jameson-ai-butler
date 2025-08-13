@@ -80,6 +80,64 @@ export function useChat(
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
 
+    //  SYSTEM STATUS INTENT (e.g., "status?", "systems?", "health check", "what's working")
+    {
+      const askStatus = /\b(system\s*status|systems?\??|status\??|health|diagnostics?|what'?s\s+(working|broken))\b/i.test(norm);
+      if (askStatus) {
+        try {
+          const res = await fetch('/.netlify/functions/system-status');
+          const data = await res.json();
+
+          if (res.ok && data) {
+            const lines = [];
+
+            // Supabase reachability
+            const sb = data.supabase;
+            lines.push(`Supabase: ${sb?.reachable ? 'reachable' : 'unreachable'} (${sb?.using || 'unknown'} key)`);
+
+            // Timers table summary
+            const t = data.db?.timers;
+            if (t) {
+              const c = t.counts || {};
+              lines.push(`Timers: ${t.columnsOk ? 'schema OK' : 'schema issue'} · active ${c.active ?? '—'} · expired ${c.expired ?? '—'} · cancelled ${c.cancelled ?? '—'}`);
+            }
+
+            // Wellness table summary
+            const w = data.db?.wellness;
+            if (w) {
+              lines.push(`Wellness: ${w.columnsOk ? 'schema OK' : 'schema issue'} · rows ${w.count ?? '—'}`);
+            }
+
+            // Top suggestions (at most 2 to keep it short)
+            const sugg = Array.isArray(data.suggestions) ? data.suggestions.slice(0, 2) : [];
+            if (sugg.length) lines.push(`Suggestions: ${sugg.join(' | ')}`);
+
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: input.trim() },
+              { isUser: false, text: lines.join(' · ') }
+            ]);
+          } else {
+            setMessages(prev => [
+              ...prev,
+              { isUser: true, text: input.trim() },
+              { isUser: false, text: `Status check failed (${res.status}).` }
+            ]);
+          }
+        } catch (err) {
+          console.error('[system-status intent] failed:', err);
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: 'Couldn’t reach the status endpoint.' }
+          ]);
+        }
+
+        setInput('');
+        return; // ✅ don’t send to the model
+      }
+    }
+
     //  TIME AWARENESS INTENT (clock / uptime / last activity)
     {
       const askClock =
