@@ -46,6 +46,58 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim() || isResponding) return;
+
+    // ⏱️ Quick timer intent (e.g., "set a 10 second timer", "start 5 min timer")
+    const timerIntent = input.toLowerCase().match(
+      /(?:set|start|create)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?/
+    );
+    if (timerIntent) {
+      const amount = parseInt(timerIntent[1], 10);
+      const unit = timerIntent[2];
+      const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
+
+      // make the timer server-side so polling can find it
+      try {
+        const res = await fetch('/.netlify/functions/create-timer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: (settings.userId || 'defaultUser'),
+            seconds
+          }),
+        });
+        const data = await res.json();
+
+        if (res.ok && (data.ok || data.result)) {
+          const prettyUnit = /(min|m)/.test(unit) ? 'minute' : 'second';
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: `⏱️ Timer set for ${amount} ${prettyUnit}${amount !== 1 ? 's' : ''}.` }
+          ]);
+          // Optional: track the specific timer locally if you show a countdown
+          if (data.result?.timerId || data.timerId) {
+            // setActiveTimerId(data.result?.timerId || data.timerId);
+          }
+        } else {
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: `Sorry, I couldn’t set that timer (${data.error || res.status}).` }
+          ]);
+        }
+      } catch (err) {
+        console.error('[timer intent] create failed:', err);
+        setMessages(prev => [
+          ...prev,
+          { isUser: true, text: input.trim() },
+          { isUser: false, text: `Timer hiccup—network error.` }
+        ]);
+      }
+
+      setInput('');
+      return; // ⬅️ don’t send this prompt to the chat model
+    }
     const shutdownPhrases = ["power down", "shut down", "go to sleep", "power off"];
     const startupPhrases = ["wake up", "power up", "turn on"];
     const lowerCaseInput = input.toLowerCase().trim();
