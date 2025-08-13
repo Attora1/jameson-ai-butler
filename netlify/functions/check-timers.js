@@ -23,7 +23,7 @@ export async function handler(event) {
     const timerId = (qs.timerId || '').trim();
     const userId = (qs.userId || '').trim();
 
-    // CASE 1: specific timer status -> return { remaining }
+    // CASE 1: check specific timer remaining
     if (timerId && userId) {
       const { data, error } = await supabase
         .from('timers')
@@ -33,32 +33,22 @@ export async function handler(event) {
         .single();
 
       if (error) {
-        // “no rows found” in PostgREST commonly returns PGRST116; handle gracefully
-        if (error.code === 'PGRST116') {
-          return json(200, { remaining: 0 });
-        }
-        console.error('[check-timers] specific timer error:', error);
+        // PostgREST “no rows” is commonly PGRST116; treat as 0 remaining
+        if (error.code === 'PGRST116') return json(200, { remaining: 0 });
+        console.error('[check-timers] specific error:', error);
         return json(500, { error: 'Unable to check specific timer' });
       }
 
-      if (!data || !data.end_time) {
-        return json(200, { remaining: 0 });
-      }
+      if (!data || !data.end_time) return json(200, { remaining: 0 });
 
       const endMs = new Date(data.end_time).getTime();
-      const nowMs = Date.now();
-      const remaining = Math.max(0, Math.floor((endMs - nowMs) / 1000));
-
+      const remaining = Math.max(0, Math.floor((endMs - Date.now()) / 1000));
       return json(200, { remaining });
     }
 
-    // CASE 2: polling for a user’s timers -> return { expiredTimers, pendingTimers }
-    if (!userId) {
-      return json(400, { error: 'Missing userId' });
-    }
+    // CASE 2: poll all timers for a user
+    if (!userId) return json(400, { error: 'Missing userId' });
 
-    // Pull active timers for this user. If you store a status column, filter on it;
-    // otherwise just select all rows for the user and compute expired vs pending here.
     const { data, error } = await supabase
       .from('timers')
       .select('timer_id, end_time')
@@ -76,11 +66,8 @@ export async function handler(event) {
     (data || []).forEach((t) => {
       const endMs = new Date(t.end_time).getTime();
       const remaining = Math.max(0, Math.floor((endMs - now) / 1000));
-      if (remaining === 0) {
-        expiredTimers.push(t.timer_id);
-      } else {
-        pendingTimers.push({ timerId: t.timer_id, remaining });
-      }
+      if (remaining === 0) expiredTimers.push(t.timer_id);
+      else pendingTimers.push({ timerId: t.timer_id, remaining });
     });
 
     return json(200, { expiredTimers, pendingTimers });
