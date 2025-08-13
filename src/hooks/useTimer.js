@@ -60,6 +60,36 @@ export function usePersistentTimerPolling(setMessages, poweredDown, settings) {
     }
   }, []);
 
+  // One-time audio unlock so Chrome/Safari don't block the chime
+  const unlockedRef = useRef(false);
+
+  useEffect(() => {
+    const unlock = () => {
+      if (unlockedRef.current || !alertSound.current) return;
+      const a = alertSound.current;
+      const prevVol = a.volume;
+
+      a.volume = 0;           // play silently to satisfy gesture requirement
+      a.play().then(() => {
+        a.pause();
+        a.currentTime = 0;
+        a.volume = prevVol;
+        unlockedRef.current = true;
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('keydown', unlock);
+      }).catch(() => {
+        // ignore; we'll try again on next gesture
+      });
+    };
+
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, []);
+
   useEffect(() => {
     setMessagesRef.current = setMessages;
   }, [setMessages]);
