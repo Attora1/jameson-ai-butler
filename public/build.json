@@ -1,0 +1,7 @@
+{
+  "appName": "AELI",
+  "appVersion": "0.1.0",
+  "buildTime": "2025-08-13T00:00:00.000Z",
+  "commit": "ui-manual",
+  "notes": "Update these fields on each deploy for now; we’ll automate next."
+}
