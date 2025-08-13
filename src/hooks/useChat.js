@@ -47,57 +47,64 @@ export function useChat(settings, setSettings, facts, addFact, spoonCount, power
     e.preventDefault();
     if (!input.trim() || isResponding) return;
 
-    // ⏱️ Quick timer intent (e.g., "set a 10 second timer", "start 5 min timer")
-    const timerIntent = input.toLowerCase().match(
-      /(?:set|start|create)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?/
-    );
-    if (timerIntent) {
-      const amount = parseInt(timerIntent[1], 10);
-      const unit = timerIntent[2];
-      const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
+    // ⏱️ TIMER INTENT (intercepts "set a 1 minute/second timer")
+// Examples it catches: "set a 10 second timer", "can you set a 1 minute timer", "start 5m timer"
+{
+  const raw = input.trim();
+  const lower = raw.toLowerCase();
 
-      // make the timer server-side so polling can find it
-      try {
-        const res = await fetch('/.netlify/functions/create-timer', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: (settings.userId || 'defaultUser'),
-            seconds
-          }),
-        });
-        const data = await res.json();
+  const match = lower.match(
+    /(?:^|\b)(?:can you|could you|would you|please|pls)?\s*(?:set|start|create|begin|make)\s+(?:a\s+)?(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m)\s*(?:timer)?\b/
+  );
 
-        if (res.ok && (data.ok || data.result)) {
-          const prettyUnit = /(min|m)/.test(unit) ? 'minute' : 'second';
-          setMessages(prev => [
-            ...prev,
-            { isUser: true, text: input.trim() },
-            { isUser: false, text: `⏱️ Timer set for ${amount} ${prettyUnit}${amount !== 1 ? 's' : ''}.` }
-          ]);
-          // Optional: track the specific timer locally if you show a countdown
-          if (data.result?.timerId || data.timerId) {
-            // setActiveTimerId(data.result?.timerId || data.timerId);
-          }
-        } else {
-          setMessages(prev => [
-            ...prev,
-            { isUser: true, text: input.trim() },
-            { isUser: false, text: `Sorry, I couldn’t set that timer (${data.error || res.status}).` }
-          ]);
-        }
-      } catch (err) {
-        console.error('[timer intent] create failed:', err);
+  if (match) {
+    const amount = parseInt(match[1], 10);
+    const unit = match[2];
+    const seconds = /(min|m)/.test(unit) ? amount * 60 : amount;
+
+    try {
+      const res = await fetch('/.netlify/functions/create-timer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: (settings?.userId || 'defaultUser'),
+          seconds
+        }),
+      });
+      const data = await res.json();
+
+      if (res.ok && (data.ok || data.result)) {
         setMessages(prev => [
           ...prev,
-          { isUser: true, text: input.trim() },
-          { isUser: false, text: `Timer hiccup—network error.` }
+          { isUser: true, text: raw },
+          {
+            isUser: false,
+            text: `⏱️ Timer set for ${amount} ${/(min|m)/.test(unit) ? 'minute' : 'second'}${amount !== 1 ? 's' : ''}.`
+          }
+        ]);
+        // Optional: track server timer id if your UI needs it:
+        // const newId = data.result?.timerId || data.timerId;
+        // setActiveTimerId?.(newId);
+      } else {
+        setMessages(prev => [
+          ...prev,
+          { isUser: true, text: raw },
+          { isUser: false, text: `Sorry, I couldn’t set that timer (${data?.error || res.status}).` }
         ]);
       }
-
-      setInput('');
-      return; // ⬅️ don’t send this prompt to the chat model
+    } catch (err) {
+      console.error('[timer intent] create failed:', err);
+      setMessages(prev => [
+        ...prev,
+        { isUser: true, text: raw },
+        { isUser: false, text: 'Timer hiccup—network error.' }
+      ]);
     }
+
+    setInput('');
+    return; // ✅ don’t send this prompt to the model
+  }
+}
 
     // ⏱️ "How much time is left?" / "How long has it been?"
     const timeLeftIntent = /^(how (much )?time (is )?left( on (my|the) timer)?\??|time left\??|how long has it been\??)$/i;
