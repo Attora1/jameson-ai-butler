@@ -61,47 +61,41 @@ export async function handler(event) {
     // Make a timer id if not provided
     const { randomUUID } = await import('node:crypto');
     const timerId = (body.timerId || "").trim() || `t_${randomUUID()}`;
-    const end_time = new Date(Date.now() + seconds * 1000).toISOString();
+    // compute both times
+const start_time = new Date().toISOString();
+const end_time = new Date(Date.now() + seconds * 1000).toISOString();
 
-    // Try a quick existence/select check to surface table errors early
-    const probe = await client.from('timers').select('timer_id').limit(1);
-    if (probe.error) {
-      return respond(500, {
-        error: "TABLE_PROBE_FAILED",
-        code: probe.error.code || null,
-        details: probe.error.details || null,
-        hint: probe.error.hint || null,
-        message: probe.error.message || String(probe.error),
-        env
-      });
-    }
+// payload matches your table: (user_id, timer_id, start_time, end_time, status)
+const payload = {
+  user_id: userId,
+  timer_id: timerId,
+  start_time,
+  end_time,
+  status: 'active', // keep if your table has this column (your error shows it does)
+};
 
-    const { data, error } = await client
-      .from('timers')
-      .upsert([{ user_id: userId, timer_id: timerId, end_time }], { onConflict: 'user_id,timer_id' })
-      .select('user_id, timer_id, end_time')
-      .single();
+const { data, error } = await client
+  .from('timers')
+  .upsert([payload], { onConflict: 'user_id,timer_id' })
+  .select('user_id, timer_id, start_time, end_time, status')
+  .single();
 
-    if (error) {
-      // Common cases:
-      //  - 42501 or RLS text: row-level security denied
-      //  - 23503/23505: constraints
-      return respond(500, {
-        error: "UPSERT_FAILED",
-        code: error.code || null,
-        details: error.details || null,
-        hint: error.hint || null,
-        message: error.message || String(error),
-        env,
-        payload: { userId, timerId, end_time, seconds }
-      });
-    }
+if (error) {
+  return respond(500, {
+    error: "UPSERT_FAILED",
+    code: error.code || null,
+    details: error.details || null,
+    hint: error.hint || null,
+    message: error.message || String(error),
+    payload,
+  });
+}
 
-    return respond(200, {
-      ok: true,
-      env,
-      result: { userId: data.user_id, timerId: data.timer_id, end_time: data.end_time, seconds }
-    });
+return respond(200, {
+  ok: true,
+  result: data,
+  seconds
+});
   } catch (err) {
     return respond(500, { error: "FATAL", message: String(err?.message || err) });
   }
