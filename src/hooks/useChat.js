@@ -80,6 +80,55 @@ export function useChat(
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
 
+    //  VERSION / UPDATE INTENT (e.g., "version?", "update?", "what build am I on")
+    {
+      const asksVersion = /\b(version|build|release|update|out[-\s]?of[-\s]?date|what'?s\s+(the\s+)?version)\b/i.test(norm);
+      if (asksVersion) {
+        try {
+          const [uiRes, fnRes] = await Promise.all([
+            fetch('/build.json', { cache: 'no-store' }),
+            fetch('/.netlify/functions/release-info', { cache: 'no-store' })
+          ]);
+
+          const ui = await uiRes.json().catch(() => ({}));
+          const fn = await fnRes.json().catch(() => ({}));
+
+          const uiVer    = ui.appVersion || 'n/a';
+          const uiTime   = ui.buildTime || null;
+          const uiCommit = ui.commit || null;
+
+          const fnVer    = fn.build?.appVersion || 'n/a';
+          const fnTime   = fn.build?.buildTime || fn.runtime?.now || null;
+          const fnCommit = fn.netlify?.commit || null;
+
+          const mismatch =
+            (uiVer && fnVer && uiVer !== fnVer) ||
+            (uiCommit && fnCommit && uiCommit !== fnCommit);
+
+          const parts = [];
+          parts.push(`UI v${uiVer}${uiTime ? ` · ${uiTime}` : ''}${uiCommit ? ` · ${uiCommit.slice(0,7)}` : ''}`);
+          parts.push(`Functions v${fnVer}${fnTime ? ` · ${fnTime}` : ''}${fnCommit ? ` · ${fnCommit.slice(0,7)}` : ''}`);
+          parts.push(mismatch ? '⚠️ UI and Functions differ' : '✅ UI and Functions appear in sync');
+
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: parts.join(' · ') }
+          ]);
+        } catch (err) {
+          console.error('[version/update intent] failed:', err);
+          setMessages(prev => [
+            ...prev,
+            { isUser: true, text: input.trim() },
+            { isUser: false, text: 'Update check failed.' }
+          ]);
+        }
+
+        setInput('');
+        return; // ✅ don’t send to the model
+      }
+    }
+
     //  SYSTEM STATUS INTENT (e.g., "status?", "systems?", "health check", "what's working")
     {
       const askStatus = /\b(system\s*status|systems?\??|status\??|health|diagnostics?|what'?s\s+(working|broken))\b/i.test(norm);
