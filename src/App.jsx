@@ -229,7 +229,7 @@ function App() {
               </div>
             )}
             <div className="messages">
-            <MessageList messages={messages} settings={settings} poweredDown={poweredDown} remainingTime={remainingTime} />
+            <MessageList messages={messages} settings={settings} poweredDown={poweredDown} />
 
             </div>
             {poweredDown ? (
