@@ -142,7 +142,6 @@ function App() {
   
 
   return (
-    <SpoonProvider setMessages={setMessages}>
       <div className={`App ${settings.mode}-theme`}>
         <div className="main-content">
           <div className="header-buttons">
@@ -232,9 +231,7 @@ function App() {
   </div>
 )}
 
-    </SpoonProvider>
-    
-  );
+    );
 }
 
 export default App;
