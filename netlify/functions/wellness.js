@@ -8,6 +8,8 @@ const json = (code, body) => ({
   body: JSON.stringify(body),
 });
 
+const { SPOON_MAX, clampSpoons } = require('../../shared/constants/spoons.js');
+
 async function getSupabase() {
   const { createClient } = await import("@supabase/supabase-js");
   const url = process.env.SUPABASE_URL;
@@ -42,7 +44,7 @@ export async function handler(event) {
       const userId = (body.userId || "").trim() || "defaultUser";
       const patch = {};
       if (Number.isFinite(body.spoons)) {
-        patch.spoons = Math.max(0, Math.min(10, Math.round(body.spoons)));
+        patch.spoons = clampSpoons(body.spoons);
       }
       if (typeof body.mood === "string") {
         patch.mood = body.mood.slice(0, 64);

@@ -3,6 +3,7 @@
 // and "how are my spoons?" / "spoons?" to query current value.
 
 import { normalizeInput } from '../utils/normalizeInput.js';
+import { SPOON_MAX, clampSpoons } from '../constants/spoons.js';
 
 function wordsToNumber(s) {
   if (!s) return NaN;
@@ -42,7 +43,7 @@ export async function wellnessIntent({ input, settings, setMessages, setInput })
     const amtStr = setMatch[1].trim();
     let spoons = wordsToNumber(amtStr);
     if (!Number.isFinite(spoons)) return false; // not our intent after all
-    spoons = Math.max(0, Math.min(10, Math.round(spoons)));
+    spoons = clampSpoons(spoons);
 
     try {
       const res = await fetch('/.netlify/functions/wellness', {
@@ -88,6 +89,7 @@ export async function wellnessIntent({ input, settings, setMessages, setInput })
       if (res.ok && data?.ok) {
         const s = data.state?.spoons;
         const mood = data.state?.mood;
+        s = clampSpoons(s);
         if (Number.isFinite(s)) {
           try {
             localStorage.setItem('AELI_SPOONS', String(s));
