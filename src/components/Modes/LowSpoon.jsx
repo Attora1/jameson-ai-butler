@@ -18,7 +18,7 @@ export default function LowSpoon({ settings }) {
   const [currentSuggestion, setCurrentSuggestion] = useState('Take a gentle moment to breathe and rest.');
   const [checkInOpen, setCheckInOpen] = useState(false);
 
-  const debouncedSpoons = useDebounce(spoonCount, 1500);
+  const debouncedSpoons = useDebounce(spoons, 1500);
 
   useEffect(() => {
     // The dynamic suggestion functionality has been removed.
