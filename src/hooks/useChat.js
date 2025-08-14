@@ -6,7 +6,6 @@ import { initTimeContext, markUserMessage, markAeliMessage, getTimeSnapshot } fr
 import { noteUserInput, learnFromCorrection } from '../state/lexicon.js';
 import { learnPrefsFromInput } from '../state/prefs.js';
 import { getAwareness } from '../awareness/awareness.js';
-import { mealMedIntent } from '../intents/mealMedIntent.js';
 
 export function useChat(
   settings,
@@ -80,7 +79,19 @@ export function useChat(
 
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
-    if (await wellnessIntent({ input, settings, setMessages, setInput })) return;
+    //  Wellness intent (lazy-loaded so it always exists at runtime)
+    {
+      let handled = false;
+      try {
+        const mod = await import('../intents/wellnessIntent.js'); // static path so bundler keeps it
+        if (mod && typeof mod.wellnessIntent === 'function') {
+          handled = await mod.wellnessIntent({ input, settings, setMessages, setInput });
+        }
+      } catch (e) {
+        console.error('[lazy wellnessIntent] load failed:', e);
+      }
+      if (handled) return; // stop before hitting the model
+    }
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
 
