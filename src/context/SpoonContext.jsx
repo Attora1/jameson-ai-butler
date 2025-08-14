@@ -1,80 +1,34 @@
-import React, { createContext, useState, useRef, useEffect } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
+import { SPOON_MAX, DEFAULT_SPOONS, clampSpoons } from '../constants/spoons';
 
-const LS_KEY = 'AELI_SPOONS';
-const clamp = (n, lo = 0, hi = 12) => Math.max(lo, Math.min(hi, Math.round(Number(n))));
+const SpoonContext = createContext();
 
-export const SpoonContext = createContext({
-  spoonCount: 12,
-  setSpoonCount: () => {},
-  prevSpoonRef: { current: 12 },
-  setMessages: () => {},
-});
+export function SpoonProvider({ children }) {
+  // Previously defaulted to 12; now we allow "unset"
+  const [spoons, setSpoons] = useState(DEFAULT_SPOONS);
 
-export const SpoonProvider = ({ children, setMessages }) => {
-  const [spoonCount, setSpoonCountRaw] = useState(12);
-  const prevSpoonRef = useRef(12);
-  const debounceRef = useRef(null);
-
-  useEffect(() => {
-    // initial load from localStorage (if chat set a value earlier)
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw != null) setSpoonCountRaw(clamp(raw));
-    } catch {}
-
-    function onCustom(e) {
-      const v = e?.detail?.spoons;
-      if (typeof v === 'number') setSpoonCountRaw(clamp(v));
-    }
-    function onStorage(e) {
-      if (e.key === LS_KEY && e.newValue != null) {
-        const v = Number(e.newValue);
-        if (!Number.isNaN(v)) setSpoonCountRaw(clamp(v));
-      }
-    }
-
-    window.addEventListener('aeli:spoons', onCustom);
-    window.addEventListener('storage', onStorage);
-    return () => {
-      window.removeEventListener('aeli:spoons', onCustom);
-      window.removeEventListener('storage', onStorage);
-    };
-  }, []);
-
-
-  const setSpoonCount = (newCount) => {
-    const n = clamp(newCount);
-    setSpoonCountRaw(n);
-
-    try {
-      localStorage.setItem(LS_KEY, String(n));
-      window.dispatchEvent(new CustomEvent('aeli:spoons', { detail: { spoons: n } }));
-    } catch {}
-  
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      const prev = prevSpoonRef.current;
-  
-      if (prev !== newCount && typeof newCount === 'number') {
-        if (setMessages) {
-          setMessages(prevMsgs => [
-            ...prevMsgs,
-            {
-              isUser: false,
-              text: `[AELI] Spoons adjusted from ${prev} to ${newCount}. Let’s take it ${newCount < prev ? 'slow' : 'up a notch'}.`,
-            },
-          ]);
-        }
-        prevSpoonRef.current = newCount;
-      }
-    }, 1500);
-  };
-  
-  
+  const value = useMemo(() => ({
+    spoons,
+    spoonMax: SPOON_MAX,
+    isUnset: spoons === undefined,
+    // Accepts numbers or undefined (to explicitly clear/unset)
+    setSpoons: (n) => {
+      if (n === undefined) return setSpoons(undefined);
+      return setSpoons(clampSpoons(n));
+    },
+    // Optional helpers (handy for buttons/shortcuts)
+    increment: (delta = 1) => {
+      const base = typeof spoons === 'number' ? spoons : 0;
+      setSpoons(clampSpoons(base + delta));
+    },
+    clear: () => setSpoons(undefined),
+  }), [spoons]);
 
   return (
-    <SpoonContext.Provider value={{ spoonCount, setSpoonCount, prevSpoonRef, setMessages }}>
+    <SpoonContext.Provider value={value}>
       {children}
     </SpoonContext.Provider>
   );
-};
+}
+
+export const useSpoons = () => useContext(SpoonContext);
