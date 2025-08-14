@@ -16,7 +16,8 @@ import LowSpoon from './components/Modes/LowSpoon.jsx';
 import PartnerSupport from './components/Modes/PartnerSupport.jsx';
 import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonProvider, useSpoons } from './context/SpoonContext.jsx';
-import { getMoodReflection } from './utils/introAndMood.js';  
+import { getMoodReflection } from './utils/introAndMood.js';
+import { composeMemoryEntries } from './utils/memoriesBridge.js';  
 
 
 function App() {
@@ -186,9 +187,23 @@ function App() {
             {showFacts && (
               <div className="memory-facts" style={{background:'#feffe8',border:'1px solid #eee',margin:'8px',padding:'8px'}}>
                 <b>My Memories:</b>
-                <ul>
-                  {facts.length ? facts.map((fact, i) => <li key={i}>{fact}</li>) : <li>No facts stored yet. Teach me!</li>}
-                </ul>
+                
+                {/* Wellness snapshot at the top */}
+                {composeMemoryEntries({ spoons, spoonMax }).map((entry, idx) => (
+                  <section key={`wellness-${idx}`} className="memory-block">
+                    <h4>{entry.title}</h4>
+                    <pre className="memory-pre" style={{ whiteSpace: 'pre-wrap' }}>
+                      {entry.content}
+                    </pre>
+                  </section>
+                ))}
+
+                {/* Your existing facts render */}
+                {facts.map((f, i) => (
+                  <section key={i} className="memory-block">
+                    <p>{typeof f === 'string' ? f : String(f)}</p>
+                  </section>
+                ))}
               </div>
             )}
             <div className="messages">

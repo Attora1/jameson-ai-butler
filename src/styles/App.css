@@ -471,6 +471,6 @@ color: #fbe0ccde;
   }
 }
 
-
-
-
+.memory-block { padding: 8px 0; border-top: 1px solid rgba(255,255,255,.08); }
+.memory-block:first-of-type { border-top: none; }
+.memory-pre { font-family: inherit; font-size: 14px; opacity: .9; }
