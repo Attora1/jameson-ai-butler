@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { SPOON_MAX, DEFAULT_SPOONS, clampSpoons } from '../constants/spoons';
 
-const SpoonContext = createContext();
+export const SpoonContext = createContext();
 
 export function SpoonProvider({ children }) {
   // Previously defaulted to 12; now we allow "unset"
