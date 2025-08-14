@@ -85,22 +85,33 @@ export default function HealthProfileEditor({ open, onClose }) {
 }
 
 const css = `
-.hp-backdrop{
-  position:fixed;inset:0;display:grid;place-items:center;
-  background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:60}
-.hp-card{
-  width:min(560px,92vw);background:rgba(22,22,26,.92);
-  border:1px solid rgba(255,255,255,.08);border-radius:16px;
-  padding:18px 18px 14px;box-shadow:0 10px 40px rgba(0,0,0,.5);
-  display:flex;flex-direction:column;gap:10px;max-height:90vh;overflow:auto}
-.hp-card h3, .hp-card h4{margin:4px 0}
-.hp-card label{display:flex;flex-direction:column;gap:6px;font-size:14px}
-.hp-row{flex-direction:row;align-items:center;gap:10px}
-.hp-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-.hp-btn{border:none;border-radius:9999px;padding:8px 14px;font-weight:600;cursor:pointer}
-.hp-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
-.hp-btn.primary{background:#6aa68f}
-.hp-card select, .hp-card input[type="text"], .hp-card input[type="number"], .hp-card input{
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-  color:inherit;border-radius:10px;padding:8px 10px}
-`;
+ .hp-backdrop{
+   position:fixed;inset:0;display:grid;place-items:center;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:60;
+  padding: 20px; /* ensures space around modal on small screens */
+  overflow-y: auto;
+}
+ .hp-card{
+  width:min(640px,96vw); /* wider */
+  background:rgba(22,22,26,.95);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:24px 24px 18px; /* more breathing room */
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  max-height:95vh; /* taller */
+  overflow-y:auto; /* scrolls inside if needed */
+}
+ .hp-card h3, .hp-card h4{margin:4px 0}
+ .hp-card label{display:flex;flex-direction:column;gap:6px;font-size:14px}
+ .hp-row{flex-direction:row;align-items:center;gap:10px}
+ .hp-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+ .hp-btn{border:none;border-radius:9999px;padding:8px 14px;font-weight:600;cursor:pointer}
+ .hp-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
+ .hp-btn.primary{background:#6aa68f}
+ .hp-card select, .hp-card input[type="text"], .hp-card input[type="number"], .hp-card input{
+   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+   color:inherit;border-radius:10px;padding:8px 10px}
+ `;
