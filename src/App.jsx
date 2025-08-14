@@ -15,7 +15,7 @@ import Focus from './components/Modes/Focus.jsx';
 import LowSpoon from './components/Modes/LowSpoon.jsx';
 import PartnerSupport from './components/Modes/PartnerSupport.jsx';
 import LandingDashboard from './components/Modes/LandingDashboard.jsx';
-import { SpoonProvider } from './context/SpoonContext.jsx';
+import { SpoonProvider, useSpoons } from './context/SpoonContext.jsx';
 import { getMoodReflection } from './utils/introAndMood.js';  
 
 
@@ -23,10 +23,10 @@ function App() {
   const [showFacts, setShowFacts] = useState(false);
   const { facts, addFact, clearFacts } = useFacts();
   const { settings, setSettings } = useSettings();
-  const [spoonCount, setSpoonCount] = useState(12);
+  const { spoons, spoonMax, isUnset } = useSpoons();
   const [poweredDown, setPoweredDown] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoonCount, poweredDown, setPoweredDown);
+  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown);
   
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
@@ -78,41 +78,7 @@ function App() {
     };
   }, [poweredDown, lastActivityTime, inactivityMessageSent, setMessages]);
 
-  useEffect(() => {
-    // Fetch initial wellness data from the server
-    async function fetchWellnessData() {
-      try {
-        const userId = "defaultUser"; // Placeholder for now
-        const response = await fetch(`/api/wellness?userId=${userId}`);
-        const data = await response.json();
-        if (response.ok) {
-          setSpoonCount(data.spoonCount);
-          // You might want to set the mood here as well
-          // setSettings(prev => ({ ...prev, mood: data.mood }));
-        }
-      } catch (error) {
-        console.error("Failed to fetch wellness data:", error);
-      }
-    }
-    fetchWellnessData();
-  }, []);
-
-  useEffect(() => {
-    // Update wellness data on the server when it changes
-    async function updateWellnessData() {
-      try {
-        const userId = "defaultUser"; // Placeholder for now
-        await fetch('/.netlify/functions/wellness', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ spoonCount, userId }),
-        });
-      } catch (error) {
-        console.error("Failed to update wellness data:", error);
-      }
-    }
-    updateWellnessData();
-  }, [spoonCount]);
+  
 
   useEffect(() => {
     async function fetchInitialWeather() {

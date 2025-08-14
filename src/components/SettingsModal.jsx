@@ -55,10 +55,6 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
       tone += (tone ? ' ' : '') + `Location set to ${localSettings.zip}.`;
     }
   
-    if (settings.spoonCount !== localSettings.spoonCount) {
-      tone += (tone ? ' ' : '') + `Spoons adjusted from ${settings.spoonCount} to ${localSettings.spoonCount}. Let’s take it ${localSettings.spoonCount < settings.spoonCount ? 'slow' : 'up a notch'}.`;
-    }
-  
     if (tone) {
       console.log('[AELI Settings Update]', tone);
       setMessages(prev => [...prev, { isUser: false, text: `[AELI] ${tone}` }]);
@@ -72,7 +68,6 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mood: localSettings.mood,
-          spoonCount: localSettings.spoonCount,
         }),
       });
     } catch (error) {

@@ -2,11 +2,11 @@ import React, { useContext } from 'react';
 import '../../styles/modes-css/LowSpoon.css'; // keep your existing css
 import petalImage from '../../assets/petal-flower.png'; // keep if used by your effect
 import { SPOON_MAX } from '../../constants/spoons';
-import { SpoonContext } from '../../context/SpoonContext.jsx';
+import { useSpoons } from '../../context/SpoonContext.jsx';
 
 // Props: { running } as in your original
 export default function BreathingRing({ running }) {
-  const { spoons, spoonMax, isUnset } = useContext(SpoonContext);
+  const { spoons, spoonMax, isUnset } = useSpoons();
   const max = typeof spoonMax === 'number' ? spoonMax : SPOON_MAX;
 
   if (isUnset) {
