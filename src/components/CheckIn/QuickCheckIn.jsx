@@ -13,6 +13,8 @@ export default function QuickCheckIn({ open, onClose }) {
     pain0to10: 0,
     mood1to5: 3,
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   if (!open) return null;
 
@@ -21,26 +23,55 @@ export default function QuickCheckIn({ open, onClose }) {
     setForm((f) => ({ ...f, [k]: v }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    const est = estimateSpoons({
+    setErrorMsg('');
+    setSubmitting(true);
+
+    const payload = {
       hoursSleep: Number(form.hoursSleep),
       bedtime: form.bedtime,
       mealsEaten: Number(form.mealsEaten),
       tookMeds: Boolean(form.tookMeds),
       pain0to10: Number(form.pain0to10),
       mood1to5: Number(form.mood1to5),
-    }, spoonMax);
+    };
+
+    const est = estimateSpoons(payload, spoonMax);
+
+    // Optimistic UI
     setSpoons(est);
 
-    // Optional: notify backend here later. For now, just close.
-    onClose?.();
+    try {
+      // Persist to your Netlify function (same-origin, no CORS issues)
+      const res = await fetch('/.netlify/functions/wellness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          spoons: est,
+          mood: payload.mood1to5,           // optional: store mood if your function accepts it
+          // you can add other fields later (e.g., lastMeal, lastMed) if your API supports them
+        }),
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+      onClose?.();
+    } catch (err) {
+      // Keep optimistic spoons but show a soft error
+      setErrorMsg('Saved locally, but the server update failed. You can retry later.');
+      console.error('Wellness save failed:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="qc-backdrop" role="dialog" aria-modal="true" aria-label="Quick check-in">
       <form className="qc-card" onSubmit={onSubmit}>
         <h3>Quick check‑in</h3>
+        {errorMsg && <div className="qc-error">{errorMsg}</div>}
 
         <label>
           Hours of sleep (last night)
@@ -84,12 +115,16 @@ export default function QuickCheckIn({ open, onClose }) {
         </label>
 
         <div className="qc-actions">
-          <button type="button" className="qc-btn ghost" onClick={onClose}>Cancel</button>
-          <button type="submit" className="qc-btn primary">Set spoons</button>
+          <button type="button" className="qc-btn ghost" onClick={onClose} disabled={submitting}>
+            Cancel
+          </button>
+          <button type="submit" className="qc-btn primary" disabled={submitting}>
+            {submitting ? 'Saving…' : 'Set spoons'}
+          </button>
         </div>
       </form>
       <style>{`
-.qc-backdrop{ 
+.qc-backdrop{
   position:fixed;inset:0;display:grid;place-items:center;
   background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:60}
 .qc-card{
@@ -108,6 +143,9 @@ export default function QuickCheckIn({ open, onClose }) {
 .qc-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
 .qc-btn.primary{background:#6aa68f}
 .qc-range-value{font-size:12px;opacity:.75;margin-top:2px}
+.qc-error{background:rgba(255,70,70,.12);border:1px solid rgba(255,70,70,.35);
+  padding:8px 10px;border-radius:10px;font-size:13px}
+.qc-btn[disabled]{opacity:.65;cursor:not-allowed}
 `}</style>
     </div>
   );
