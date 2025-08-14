@@ -87,9 +87,11 @@ export async function wellnessIntent({ input, settings, setMessages, setInput })
       const res = await fetch(`/.netlify/functions/wellness?userId=${encodeURIComponent(userId)}`);
       const data = await res.json();
       if (res.ok && data?.ok) {
-        const s = data.state?.spoons;
+        const sRaw = data.state?.spoons;
         const mood = data.state?.mood;
-        s = clampSpoons(s);
+
+        const s = sRaw === undefined ? undefined : clampSpoons(sRaw);
+
         if (Number.isFinite(s)) {
           try {
             localStorage.setItem('AELI_SPOONS', String(s));
