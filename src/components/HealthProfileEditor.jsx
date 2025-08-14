@@ -85,33 +85,83 @@ export default function HealthProfileEditor({ open, onClose }) {
 }
 
 const css = `
- .hp-backdrop{
-   position:fixed;inset:0;display:grid;place-items:center;
-  background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:60;
-  padding: 20px; /* ensures space around modal on small screens */
-  overflow-y: auto;
+/* Global note:
+   - Modal scales with --ui-font-scale (default 1).
+   - You can set this on :root or body, e.g.:
+   :root { --ui-font-scale: 1.0 }  // normal
+   :root { --ui-font-scale: 1.2 }  // larger
+*/
+
+.hp-backdrop{
+  position:fixed;inset:0;display:grid;place-items:start; /* keep left/your current layout */
+  padding:20px;
+  background:rgba(0,0,0,.4);
+  backdrop-filter:blur(3px);
+  z-index:60;
+  overflow-y:auto;
 }
- .hp-card{
-  width:min(640px,96vw); /* wider */
+
+/* Scale the whole card relative to the user's font settings */
+.hp-card{
+  /* Wider but clamped for smaller screens */
+  width:clamp(680px, 78vw, 1040px);
+  max-height:95vh;
+
+  /* Font size is slightly smaller than the global scale for density,
+     but still respects --ui-font-scale */
+  font-size: calc(1rem * var(--ui-font-scale, 1) * 0.92);
+  line-height: 1.4;
+
   background:rgba(22,22,26,.95);
   border:1px solid rgba(255,255,255,.08);
   border-radius:16px;
-  padding:24px 24px 18px; /* more breathing room */
+  padding:24px 28px 18px;
   box-shadow:0 10px 40px rgba(0,0,0,.5);
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  max-height:95vh; /* taller */
-  overflow-y:auto; /* scrolls inside if needed */
+  display:flex;flex-direction:column;gap:14px;
+  overflow-y:auto;
 }
- .hp-card h3, .hp-card h4{margin:4px 0}
- .hp-card label{display:flex;flex-direction:column;gap:6px;font-size:14px}
- .hp-row{flex-direction:row;align-items:center;gap:10px}
- .hp-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
- .hp-btn{border:none;border-radius:9999px;padding:8px 14px;font-weight:600;cursor:pointer}
- .hp-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
- .hp-btn.primary{background:#6aa68f}
- .hp-card select, .hp-card input[type="text"], .hp-card input[type="number"], .hp-card input{
-   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-   color:inherit;border-radius:10px;padding:8px 10px}
- `;
+
+/* Titles scale down a touch too */
+.hp-card h3{ margin:4px 0; font-size: 1.15em; }
+.hp-card h4{ margin:4px 0; font-size: 1.05em; }
+
+/* Labels and inputs use em so they inherit the scale above */
+.hp-card label{
+  display:flex;flex-direction:column;gap:6px;
+  font-size: 0.98em;
+}
+
+.hp-card select,
+.hp-card input[type="text"],
+.hp-card input[type="number"],
+.hp-card input{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:inherit;
+  border-radius:10px;
+  padding:8px 10px;
+
+  /* Slightly smaller controls to fit more on screen, but still scale-aware */
+  font-size: 0.94em;           /* inherits from .hp-card font-size */
+  min-height: 34px;            /* more compact, still tappable */
+}
+
+.hp-row{flex-direction:row;align-items:center;gap:10px}
+
+/* Buttons compact but readable, also scale-aware */
+.hp-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.hp-btn{
+  border:none;border-radius:9999px;
+  padding:8px 14px;
+  font-weight:600;
+  cursor:pointer;
+  font-size: 0.95em;
+}
+.hp-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.2)}
+.hp-btn.primary{background:#6aa68f}
+
+.qc-error{background:rgba(255,70,70,.12);border:1px solid rgba(255,70,70,.35);
+  padding:8px 10px;border-radius:10px;font-size:0.95em}
+
+.hp-btn[disabled]{opacity:.65;cursor:not-allowed}
+`;
