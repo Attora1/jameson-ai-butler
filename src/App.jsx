@@ -10,6 +10,7 @@ import MessageList from './components/Chat/MessageList.jsx';
 import ChatInput from './components/Chat/ChatInput.jsx';
 import WakeUpInput from './components/Chat/WakeUpInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
+import HealthProfileEditor from './components/HealthProfileEditor.jsx';
 import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
 import Focus from './components/Modes/Focus.jsx';
 import LowSpoon from './components/Modes/LowSpoon.jsx';
@@ -17,8 +18,7 @@ import PartnerSupport from './components/Modes/PartnerSupport.jsx';
 import LandingDashboard from './components/Modes/LandingDashboard.jsx';
 import { SpoonProvider, useSpoons } from './context/SpoonContext.jsx';
 import { getMoodReflection } from './utils/introAndMood.js';
-import { composeMemoryEntries } from './utils/memoriesBridge.js';  
-
+import { composeMemoryEntries } from './utils/memoriesBridge.js';
 
 function App() {
   const [showFacts, setShowFacts] = useState(false);
@@ -28,22 +28,22 @@ function App() {
   const [poweredDown, setPoweredDown] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown);
-  
+
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [hpOpen, setHpOpen] = useState(false);
   usePersistentTimerPolling(setMessages, poweredDown, settings);
-
 
   useEffect(() => {
     if (poweredDown) {
-      const timer = setTimeout(() => setShowOverlay(true), 1000); // 1-second delay
+      const timer = setTimeout(() => setShowOverlay(true), 1000);
       return () => clearTimeout(timer);
     } else {
       setShowOverlay(false);
     }
 
-    const INACTIVITY_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+    const INACTIVITY_THRESHOLD = 5 * 60 * 1000;
     let inactivityTimer;
 
     const resetActivity = () => {
@@ -64,12 +64,10 @@ function App() {
       }
     };
 
-    // Set up event listeners for user activity
     window.addEventListener('mousemove', resetActivity);
     window.addEventListener('keydown', resetActivity);
     window.addEventListener('click', resetActivity);
-    // Initial setup of the inactivity check interval
-    inactivityTimer = setInterval(checkInactivity, 5000); // Check every 5 seconds
+    inactivityTimer = setInterval(checkInactivity, 5000);
 
     return () => {
       clearInterval(inactivityTimer);
@@ -78,8 +76,6 @@ function App() {
       window.removeEventListener('click', resetActivity);
     };
   }, [poweredDown, lastActivityTime, inactivityMessageSent, setMessages]);
-
-  
 
   useEffect(() => {
     async function fetchInitialWeather() {
@@ -102,7 +98,7 @@ function App() {
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("AELI_INTRO_SHOWN") === "true";
-  
+
     if (
       !hasSeen &&
       settings.nameFormal &&
@@ -110,16 +106,13 @@ function App() {
       settings.mood &&
       messages.length > 0
     ) {
-
       const moodLine = getMoodReflection(settings.mood);
-
       const line = `[AELI] Ah, ${settings.nameFormal}. Pleasure to make your acquaintance. I see you prefer a ${settings.tone} conversation. ${moodLine}`;
-              
       setMessages((prev) => [...prev, { isUser: false, text: line }]);
       localStorage.setItem("AELI_INTRO_SHOWN", "true");
     }
   }, [settings, messages.length, setMessages]);
-  
+
   const renderModeContent = () => {
     switch (settings.mode) {
       case 'dashboard':
@@ -140,7 +133,6 @@ function App() {
         return <LowSpoon settings={settings} />;
     }
   };
-  
 
   return (
     <>
@@ -150,29 +142,27 @@ function App() {
             <button onClick={() => setShowSettings(true)} className="settings-button">
               ⚙️
             </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              setMessages([]);
-            }}
-            className="clear-memory-button"
-          >
-            Clear Memory
-          </button>
-
-          <button
-            onClick={() => setShowFacts(f => !f)}
-            className="show-facts-button"
-          >
-            {showFacts ? "Hide Memories" : "Show Memories"}
-          </button>
-
-          <button
-            onClick={clearFacts}
-            className="clear-facts-button"
-          >
-            Clear Memories
-          </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem(STORAGE_KEY);
+                setMessages([]);
+              }}
+              className="clear-memory-button"
+            >
+              Clear Memory
+            </button>
+            <button
+              onClick={() => setShowFacts(f => !f)}
+              className="show-facts-button"
+            >
+              {showFacts ? "Hide Memories" : "Show Memories"}
+            </button>
+            <button
+              onClick={clearFacts}
+              className="clear-facts-button"
+            >
+              Clear Memories
+            </button>
             <button
               onClick={() =>
                 setSettings(prev => ({ ...prev, voiceEnabled: !prev.voiceEnabled }))
@@ -185,9 +175,10 @@ function App() {
 
           <div className={`chat-container ${settings.mode}-theme`}>
             {showFacts && (
-              <div className="memory-facts" style={{background:'#feffe8',border:'1px solid #eee',margin:'8px',padding:'8px'}}>
+              <div className="memory-facts" style={{ background: '#feffe8', border: '1px solid #eee', margin: '8px', padding: '8px' }}>
                 <b>My Memories:</b>
-                
+                <button onClick={() => setHpOpen(true)} className="btn small">Edit Health Profile</button>
+
                 {/* Wellness snapshot at the top */}
                 {composeMemoryEntries({ spoons, spoonMax }).map((entry, idx) => (
                   <section key={`wellness-${idx}`} className="memory-block">
@@ -204,17 +195,17 @@ function App() {
                     <p>{typeof f === 'string' ? f : String(f)}</p>
                   </section>
                 ))}
+                <HealthProfileEditor open={hpOpen} onClose={() => setHpOpen(false)} />
               </div>
             )}
             <div className="messages">
-            <MessageList messages={messages} settings={settings} poweredDown={poweredDown} />
-
+              <MessageList messages={messages} settings={settings} poweredDown={poweredDown} />
             </div>
             {poweredDown ? (
-              <WakeUpInput 
-                input={input} 
-                setInput={setInput} 
-                onWakeUp={handleSubmit} 
+              <WakeUpInput
+                input={input}
+                setInput={setInput}
+                onWakeUp={handleSubmit}
               />
             ) : (
               <ChatInput
