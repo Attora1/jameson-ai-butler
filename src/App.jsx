@@ -142,6 +142,7 @@ function App() {
   
 
   return (
+    <>
       <div className={`App ${settings.mode}-theme`}>
         <div className="main-content">
           <div className="header-buttons">
@@ -226,12 +227,12 @@ function App() {
         </div>
       </div>
       {showOverlay && (
-  <div className="aeli-poweroff-overlay fade-in">
-    <p>AELI is powered down. Say “wake up” to restore functions.</p>
-  </div>
-)}
-
-    );
+        <div className="aeli-poweroff-overlay fade-in">
+          <p>AELI is powered down. Say “wake up” to restore functions.</p>
+        </div>
+      )}
+    </>
+  );
 }
 
 export default App;
