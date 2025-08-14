@@ -1,14 +1,13 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BreathingRing from './BreathingRing.jsx';
-import { SpoonContext } from '../../context/SpoonContext.jsx';
 import ModeLayout from '../Modes/ModeLayout.jsx';
 import DimOverlay from './DimOverlay.jsx';
 import { getReturnFromZen, getModeSubtitle } from '../../utils/AELIRemarks.js';
 import { useDebounce } from '../../utils/useDebounce.js';
+import QuickCheckIn from '../CheckIn/QuickCheckIn.jsx';
 import '../../styles/modes-css/LowSpoon.css';
 
 export default function LowSpoon({ settings }) {
-  const { spoonCount } = useContext(SpoonContext);
   const [isBreathing, setIsBreathing] = useState(false);
   const [dimVisible, setDimVisible] = useState(false);
   const [AELIMessage, setAELIMessage] = useState('');
@@ -17,6 +16,7 @@ export default function LowSpoon({ settings }) {
   const [showIntro, setShowIntro] = useState(false);
   const petalLayerRef = useRef(null);
   const [currentSuggestion, setCurrentSuggestion] = useState('Take a gentle moment to breathe and rest.');
+  const [checkInOpen, setCheckInOpen] = useState(false);
 
   const debouncedSpoons = useDebounce(spoonCount, 1500);
 
@@ -155,6 +155,7 @@ export default function LowSpoon({ settings }) {
       <div className="grounding-link">
         <a href="https://www.crisistextline.org/" target="_blank" rel="noopener noreferrer">Grounding help</a>
       </div>
+      <QuickCheckIn open={checkInOpen} onClose={() => setCheckInOpen(false)} />
     </>
   );
 }
