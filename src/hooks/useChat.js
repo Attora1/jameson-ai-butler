@@ -79,7 +79,7 @@ export function useChat(
 
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
-    //  Wellness intent (lazy-loaded so it always exists at runtime)
+    //  Wellness intent (safe, lazy-loaded)
     {
       let handled = false;
       try {
@@ -90,9 +90,22 @@ export function useChat(
       } catch (e) {
         console.error('[lazy wellnessIntent] load failed:', e);
       }
-      if (handled) return; // stop before hitting the model
+      if (handled) return; // only return if actually handled
     }
-    if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
+
+    // ️ Meal/Med intent (safe, lazy-loaded)
+    {
+      let handled = false;
+      try {
+        const mod = await import('../intents/mealMedIntent.js'); // static path
+        if (mod && typeof mod.mealMedIntent === 'function') {
+          handled = await mod.mealMedIntent({ input, settings, setMessages, setInput });
+        }
+      } catch (e) {
+        console.error('[lazy mealMedIntent] load failed:', e);
+      }
+      if (handled) return;
+    }
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
 
     //  VERSION / UPDATE INTENT (e.g., "version?", "update?", "what build am I on")
