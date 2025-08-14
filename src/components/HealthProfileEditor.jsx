@@ -104,21 +104,7 @@ const css = `
 /* Scale the whole card relative to the user's font settings */
 .hp-card{
   /* Wider but clamped for smaller screens */
-  width:clamp(680px, 78vw, 1040px);
-  max-height:95vh;
-
-  /* Font size is slightly smaller than the global scale for density,
-     but still respects --ui-font-scale */
-  font-size: calc(1rem * var(--ui-font-scale, 1) * 0.92);
-  line-height: 1.4;
-
-  background:rgba(22,22,26,.95);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;
-  padding:24px 28px 18px;
-  box-shadow:0 10px 40px rgba(0,0,0,.5);
-  display:flex;flex-direction:column;gap:14px;
-  overflow-y:auto;
+  width: clamp(720px, 85vw, 1120px);  max-height: 95vh;  /* Dynamic font size based on UI scale setting */  font-size: calc(1rem * var(--ui-font-scale, 1) * 0.92);  line-height: 1.4;  background: rgba(22, 22, 26, .95);  border: 1px solid rgba(255, 255, 255, .08);  border-radius: 16px;  padding: 24px 28px 18px;  box-shadow: 0 10px 40px rgba(0, 0, 0, .5);  display: flex;  flex-direction: column;  gap: 14px;  overflow-y: auto;  overflow-x: hidden; /* prevent the horizontal scrollbar unless needed */}
 }
 
 /* Titles scale down a touch too */
@@ -135,15 +121,7 @@ const css = `
 .hp-card input[type="text"],
 .hp-card input[type="number"],
 .hp-card input{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  color:inherit;
-  border-radius:10px;
-  padding:8px 10px;
-
-  /* Slightly smaller controls to fit more on screen, but still scale-aware */
-  font-size: 0.94em;           /* inherits from .hp-card font-size */
-  min-height: 34px;            /* more compact, still tappable */
+  font-size: calc(0.94rem * var(--ui-font-scale, 1));  min-height: 34px;  background: rgba(255, 255, 255, .06);  border: 1px solid rgba(255, 255, 255, .12);  border-radius: 10px;  color: inherit;  padding: 8px 10px;
 }
 
 .hp-row{flex-direction:row;align-items:center;gap:10px}
