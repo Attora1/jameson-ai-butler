@@ -6,6 +6,7 @@ import { initTimeContext, markUserMessage, markAeliMessage, getTimeSnapshot } fr
 import { noteUserInput, learnFromCorrection } from '../state/lexicon.js';
 import { learnPrefsFromInput } from '../state/prefs.js';
 import { getAwareness } from '../awareness/awareness.js';
+import { mealMedIntent } from '../intents/mealMedIntent.js';
 
 export function useChat(
   settings,
@@ -80,6 +81,7 @@ export function useChat(
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
     if (await wellnessIntent({ input, settings, setMessages, setInput })) return;
+    if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
 
     //  VERSION / UPDATE INTENT (e.g., "version?", "update?", "what build am I on")
