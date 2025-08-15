@@ -1,25 +1,9 @@
-:root {
-  --gold-deep: #e19127;
-  --gold-soft: #eec38a;
-  --navy-deep: #183257;
-  --blue-gray: #345682;
-  --cloud-gray: #acb6be;
-  --steel-blue: #1d2e44;
-  --gold-dark: #c9a356;
 
-  --text-light: #e0e6ed;
-  --background-dark: #15202b;
-}
 
-html, body, #root, .App {
-  height: 100%;
-  width:100%;
-  margin: 0;
-  padding: 0;
-  background: none;
-  color: var(--text-light);
-  font-family: system-ui, sans-serif;
-}
+
+
+@import './tokens.css';
+@import './base.css';
 
 .App {
   display: flex;
@@ -38,31 +22,10 @@ html, body, #root, .App {
   pointer-events: auto;
 }
 
-.header-buttons button {
-  background: none;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  border-radius: 8px;
-  color: var(--gold-soft);
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
-  outline: none; /* removes the white border */
-}
-
-.header-buttons button:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: scale(1.05);
-}
-
-.header-buttons button:focus {
-  outline: none;          
-  box-shadow: none;
-}
-
-.header-buttons button:active {
-  transform: scale(0.97);
+.header-buttons .btn {
+  color: var(--color-gold-soft);
+  font-size: 0.95rem; /* Keep specific font-size here if it deviates from base */
+  transition: var(--transition-ease); /* Use token for transition */
 }
 
 
@@ -243,43 +206,21 @@ color: #fbe0ccde;
   outline: none;
 }
 
-.chat-input-container button {
-  padding: 0.4rem 0.9rem;
+.chat-input-container .btn {
+  padding: var(--spacing-xs) var(--spacing-s); /* Use tokens */
   font-size: 0.95rem;
-  border-radius: 6px;
-  background-color: var(--gold-deep);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-s); /* Use token */
+  background-color: var(--color-gold-deep);
+  color: #fff; /* Keep specific color here */
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
-}
-
-
-
-
-.chat-input-container button:hover {
-  background-color: var(--navy-deep);
-  color: var(--gold-deep);
+  transition: var(--transition-ease); /* Use token */
 }
 
 
 
 /* Settings modal overlay */
-.settings-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(9, 26, 44, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 20;
+.settings-overlay { /* Keep this selector for now, but it will extend .modal-overlay */
+  /* No specific styles here, will rely on .modal-overlay */
 }
 
 /* Settings modal */
@@ -315,17 +256,8 @@ color: #fbe0ccde;
 }
 
 .settings-modal input,
-.settings-modal select {
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  border: 1px solid var(--blue-gray);
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: rgba(28, 60, 105, 0.9);
-  color: var(--text-light);
-  appearance: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.settings-modal select { /* Keep this selector for now, but it will extend .form-control */
+  /* No specific styles here, will rely on .form-control */
 }
 
 .settings-modal select:hover,
@@ -339,28 +271,19 @@ color: #fbe0ccde;
 
 .close-settings {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--steel-blue);
-  color: var(--text-light);
-  border: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  cursor: pointer;
+  top: var(--spacing-m);
+  right: var(--spacing-m);
+  background: var(--color-steel-blue);
+  color: var(--color-text-light);
+  padding: var(--spacing-xs) var(--spacing-s); /* Use tokens */
+  border-radius: var(--border-radius-m); /* Use token */
 }
 
 .save-settings {
   position: absolute;
   bottom: 0rem;
-  right: 1rem;
-  padding: 0.75rem 1.25rem;
-  background-color: var(--navy-deep);
-  color: var(--gold-deep);
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  right: var(--spacing-m);
+  padding: var(--spacing-s) var(--spacing-l); /* Use tokens */
   z-index: 11;
 }
 
@@ -382,17 +305,15 @@ color: #fbe0ccde;
 }
 
 .google-connect-button {
-  background-color: #4285F4; /* Google Blue */
+  background-color: #4285F4; /* Keep specific color */
   color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
+  padding: var(--spacing-s) var(--spacing-l); /* Use tokens */
+  border-radius: var(--border-radius-m); /* Use token */
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  max-width: 250px; /* Make it less wide */
-  margin: 1rem auto 0; /* Center it and add top space */
-  display: block; /* Ensure margin: auto works */
+  transition: var(--transition-ease); /* Use token */
+  max-width: 250px;
+  margin: var(--spacing-m) auto 0; /* Use token */
+  display: block;
 }
 
 .google-connect-button:hover {
