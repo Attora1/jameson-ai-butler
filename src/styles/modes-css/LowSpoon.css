@@ -1,11 +1,3 @@
-.low-spoon-theme {
-  --grove-dusk: rgba(34, 54, 45, 0.35);
-  --river-glint: #d8eae7;
-  --gold-soft: rgb(243, 222, 177);
-  --petal-lavender: rgba(206, 178, 255, 0.4);
-  --glass-shadow: 0 0 30px rgba(220, 250, 230, 0.1);
-}
-
 .low-spoon-bg {
   position: fixed;
   inset: 0;
@@ -24,9 +16,9 @@
 
 .mode-layout-subtitle,
 .low-spoon-AELI-message {
-  color: var(--gold-soft);
-  text-shadow: 0 0 10px rgba(230, 232, 119, 0.37);
-  transition: text-shadow 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  color: var(--color-low-spoon-gold-soft);
+  text-shadow: var(--text-shadow-low-spoon-message);
+  transition: text-shadow 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Keep as is, no direct token */
   opacity: .8;
 }
 
@@ -36,9 +28,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  gap: 2.4rem;
+  gap: 2.4rem; /* Keep as is, no direct token */
 
-  padding: 1rem 0;
+  padding: var(--spacing-m) 0;
   margin-top: -0.5rem; /* was 1rem — this brings it closer to the top */
   transform: translateY(-5rem); /* gently lift it up */
   
@@ -52,7 +44,7 @@
   position: absolute;
   font-size: .75rem;
   color: black;
-  text-shadow: 0 0 4px rgba(0,0,0,0.6);
+  text-shadow: var(--text-shadow-low-spoon-spoon-count);
   top: 50%;
   left: 49.4%;
   transform: translate(-50%, -50%);
@@ -139,13 +131,13 @@
 
 
 .suggestions {
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius-l);
+  padding: var(--spacing-m) var(--spacing-l);
   max-width: 100%;
   backdrop-filter: blur(4px);
   box-shadow:
-    inset 0 0 8px rgba(255, 255, 255, 0.1),
-    0 0 12px rgba(206, 178, 255, 0.3); 
+    var(--box-shadow-low-spoon-suggestions-inset),
+    var(--box-shadow-low-spoon-suggestions-outer); 
   display: flex;
   flex-wrap: wrap;
 
@@ -156,25 +148,25 @@
 
 .suggestions h3 {
   margin-top: 0;
-  color: var(--gold-soft);
+  color: var(--color-low-spoon-gold-soft);
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-m);
 }
 
 .suggestion-item {
-  padding: 0.5rem 0;
-  font-size: 1rem;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--spacing-m);
   line-height: 1rem;
-  color: rgba(220, 240, 235, 0.9);
+  color: var(--color-low-spoon-suggestion-item);
 
 }
 
 .low-spoon-AELI-message {
   font-style: italic;
-  color: var(--gold-soft);
+  color: var(--color-low-spoon-gold-soft);
   text-align: center;
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
+  padding: var(--spacing-xs) var(--spacing-m);
+  margin-bottom: var(--spacing-m);
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -185,11 +177,11 @@
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(34, 54, 45, 0.85);
-  color: var(--gold-soft);
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
+  background: var(--color-low-spoon-breathing-modal-background);
+  color: var(--color-low-spoon-gold-soft);
+  padding: var(--spacing-m) var(--spacing-xl);
+  border-radius: var(--border-radius-l);
+  box-shadow: var(--box-shadow-low-spoon-breathing-modal);
   font-size: 1.1rem;
   font-weight: 500;
   z-index: 100;
@@ -207,48 +199,48 @@
 .breathing-controls {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: var(--spacing-l);
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: var(--spacing-l);
   flex-wrap: wrap;
 }
 
 .breathing-timer {
-  font-size: 1.25rem;
-  color: var(--gold-soft);
-  background-color: rgba(17, 60, 85, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 0.5rem 1rem;
+  font-size: 1.25rem; /* Keep as is */
+  color: var(--color-low-spoon-gold-soft);
+  background-color: var(--color-low-spoon-breathing-timer-background);
+  border: 1px solid var(--color-low-spoon-breathing-timer-border);
+  border-radius: var(--border-radius-l);
+  padding: var(--spacing-xs) var(--spacing-m);
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s ease;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease, background-color 0.3s ease; /* Keep as is */
+  backdrop-filter: blur(4px); /* Keep as is */
+  box-shadow: var(--box-shadow-low-spoon-breathing-timer);
 }
 
 .breathing-timer:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-low-spoon-breathing-timer-hover-background);
   transform: scale(1.05);
 }
 
 .start-breathing-button,
 .stop-breathing-button {
-  background-color: rgba(255, 220, 150, 0.25); /* slightly softened gold */
-  color: var(--gold-soft);
-  border: .75px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(4px);
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: var(--color-low-spoon-start-stop-btn-background);
+  color: var(--color-low-spoon-gold-soft);
+  border: var(--color-low-spoon-start-stop-btn-border);
+  box-shadow: var(--box-shadow-low-spoon-start-stop-btn);
+  backdrop-filter: blur(4px); /* Keep as is */
+  text-shadow: var(--text-shadow-low-spoon-start-stop-btn);
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Keep as is */
 }
 
 .start-breathing-button:hover,
 .stop-breathing-button:hover {
-  background-color: #eef7f257;
+  background-color: var(--color-low-spoon-start-stop-btn-hover-background);
   transform: scale(1.05);
-  color: #0b042f;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
-  border: .75px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-low-spoon-start-stop-btn-hover-color);
+  text-shadow: var(--text-shadow-low-spoon-start-stop-btn-hover);
+  border: var(--color-low-spoon-start-stop-btn-border); /* Keep as is */
 }
 
 /* Prevent persistent white border after clicking */
@@ -276,12 +268,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: var(--spacing-xxs);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: var(--border-radius-m);
+  transition: var(--transition-ease);
   margin-left: auto; 
   outline: none;
 }
@@ -317,7 +309,7 @@
   width: 100%;
   height: 100%;
   backdrop-filter: blur(2px);
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--color-low-spoon-dim-overlay-background);
   z-index: 3;
   pointer-events: none;
   transition: opacity 5s ease-in-out;
@@ -349,18 +341,18 @@
 
 .grounding-link {
   position: fixed;
-  bottom: 1rem;
-  right: 2rem;
+  bottom: var(--spacing-m);
+  right: var(--spacing-xl);
   z-index: 10;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  background-color: var(--color-low-spoon-grounding-link-background);
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--border-radius-m);
   font-size: 0.9rem;
-  color: var(--river-glint);
+  color: var(--color-low-spoon-river-glint);
   text-decoration: none;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+  box-shadow: var(--box-shadow-low-spoon-grounding-link);
   backdrop-filter: blur(4px);
-  transition: background-color 0.3s ease;
+  transition: var(--transition-ease);
 }
 
 .grounding-link a {
@@ -369,7 +361,7 @@
 }
 
 .grounding-link:hover {
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: var(--color-low-spoon-grounding-link-hover-background);
 }
 
 
@@ -377,10 +369,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: start;
-  gap: 2.5rem;
-  padding: 1rem 2rem;
+  gap: 2.5rem; /* Keep as is, no direct token */
+  padding: var(--spacing-m) var(--spacing-xl);
   box-sizing: border-box;
-  margin-top: 7rem;
+  margin-top: 7rem; /* Keep as is, no direct token */
 }
 
 .low-spoon-theme  {
@@ -391,7 +383,7 @@ margin-top: -3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--spacing-l);
   padding: 0;
 }
 
@@ -404,3 +396,164 @@ margin-top: -3rem;
 
 
 
+
+
+.low-spoon-theme .suggestions {
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-s);
+}
+
+.low-spoon-theme .suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
+}
+
+.low-spoon-theme .suggestions-header h3 {
+  margin: 0;
+  color: var(--color-low-spoon-gold-soft);
+  font-weight: 600;
+}
+
+.low-spoon-theme .suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+  justify-content: flex-start;
+}
+
+.low-spoon-theme .suggestions .btn {
+  background-color: var(--color-low-spoon-suggestion-btn-background);
+  color: var(--color-low-spoon-suggestion-btn-color);
+  border: 1px solid var(--color-low-spoon-suggestion-btn-border);
+  box-shadow: var(--box-shadow-low-spoon-suggestion-btn);
+  backdrop-filter: blur(4px);
+  text-shadow: var(--text-shadow-low-spoon-suggestion-btn);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: var(--border-radius-m);
+  cursor: pointer;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.low-spoon-theme .suggestions .btn:hover {
+  background-color: var(--color-low-spoon-suggestion-btn-hover-background);
+  transform: translateY(-2px);
+  color: var(--color-low-spoon-suggestion-btn-hover-color);
+  box-shadow: var(--box-shadow-low-spoon-suggestion-btn-hover);
+}
+
+.low-spoon-theme .mode-header {
+  width: 100%;
+  padding: var(--spacing-l) var(--spacing-xl);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-s);
+  position: relative;
+  z-index: 5;
+}
+
+.low-spoon-theme .mode-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-low-spoon-gold-soft);
+  text-shadow: var(--text-shadow-low-spoon-title);
+}
+
+.low-spoon-theme .mode-subtitle {
+  font-size: 1rem;
+  color: var(--color-low-spoon-gold-soft);
+  opacity: 0.9;
+  max-width: 60ch;
+  text-shadow: var(--text-shadow-low-spoon-subtitle);
+}
+
+.low-spoon-theme .breathing-ring {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-l);
+  transition: transform 0.5s ease;
+}
+
+.low-spoon-theme .breathing-ring.shell {
+  border: 2px solid var(--color-low-spoon-breathing-ring-shell-border);
+  box-shadow: var(--box-shadow-low-spoon-breathing-ring-shell);
+}
+
+.low-spoon-theme .breathing-ring .breathing-ring-inner {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background-color: var(--color-low-spoon-breathing-ring-inner-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-low-spoon-gold-soft);
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: var(--spacing-m);
+  box-sizing: border-box;
+  text-shadow: var(--text-shadow-low-spoon-breathing-ring-inner);
+  transition: transform 8.5s cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.low-spoon-theme .breathing-ring.inhale .breathing-ring-inner {
+  transform: scale(1.2);
+}
+
+.low-spoon-theme .breathing-ring.exhale .breathing-ring-inner {
+  transform: scale(0.8);
+}
+
+/* === Responsive (mobile) adjustments for Low Spoon === */
+ @media (max-width: 768px) {
+  /* Header area */
+  .low-spoon-theme .mode-header {
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-3);
+  }
+
+  .low-spoon-theme .mode-title {
+    font-size: calc(1.05rem * var(--ui-font-scale, 1));
+  }
+
+  .low-spoon-theme .mode-subtitle {
+    font-size: calc(0.95rem * var(--ui-font-scale, 1));
+  }
+
+  /* Breathing ring container */
+  .breathing-ring,
+  .breathing-ring.shell,
+  .breathing-ring .breathing-ring-inner {
+    margin-top: var(--space-4);
+  }
+
+  /* Suggestions / buttons cluster */
+  .low-spoon-theme .suggestions {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .low-spoon-theme .suggestions .btn {
+    padding: 8px 12px;
+    font-size: calc(0.95rem * var(--ui-font-scale, 1));
+  }
+}
