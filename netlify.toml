@@ -1,6 +1,6 @@
 [build]
   command = "npm run build && cp -r backend/ netlify/functions/"
-  publish = "src/dist"
+  publish = "dist"
   functions = "netlify/functions"
 
 # Map /api/* to serverless functions
