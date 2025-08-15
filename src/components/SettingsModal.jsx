@@ -80,10 +80,10 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
   
 
   return (
-    <div className="settings-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div className="settings-overlay modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div className="settings-modal" onClick={(e) => e.stopPropagation()} tabIndex={-1}>
         <button
-          className="close-settings"
+          className="close-settings btn"
           onClick={onClose}
           aria-label="Close settings modal"
           type="button"
@@ -96,6 +96,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Preferred Formal Name:
           <input
+            className='form-control'
             type="text"
             value={localSettings.nameFormal}
             onChange={(e) =>
@@ -108,6 +109,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Preferred Casual Name:
           <input
+            className='form-control'
             type="text"
             value={localSettings.nameCasual}
             onChange={(e) =>
@@ -121,6 +123,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
           Zip Code:
           <input
             type="text"
+            className='form-control'
             value={localSettings.zip || ''}
             onChange={handleZipChange}
             placeholder="e.g. 90210"
@@ -132,6 +135,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Honorific (Title):
           <select
+            className='form-control'
             value={localSettings.title}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, title: e.target.value }))
@@ -148,6 +152,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Your Pronouns:
           <select
+            className='form-control'
             value={localSettings.userPronouns?.subject || ''}
             onChange={(e) => {
               const selected = PRONOUN_SETS[e.target.value];
@@ -165,6 +170,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Partner's Pronouns:
           <select
+            className='form-control'
             value={localSettings.partnerPronouns?.subject || ''}
             onChange={(e) => {
               const selected = PRONOUN_SETS[e.target.value];
@@ -183,6 +189,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Tone:
           <select
+            className='form-control'
             value={localSettings.tone || localSettings.mode}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, tone: e.target.value }))
@@ -196,6 +203,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label> 
         Humor Level:
           <select
+            className='form-control'
             value={localSettings.humorLevel || 'dry'}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, humorLevel: e.target.value }))
@@ -210,6 +218,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Mood:
           <select
+            className='form-control'
             value={localSettings.mood}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, mood: e.target.value }))
@@ -226,6 +235,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Mode:
           <select
+            className='form-control'
             value={localSettings.mode}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, mode: e.target.value }))
@@ -242,6 +252,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Voice:
           <select
+            className='form-control'
             value={localSettings.voiceGender}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, voiceGender: e.target.value }))
@@ -258,6 +269,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Accent:
           <select
+            className='form-control'
             value={localSettings.voiceAccent}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, voiceAccent: e.target.value }))
@@ -274,6 +286,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Memory Limit:
           <select
+            className='form-control'
             value={localSettings.memoryLimit}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, memoryLimit: parseInt(e.target.value) }))
@@ -290,6 +303,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Font:
           <select
+            className='form-control'
             value={localSettings.fontFamily}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, fontFamily: e.target.value }))
@@ -306,6 +320,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
         <label>
           Font Size:
           <select
+            className='form-control'
             value={localSettings.fontSize}
             onChange={(e) =>
               setLocalSettings(prev => ({ ...prev, fontSize: e.target.value }))
@@ -325,6 +340,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
           <label>
             Select Integration:
             <select
+              className='form-control'
               onChange={(e) => {
                 const selectedIntegration = e.target.value;
                 if (selectedIntegration === 'google-calendar') {
@@ -342,7 +358,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
 
         {/* Save Button */}
         <div className="settings-footer">
-          <button className="save-settings" onClick={handleSave} type="button">
+          <button className="save-settings btn" onClick={handleSave} type="button">
             Save
           </button>
         </div>

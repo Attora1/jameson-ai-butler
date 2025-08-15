@@ -38,7 +38,7 @@ export default function ChatInput({ input, setInput, onSubmit, disabled }) {
         rows={1}
         className="chat-textarea"
       />
-      <button type="submit" disabled={disabled}>
+      <button className="btn" type="submit" disabled={disabled}>
         {disabled ? "Processing..." : "Engage"}
       </button>
     </form>

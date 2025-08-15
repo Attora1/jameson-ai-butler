@@ -139,7 +139,7 @@ function App() {
       <div className={`App ${settings.mode}-theme`}>
         <div className="main-content">
           <div className="header-buttons">
-            <button onClick={() => setShowSettings(true)} className="settings-button">
+            <button onClick={() => setShowSettings(true)} className="settings-button btn">
               ⚙️
             </button>
             <button
@@ -147,19 +147,19 @@ function App() {
                 localStorage.removeItem(STORAGE_KEY);
                 setMessages([]);
               }}
-              className="clear-memory-button"
+              className="clear-memory-button btn"
             >
               Clear Memory
             </button>
             <button
               onClick={() => setShowFacts(f => !f)}
-              className="show-facts-button"
+              className="show-facts-button  btn"
             >
               {showFacts ? "Hide Memories" : "Show Memories"}
             </button>
             <button
               onClick={clearFacts}
-              className="clear-facts-button"
+              className="clear-facts-button btn"
             >
               Clear Memories
             </button>
@@ -167,7 +167,7 @@ function App() {
               onClick={() =>
                 setSettings(prev => ({ ...prev, voiceEnabled: !prev.voiceEnabled }))
               }
-              className="voice-toggle-button"
+              className="voice-toggle-button btn"
             >
               {settings.voiceEnabled ? "🔈 Voice On" : "🔇 Voice Off"}
             </button>

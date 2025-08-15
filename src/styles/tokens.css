@@ -1,38 +1,85 @@
+/* src/styles/tokens.css */
+/* Design tokens – single source of truth */
+
+/* =========
+   Dark theme (default)
+   ========= */
 :root {
-  /* Colors */
-  --color-gold-deep: #e19127;
-  --color-gold-soft: #eec38a;
-  --color-navy-deep: #183257;
-  --color-blue-gray: #345682;
-  --color-cloud-gray: #acb6be;
-  --color-steel-blue: #1d2e44;
-  --color-gold-dark: #c9a356;
-  --color-text-light: #e0e6ed;
-  --color-background-dark: #15202b;
+  /* Typography */
+  --ui-font-scale: 1; /* user-controlled global scale */
+  --font-base: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  /* Spacing */
-  --spacing-xxs: 0.25rem; /* 4px */
-  --spacing-xs: 0.5rem;  /* 8px */
-  --spacing-s: 0.75rem; /* 12px */
-  --spacing-m: 1rem;    /* 16px */
-  --spacing-l: 1.5rem;  /* 24px */
-  --spacing-xl: 2rem;   /* 32px */
-  --spacing-xxl: 3rem;  /* 48px */
+  /* Core colors */
+  --text: #f3f5f7;
+  --text-dim: rgba(243, 245, 247, 0.8);
 
-  /* Border Radii */
-  --border-radius-s: 4px;
-  --border-radius-m: 8px;
-  --border-radius-l: 12px;
-  --border-radius-xl: 16px;
-  --border-radius-round: 9999px;
+  /* Surfaces */
+  --bg-page: #0f1115;                /* page background (optional) */
+  --bg-elev-1: rgba(22, 22, 26, 0.96); /* elevated card/modal background */
+  --bg-overlay: rgba(0, 0, 0, 0.40);   /* modal/backdrop overlay */
 
-  /* Box Shadows */
-  --box-shadow-s: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --box-shadow-m: 0 4px 8px rgba(0, 0, 0, 0.15);
-  --box-shadow-l: 0 8px 24px rgba(0, 0, 0, 0.1);
+  /* Brand & accents */
+  --brand: #6aa68f;                  /* primary accent (buttons etc.) */
+  --accent-1: #7db9a3;               /* lighter accent (optional hovers) */
+  --accent-2: #518a73;               /* darker accent (active states) */
 
-  /* Transitions */
-  --transition-ease: all 0.3s ease;
-  --transition-fast: all 0.2s ease-out;
-  --transition-slow: all 0.6s ease;
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-faint:  rgba(255, 255, 255, 0.08);
+
+  /* Shadows & radius */
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.55);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* Z-index */
+  --z-modal: 9999;
+  --z-popover: 1000;
+  --z-header: 900;
+
+  /* Layout clamps (used for modals/cards) */
+  --content-max-h: 95vh;
+  --modal-min: 720px;
+  --modal-ideal: 85vw;
+  --modal-max: 1120px;
+
+  /* Breakpoints (reference only) */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+/* =========
+   (Optional) Light theme
+   Enable by adding data-theme="light" on <html> or <body>
+   ========= */
+:root[data-theme="light"] {
+  --text: #0f1216;
+  --text-dim: rgba(15, 18, 22, 0.7);
+
+  --bg-page: #ffffff;
+  --bg-elev-1: #f7f9fb;
+  --bg-overlay: rgba(0, 0, 0, 0.35);
+
+  --brand: #3f7d66;
+  --accent-1: #4d8f78;
+  --accent-2: #2d6953;
+
+  --border-subtle: rgba(0, 0, 0, 0.12);
+  --border-faint:  rgba(0, 0, 0, 0.08);
+
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.18);
 }
