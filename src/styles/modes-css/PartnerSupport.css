@@ -1,8 +1,8 @@
 .partner-support-grid-4 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(clamp(300px, 22%, 350px), 1fr));
-  gap: 3rem 3rem;
-  padding: 2rem 3rem;
+  gap: var(--spacing-xxl);
+  padding: var(--spacing-xl) var(--spacing-xxl);
   max-width: 100%;
   margin: 0 auto;
   justify-items: center;
@@ -13,8 +13,8 @@
   position: relative;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: var(--border-radius-l);
+  padding: var(--spacing-l);
   text-align: center;
   color: var(--text-color, #7D6860);
   box-shadow: 0 6px 24px rgba(242, 217, 134, 0.218);
@@ -42,8 +42,8 @@
   right: 0;
   height: 25%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-top-left-radius: var(--border-radius-l);
+  border-top-right-radius: var(--border-radius-l);
   pointer-events: none;
 }
 
@@ -59,7 +59,7 @@
 .partner-card h1,
 .partner-card h2 {
   color: #9C7A6E;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
   max-width: 90%;
   word-wrap: break-word;
 }
@@ -73,25 +73,25 @@
 .partner-card ul {
   list-style: none;
   padding: 0;
-  margin: 1rem 0 0 0;
+  margin: var(--spacing-m) 0 0 0;
   text-align: left;
 }
 
 .partner-card li {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-xs);
 }
 
 .start-button,
 .tether-button {
-  padding: 0.5rem 1.2rem;
+  padding: var(--spacing-xs) var(--spacing-l);
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--border-radius-round);
   background: var(--partner-accent-color, #D9A79E);
   color: white;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 1rem;
+  margin-top: var(--spacing-m);
 }
 
 .start-button:hover,
@@ -110,8 +110,8 @@
   height: 50vh;
   background: none;
   backdrop-filter: blur(8px);
-  z-index: 100;
-  border-radius: 16px;
+  z-index: 1000;
+  border-radius: var(--border-radius-xl);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -125,15 +125,15 @@
 }
 
 .check-partner-button {
-  padding: 0.5rem 1.2rem;
+  padding: var(--spacing-xs) var(--spacing-l);
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--border-radius-round);
   background: var(--partner-accent-color, #d99ec4);
   color: white;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-xs);
 }
 
 .check-partner-button:hover {
@@ -146,7 +146,7 @@
   position: fixed;
   background: rgba(209, 193, 193, 0.716);
   backdrop-filter: blur(4px);
-  border-radius: 12px;
+  border-radius: var(--border-radius-l);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,9 +157,9 @@
 
 .partner-checkin-modal {
   background: rgba(219, 145, 234, 0.614);
-  border-radius: 12px;
-  padding: 0.75rem auto;
-  padding-bottom: 1rem;
+  border-radius: var(--border-radius-l);
+  padding: var(--spacing-s) auto;
+  padding-bottom: var(--spacing-m);
   text-align: center;
   color: #7D6860;
   max-width: 420px;
@@ -179,15 +179,15 @@
 
 .partner-checkin-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   justify-content: center;
 }
 
 .partner-checkin-buttons button {
-  padding: 0.4rem 0.9rem;         /* reduced from 0.75rem 1.8rem */
+  padding: var(--spacing-xs) var(--spacing-m);         /* reduced from 0.75rem 1.8rem */
   font-size: 0.9rem;            /* optional: slightly smaller text */
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--border-radius-round);
   background: #D9A79E;
   color: white;
   font-weight: 600;
@@ -220,7 +220,7 @@
 @media (max-width: 768px) {
   .partner-support-grid-4 {
     grid-template-columns: 1fr; /* Single column for mobile */
-    padding: 1rem;
+    padding: var(--spacing-m);
   }
 
   .tether-overlay {
