@@ -9,7 +9,6 @@ const __dirname = dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: __dirname,
   plugins: [
     react({
       jsxRuntime: 'automatic'
@@ -34,6 +33,9 @@ export default defineConfig({
             type: 'image/png'
           }
         ]
+      },
+      workbox: {
+        globDirectory: 'dist/'
       }
     })
   ],
