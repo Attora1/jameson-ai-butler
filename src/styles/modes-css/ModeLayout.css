@@ -4,7 +4,7 @@
   max-width: 1000px;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: var(--spacing-m);
   flex: 1;
   box-sizing: border-box;
  
@@ -15,10 +15,10 @@
   display: flex;
   flex-direction: row;
   grid-template-columns: 1fr 1fr;
-  padding: 1rem;
+  padding: var(--spacing-m);
   justify-content: space-between;
   align-items: center; /* vertically center items */
-  gap: 3rem;
+  gap: var(--spacing-xxl);
   width: 100%;
   max-width: 100%;
   height: 100%;
@@ -32,7 +32,7 @@
   align-items: center;
   justify-content: flex-start;
   flex: 1;
-  gap: 1.5rem; /* spacing between timer, ring, button */
+  gap: var(--spacing-l); /* spacing between timer, ring, button */
   min-width: 300px;
 }
 
@@ -60,7 +60,7 @@
   
   .mode-layout-subtitle {
     text-align: center;
-    margin-top: -0.5rem;
+    margin-top: calc(var(--spacing-xs) * -1);
     color: rgba(133, 163, 226, 0.138);
     font-style: italic;
     font-weight: 300;

@@ -3,14 +3,14 @@
 .boxed-section {
   background: rgba(52, 86, 130, 0.35);
   backdrop-filter: blur(6px);
-  border-radius: 16px;
-  padding: 1rem;
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-m);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+  gap: var(--spacing-xs);
+  box-shadow: var(--box-shadow-l);
   transition: transform 0.2s ease;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-m);
 }
 
 .boxed-section:hover {
@@ -19,12 +19,12 @@
 
 .boxed-section button {
   align-self: flex-start;
-  margin: 0.75rem;
+  margin: var(--spacing-s);
   background: #E1C084;
   color: #1d2e44;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-m);
+  padding: var(--spacing-xs) var(--spacing-m);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;

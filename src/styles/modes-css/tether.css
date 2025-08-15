@@ -14,7 +14,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for the wrapper */
-    border-radius: 16px;
+    border-radius: var(--border-radius-xl);
     overflow: hidden;
     position: relative; /* Needed for absolute positioning of modals/close button */
   }
@@ -22,7 +22,7 @@
    .tether-canvas {
     display: block;
     margin: 0 auto; /* Center the canvas */
-    border-radius: 16px;
+    border-radius: var(--border-radius-xl);
     background: rgb(246, 214, 181);
     overflow: hidden;
     z-index: 20;
@@ -46,8 +46,8 @@
 
   .line {
     position: absolute;
-    width: 4px;
-    height: 4px;
+    width: var(--spacing-xxs);
+    height: var(--spacing-xxs);
     background: #D9A79E;
     border-radius: 50%;
     box-shadow: 0 0 12px rgba(217, 167, 158, 0.5);
@@ -60,10 +60,10 @@
     transform: translate(-50%, -50%);
     background: rgba(247, 207, 167, 0.777);
     color: #7d6860d8;
-    padding: 1.5rem 2rem;
-    border-radius: 12px;
+    padding: var(--spacing-l) var(--spacing-xl);
+    border-radius: var(--border-radius-l);
     box-shadow: 0 0 20px rgba(156, 122, 110, 0.2);
-    font-size: 1rem;
+    font-size: var(--spacing-m);
     z-index: 30;
     text-align: center;
     opacity: 0;
@@ -86,14 +86,14 @@
   .tether-modal button {
     display: flex;
     justify-content: center;
-    gap: 1rem; 
+    gap: var(--spacing-m); 
     flex-wrap: wrap; 
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
+    margin-top: var(--spacing-m);
+    padding: var(--spacing-xs) var(--spacing-m);
     background: rgba(217, 167, 158, 0.8);
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius-m);
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -113,16 +113,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--spacing-m);
+  margin-top: var(--spacing-m);
 }
 
 .tether-modal-buttons button {
-  padding: 0.5rem 1.2rem;
+  padding: var(--spacing-xs) var(--spacing-l);
   background: rgba(217, 167, 158, 0.8);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-m);
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -136,13 +136,13 @@
 .close-button {
   position: absolute;
   top: 0;
-  right: 1rem;
+  right: var(--spacing-m);
   background: none;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   cursor: pointer;
   font-size: 1.2rem;
 }
@@ -156,7 +156,7 @@
     justify-content: center;
     margin: 5rem;
     width: 50%;
-    gap: 3rem;
+    gap: var(--spacing-xxl);
     font-size: 0.9rem;
     color: #7d6860;
 }
@@ -167,24 +167,24 @@
     width: 90%;
     max-width: 300px;
     min-height: 80px;
-    padding: 0.5rem;
-    border-radius: 8px;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-m);
     border: 1px solid rgba(156, 122, 110, 0.2);
     resize: none;
-    font-size: 1rem;
+    font-size: var(--spacing-m);
     font-family: inherit;
     background: rgba(255, 255, 255, 0.8);
     color: #7D6860;
-    margin: 1rem 0;
+    margin: var(--spacing-m) 0;
   }
   
 
   .tether-button {
-    padding: 0.5rem 1rem;
+    padding: var(--spacing-xs) var(--spacing-m);
     background: rgba(235, 122, 139, 0.508);
     color: #7D6860;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius-m);
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -215,7 +215,7 @@
   }
   
   .tether-shape-display {
-    margin: 1rem 0;
+    margin: var(--spacing-m) 0;
     display: flex;
     justify-content: center;
     align-items: center;

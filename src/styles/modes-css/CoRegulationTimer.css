@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: var(--spacing-m);
   }
   
   .coregulation-ring {
@@ -19,16 +19,16 @@
   }
   
   .coregulation-subtext {
-    font-size: 1rem;
+    font-size: var(--spacing-m);
     color: var(--text-color, #7D6860);
-    margin-top: 0.5rem;
+    margin-top: var(--spacing-xs);
   }
   
   .end-session-button,
   .duration-buttons button {
-    padding: 0.5rem 1.2rem;
+    padding: var(--spacing-xs) var(--spacing-l);
     border: none;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-round);
     background: var(--partner-accent-color, #D9A79E);
     color: white;
     font-weight: 600;
@@ -59,9 +59,9 @@
 
   .duration-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--spacing-xs);
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: var(--spacing-m);
   }
   
   
