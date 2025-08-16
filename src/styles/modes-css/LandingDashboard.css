@@ -45,3 +45,29 @@
   width: 5%;
   height: 5%;
 }
+
+/* Dashboard actions layout — scoped to existing container */
+.action-buttons-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px) var(--space-4, 16px);
+  align-items: center;
+}
+
+/* Make each action a tidy pill; override the generic .boxed-section button margin */
+.action-buttons-grid > button {
+  margin: 0; /* prevent the earlier .boxed-section button margin from separating oddly */
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  border-radius: var(--radius-2xl, 20px);
+  background: var(--bg-elev-1, rgba(255,255,255,0.06));
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+  color: var(--text, #f3f5f7);
+  font-weight: 600;
+  line-height: 1;
+  backdrop-filter: blur(2px);
+}
+
+.action-buttons-grid > button:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-faint, rgba(255,255,255,0.22));
+}

@@ -307,3 +307,25 @@ h3, h4, .task-header {
   }
 }
 
+/* Ensure proper layout + gaps for timer controls */
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3, 12px);
+}
+
+/* Make timer buttons render as pills with consistent spacing */
+.timer-controls .timer-btn {
+  display: inline-flex;           /* belt-and-suspenders vs. any global resets */
+  align-items: center;
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  border-radius: var(--radius-xl, 16px);
+  line-height: 1;
+}
+
+/* Keep Stop visually distinct using your existing token colors */
+.timer-controls .stop-btn {
+  /* you already set colors; this is only here to keep the pill shape consistent */
+  border-radius: var(--radius-xl, 16px);
+}
