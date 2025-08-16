@@ -89,6 +89,8 @@ export function useChat(
         }
       } catch (e) {
         console.error('[lazy wellnessIntent] load failed:', e);
+        // Fall back so the chat doesn’t hard-crash:
+        setMessages(prev => [...prev, { text: "I'm having trouble loading wellness tools right now. Try again in a moment.", isUser: false }]);
       }
       if (handled) return; // only return if actually handled
     }
