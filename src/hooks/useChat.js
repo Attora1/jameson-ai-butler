@@ -100,12 +100,15 @@ export function useChat(
       let handled = false;
       try {
         const mod = await import('../intents/mealMedIntent.js'); // static path
-        if (mod && typeof mod.mealMedIntent === 'function') {
-          handled = await mod.mealMedIntent({ input, settings, setMessages, setInput });
+        const run = mod.default || mod.mealMedIntent; // support either default or named export
+        if (!run) throw new Error('mealMedIntent export missing');
+        if (run && typeof run === 'function') {
+          handled = await run({ input, settings, setMessages, setInput });
         }
       } catch (e) {
         console.error('[lazy mealMedIntent] load failed:', e);
-      }
+        // Fall back so the chat doesn’t hard-crash:
+        setMessages(prev => [...prev, { text: "I'm having trouble loading the meal/med tools right now. Try again in a moment.", isUser: false }]);
       if (handled) return;
     }
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
