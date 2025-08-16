@@ -1,52 +1,28 @@
 /* Refactored LandingDashboard.css for clearer, brighter boxes and buttons */
 
+/* --- Dashboard cards --------------------------------------------------- */
+/* Give each boxed section its own soft surface + separation */
 .boxed-section {
-  background: rgba(52, 86, 130, 0.35);
-  backdrop-filter: blur(6px);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-m);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  box-shadow: var(--box-shadow-l);
-  transition: transform 0.2s ease;
-  margin-bottom: var(--spacing-m);
+  background: var(--surface-1, rgba(255,255,255,0.05));
+  border: 1px solid var(--border-1, rgba(255,255,255,0.12));
+  border-radius: var(--radius-2xl, 20px);
+  box-shadow: var(--shadow-soft, 0 6px 24px rgba(0,0,0,0.18));
+  padding: var(--space-5, 20px);
+  backdrop-filter: blur(var(--blur-xs, 2px));
+  margin-bottom: var(--space-5, 20px);   /* visually separates the two boxes */
 }
 
-.boxed-section:hover {
-  transform: scale(1.02);
+/* Card titles: subtle header, not shouting */
+.boxed-section h2,
+.boxed-section .section-title {
+  color: var(--text-strong, #e8edf2);
+  letter-spacing: 0.2px;
+  margin-bottom: var(--space-3, 12px);
+  text-shadow: var(--shadow-glow, 0 1px 0 rgba(0,0,0,0.35));
 }
 
-.boxed-section button {
-  align-self: flex-start;
-  margin: var(--spacing-s);
-  background: #E1C084;
-  color: #1d2e44;
-  border: none;
-  border-radius: var(--border-radius-m);
-  padding: var(--spacing-xs) var(--spacing-m);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.boxed-section button:hover {
-  background: #D9B060;
-  transform: scale(1.03);
-}
-
-.daily-encouragement {
-  font-style: italic;
-  color: var(--text-light);
-  opacity: 0.85;
-}
-
-.made-with-bolt {
-  width: 5%;
-  height: 5%;
-}
-
-/* Dashboard actions layout — scoped to existing container */
+/* --- Actions panel (no black chips) ------------------------------------ */
+/* Your actions already sit inside .action-buttons-grid; keep scope tight */
 .action-buttons-grid {
   display: flex;
   flex-wrap: wrap;
@@ -54,20 +30,43 @@
   align-items: center;
 }
 
-/* Make each action a tidy pill; override the generic .boxed-section button margin */
-.action-buttons-grid > button {
-  margin: 0; /* prevent the earlier .boxed-section button margin from separating oddly */
+/* Make each action a soft pill that matches the brand, not pure black */
+.action-buttons-grid > button,
+.action-buttons-grid > a {
+  margin: 0;
   padding: var(--space-2, 8px) var(--space-4, 16px);
-  border-radius: var(--radius-2xl, 20px);
-  background: var(--bg-elev-1, rgba(255,255,255,0.06));
-  border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+  border-radius: var(--radius-pill, 9999px);
+  background: var(--chip-bg, rgba(255,255,255,0.08));             /* <— softer */
+  border: 1px solid var(--border-1, rgba(255,255,255,0.14));
   color: var(--text, #f3f5f7);
-  font-weight: 600;
   line-height: 1;
-  backdrop-filter: blur(2px);
+  box-shadow: var(--chip-shadow, 0 2px 10px rgba(0,0,0,0.18));     /* light */
+  text-decoration: none;
 }
 
-.action-buttons-grid > button:hover {
+/* In case a global .btn/.primary makes them black, neutralize it here */
+.action-buttons-grid > .btn,
+.action-buttons-grid > .primary {
+  background: var(--chip-bg, rgba(255,255,255,0.08)) !important;
+  color: var(--text, #f3f5f7) !important;
+  border-color: var(--border-1, rgba(255,255,255,0.14)) !important;
+  box-shadow: var(--chip-shadow, 0 2px 10px rgba(0,0,0,0.18)) !important;
+}
+
+/* Hover/active: gentle lift, still not black */
+.action-buttons-grid > button:hover,
+.action-buttons-grid > a:hover {
   transform: translateY(-1px);
-  border-color: var(--border-faint, rgba(255,255,255,0.22));
+  border-color: var(--border-2, rgba(255,255,255,0.22));
+}
+
+.action-buttons-grid > button:active,
+.action-buttons-grid > a:active {
+  transform: translateY(0);
+}
+
+/* Mobile comfort */
+ @media (max-width: 640px) {
+  .boxed-section { padding: var(--space-4, 16px); }
+  .action-buttons-grid { gap: var(--space-2, 8px) var(--space-3, 12px); }
 }
