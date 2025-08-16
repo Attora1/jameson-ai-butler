@@ -83,3 +83,36 @@
 
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.18);
 }
+
+/* General buttons — exclude Engage explicitly */
+button:not(.engage-btn),
+.action-buttons-grid > button,
+.action-buttons-grid > a,
+.timer-controls .timer-btn,
+.partner-checkin-buttons button {
+  position: relative;
+  z-index: 0; /* needed for pseudo glow layering */
+  transition: all 0.25s ease;
+  box-shadow: 0 0 0 transparent; /* default no glow */
+}
+
+/* Hover: faint glow + fog glass, text stays sharp */
+button:not(.engage-btn):hover,
+.action-buttons-grid > button:hover,
+.action-buttons-grid > a:hover,
+.timer-controls .timer-btn:hover,
+.partner-checkin-buttons button:hover {
+  box-shadow: 0 0 10px var(--glow-color, rgba(255,255,255,0.25));
+  background: var(--chip-bg-hover, rgba(255,255,255,0.14));
+  backdrop-filter: blur(4px) brightness(1.05);
+}
+
+/* Active: keep the glow but reduce blur so it feels pressed */
+button:not(.engage-btn):active,
+.action-buttons-grid > button:active,
+.action-buttons-grid > a:active,
+.timer-controls .timer-btn:active,
+.partner-checkin-buttons button:active {
+  box-shadow: 0 0 6px var(--glow-color, rgba(255,255,255,0.2));
+  backdrop-filter: blur(2px) brightness(0.98);
+}
