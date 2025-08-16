@@ -112,7 +112,7 @@ export function useChat(
       }
       if (handled) return;
     }
-    if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
+    
 
     //  VERSION / UPDATE INTENT (e.g., "version?", "update?", "what build am I on")
     {
