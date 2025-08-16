@@ -358,7 +358,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
 
         {/* Save Button */}
         <div className="settings-footer">
-          <button className="save-settings btn" onClick={handleSave} type="button">
+          <button className="save-btn btn" onClick={handleSave} type="button">
             Save
           </button>
         </div>
