@@ -109,6 +109,7 @@ export function useChat(
         console.error('[lazy mealMedIntent] load failed:', e);
         // Fall back so the chat doesn’t hard-crash:
         setMessages(prev => [...prev, { text: "I'm having trouble loading the meal/med tools right now. Try again in a moment.", isUser: false }]);
+      }
       if (handled) return;
     }
     if (await mealMedIntent({ input, settings, setMessages, setInput })) return;
