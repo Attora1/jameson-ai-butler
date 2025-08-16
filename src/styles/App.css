@@ -278,12 +278,17 @@ color: #fbe0ccde;
   border-radius: var(--radius-md); /* Use token */
 }
 
-.save-settings {
+/* Save button: bottom-right action */
+.settings-modal .save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2, 8px) var(--space-5, 20px);
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
   position: absolute;
-  bottom: 0;
-  right: var(--space-4);
-  padding: var(--space-3) var(--space-6); /* Use tokens */
-  z-index: 11;
+  bottom: var(--space-4, 16px);
+  right: var(--space-4, 16px);
 }
 
 .save-settings:hover {
