@@ -3,7 +3,7 @@ import './styles/App.css';
 
 import { useFacts } from './hooks/useFacts.js';
 import { useSettings } from './hooks/useSettings.js';
-import { useChat } from './hooks/useChat.js';
+import { useChat } from './hooks/useChat.jsx';
 import { usePersistentTimerPolling } from './hooks/useTimer.js';
 
 import MessageList from './components/Chat/MessageList.jsx';
