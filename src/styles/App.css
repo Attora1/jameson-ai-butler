@@ -271,11 +271,12 @@ color: #fbe0ccde;
 .close-settings {
   position: absolute;
   top: var(--space-4);
-  right: var(--space-4);
+  right: var(--space-2);
   background: var(--color-steel-blue);
   color: var(--color-text-light);
-  padding: var(--space-2) var(--space-3); /* Use tokens */
+  padding: var(--space-1) var(--space-2); /* Use tokens */
   border-radius: var(--radius-md); /* Use token */
+  font-size: 0.8rem;
 }
 
 /* Save button: bottom-right action */

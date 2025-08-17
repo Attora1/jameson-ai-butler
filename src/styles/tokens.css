@@ -60,6 +60,20 @@
   --bp-md: 768px;
   --bp-lg: 1024px;
   --bp-xl: 1280px;
+
+  /* Custom tokens for settings modal */
+  --radius-full: 50%;
+  --surface-1: rgba(255,255,255,0.05);
+  --surface-2: rgba(255,255,255,0.08);
+  --surface-3: rgba(255,255,255,0.14);
+  --border-1: rgba(255,255,255,0.12);
+  --text-strong: #e8edf2;
+  --shadow-glow: 0 1px 0 rgba(0,0,0,0.35);
+  --blur-xs: 2px;
+  --radius-pill: 9999px;
+  --chip-bg: rgba(255,255,255,0.08);
+  --chip-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  --border-2: rgba(255,255,255,0.22);
 }
 
 /* =========
