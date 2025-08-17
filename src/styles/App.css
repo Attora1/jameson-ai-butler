@@ -271,7 +271,7 @@ color: #fbe0ccde;
 .close-settings {
   position: absolute;
   top: var(--space-4);
-  right: var(--space-2);
+  right: var(--space-8);
   background: var(--color-steel-blue);
   color: var(--color-text-light);
   padding: var(--space-1) var(--space-2); /* Use tokens */
