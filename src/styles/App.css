@@ -272,11 +272,17 @@ color: #fbe0ccde;
   position: absolute;
   top: var(--space-4);
   right: var(--space-8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-steel-blue);
   color: var(--color-text-light);
-  padding: var(--space-1) var(--space-2); /* Use tokens */
-  border-radius: var(--radius-md); /* Use token */
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
   font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 120ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease;
 }
 
 /* Save button: bottom-right action */
