@@ -83,7 +83,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
     <div className="settings-overlay modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div className="settings-modal" onClick={(e) => e.stopPropagation()} tabIndex={-1}>
         <button
-          className="close-settings btn"
+          className="close-settings"
           onClick={onClose}
           aria-label="Close settings modal"
           type="button"
