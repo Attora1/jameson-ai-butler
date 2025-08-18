@@ -1,3 +1,4 @@
+import { endpoints } from '../utils/apiBase.js';
 import React, { useState, useEffect } from 'react';
 import {
   HONORIFICS,
@@ -63,7 +64,7 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
     setSettings(localSettings);
   
     try {
-      await fetch('http://localhost:3001/api/wellness', {
+      await fetch(endpoints.wellness, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
