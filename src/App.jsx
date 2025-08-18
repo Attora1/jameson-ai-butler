@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './styles/App.css';
 
 import { useFacts } from './hooks/useFacts.js';
@@ -20,6 +20,8 @@ import { SpoonProvider, useSpoons } from './context/SpoonContext.jsx';
 import { getMoodReflection } from './utils/introAndMood.js';
 import { composeMemoryEntries } from './utils/memoriesBridge.js';
 
+const MODES = { CHAT:'chat', FOCUS:'focus', LOW_SPOON:'low-spoon', PARTNER:'partner', CRISIS:'crisis' };
+
 function App() {
   const [showFacts, setShowFacts] = useState(false);
   const { facts, addFact, clearFacts } = useFacts();
@@ -27,7 +29,29 @@ function App() {
   const { spoons, spoonMax, isUnset } = useSpoons();
   const [poweredDown, setPoweredDown] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown);
+  
+  const [mode, setMode] = useState(() => localStorage.getItem('mode') || MODES.CHAT);
+  const [lastMode, setLastMode] = useState(() => localStorage.getItem('lastMode') || MODES.CHAT);
+
+  useEffect(() => {
+    document.body.setAttribute('data-mode', mode);
+    localStorage.setItem('mode', mode);
+  }, [mode]);
+
+  useEffect(() => {
+    localStorage.setItem('lastMode', lastMode);
+  }, [lastMode]);
+
+  const switchMode = useCallback((target) => {
+    if (target === mode) return false; // nothing to do
+    setLastMode(mode);
+    setMode(target);
+    return true;
+  }, [mode]);
+
+  const aeliApi = { mode, lastMode, switchMode, MODES };
+
+  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown, aeliApi);
 
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
@@ -114,29 +138,19 @@ function App() {
   }, [settings, messages.length, setMessages]);
 
   const renderModeContent = () => {
-    switch (settings.mode) {
-      case 'dashboard':
-        return (
-          <LandingDashboard
-            settings={settings}
-            setSettings={setSettings}
-            setShowSettings={setShowSettings}
-          />
-        );
-      case 'focus':
-        return <Focus settings={settings} />;
-      case 'low_spoon':
-        return <LowSpoon settings={settings} />;
-      case 'partner_support':
-        return <PartnerSupport settings={settings} />;
-      default:
-        return <LowSpoon settings={settings} />;
-    }
+    let content = null;
+    if (mode === MODES.FOCUS) content = <Focus />;
+    else if (mode === MODES.LOW_SPOON) content = <LowSpoon />;
+    else if (mode === MODES.PARTNER) content = <PartnerSupport />;
+    else if (mode === MODES.CRISIS) content = <Crisis />;
+    else content = <LandingDashboard settings={settings} setSettings={setSettings} setShowSettings={setShowSettings} />;
+
+    return content;
   };
 
   return (
     <>
-      <div className={`App ${settings.mode}-theme`}>
+      <div className={`App ${mode}-theme`}>
         <div className="main-content">
           <div className="header-buttons">
             <button onClick={() => setShowSettings(true)} className="settings-button btn">

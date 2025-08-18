@@ -15,7 +15,8 @@ export function useChat(
   spoonCount,
   poweredDown,
   setPoweredDown,
-  startupPhrasesParam
+  startupPhrasesParam,
+  aeliApi
 ) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -466,7 +467,7 @@ export function useChat(
       // Minimal action handling (mode switch only to avoid undefined imports)
       const action = data.action;
       if (action?.type === 'switchMode' && typeof action.payload === 'string') {
-        setSettings(prev => ({ ...prev, mode: action.payload }));
+        aeliApi.switchMode(action.payload);
       }
 
     } catch (error) {
