@@ -1,0 +1,1 @@
+export default function CrisisMode() { return (<div className="mode crisis"><p>CrisisMode stub loaded.</p></div>); }
