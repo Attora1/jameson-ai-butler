@@ -1,7 +1,7 @@
 // src/components/CheckIn/QuickCheckIn.jsx
 import React, { useState } from 'react';
 import { estimateSpoons } from '../../utils/estimateSpoons';
-import { useSpoons } from '../../context/SpoonContext.jsx';
+import { useSpoons } from '../../context/useSpoons.js';
 
 export default function QuickCheckIn({ open, onClose }) {
   const { setSpoons, spoonMax } = useSpoons();

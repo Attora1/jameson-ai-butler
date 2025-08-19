@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useMode } from '../context/ModeContext.jsx'; // Import useMode
+import { useMode } from '../context/useMode.js'; // Import useMode
 import { cancelTimerIntent } from '../intents/cancelTimerIntent.js';
 import { normalizeInput } from '../utils/normalizeInput.js';
 import { styleGovernor } from '../persona/styleGovernor.js';

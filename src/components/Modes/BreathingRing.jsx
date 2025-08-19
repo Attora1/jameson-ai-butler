@@ -2,7 +2,7 @@ import React from 'react';
 import '../../styles/modes-css/LowSpoon.css'; // keep your existing css
 import petalImage from '../../assets/petal-flower.png'; // keep if used by your effect
 import { SPOON_MAX } from '../../constants/spoons';
-import { useSpoons } from '../../context/SpoonContext.jsx';
+import { useSpoons } from '../../context/useSpoons.js';
 
 // Props: { running } as in your original
 export default function BreathingRing({ running }) {

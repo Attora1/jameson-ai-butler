@@ -6,7 +6,7 @@ import { getReturnFromZen, getModeSubtitle } from '../../utils/AELIRemarks.js';
 import { useDebounce } from '../../utils/useDebounce.js';
 import QuickCheckIn from '../CheckIn/QuickCheckIn.jsx';
 import '../../styles/modes-css/LowSpoon.css';
-import { useSpoons } from '../../context/SpoonContext.jsx';
+import { useSpoons } from '../../context/useSpoons.js';
 
 export default function LowSpoon({ settings }) {
   const { spoons } = useSpoons();
