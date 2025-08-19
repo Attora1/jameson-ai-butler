@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useMode } from '../context/ModeContext.jsx'; // Import useMode
 import { cancelTimerIntent } from '../intents/cancelTimerIntent.js';
 import { normalizeInput } from '../utils/normalizeInput.js';
 import { styleGovernor } from '../persona/styleGovernor.js';
@@ -15,9 +16,9 @@ export function useChat(
   spoonCount,
   poweredDown,
   setPoweredDown,
-  startupPhrasesParam,
-  aeliApi
+  startupPhrasesParam
 ) {
+  const { setMode } = useMode(); // Get setMode from useMode
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isResponding, setIsResponding] = useState(false);
@@ -77,6 +78,13 @@ export function useChat(
 
     // now normalize for intent matching
     const norm = normalizeInput(input).normalized;
+
+    // crude intent hooks (you can refine later):
+    const text = input.toLowerCase();
+    if (text.includes("low spoon")) setMode("lowSpoon");
+    else if (text.includes("focus")) setMode("focus");
+    else if (text.includes("partner")) setMode("partner");
+    else if (text.includes("chat mode") || text.includes("back to chat")) setMode("chat");
 
     // 🛑 CANCEL TIMER (helper) — runs before anything goes to the model
     if (await cancelTimerIntent({ input, settings, setMessages, setInput })) return;
@@ -464,12 +472,6 @@ export function useChat(
       }
       markAeliMessage(settings?.userId || 'defaultUser');
 
-      // Minimal action handling (mode switch only to avoid undefined imports)
-      const action = data.action;
-      if (action?.type === 'switchMode' && typeof action.payload === 'string') {
-        aeliApi.switchMode(action.payload);
-      }
-
     } catch (error) {
       console.error('[AELI Chat Error]', error);
       setMessages(prev => [...prev, { text: styleGovernor("♦cough♦ Technical difficulties, madam.", { userName: settings?.name || 'Nessa', recentAiTexts: prev.filter(m => !m.isUser).map(m => m.text) }), isUser: false }]);
@@ -491,7 +493,8 @@ export function useChat(
     skipNextResponse,
     poweredDown,
     setPoweredDown,
-    startupPhrasesParam
+    startupPhrasesParam,
+    setMode // Add setMode to dependency array
   ]);
 
   return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown };

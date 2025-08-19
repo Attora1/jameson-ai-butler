@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import './styles/App.css';
 
 import { useFacts } from './hooks/useFacts.js';
@@ -11,53 +11,33 @@ import ChatInput from './components/Chat/ChatInput.jsx';
 import WakeUpInput from './components/Chat/WakeUpInput.jsx';
 import SettingsModal from './components/SettingsModal.jsx';
 import HealthProfileEditor from './components/HealthProfileEditor.jsx';
-import { STORAGE_KEY, DEFAULT_SETTINGS } from './constants.js';
-import Focus from './components/Modes/Focus.jsx';
-import LowSpoon from './components/Modes/LowSpoon.jsx';
-import PartnerSupport from './components/Modes/PartnerSupport.jsx';
-import LandingDashboard from './components/Modes/LandingDashboard.jsx';
+import { STORAGE_KEY } from './constants.js';
 import { SpoonProvider, useSpoons } from './context/SpoonContext.jsx';
 import { getMoodReflection } from './utils/introAndMood.js';
 import { composeMemoryEntries } from './utils/memoriesBridge.js';
+import { ModeProvider, useMode } from "./context/ModeContext.jsx";
+import ModeRouter from "./components/ModeRouter.jsx";
 
-const MODES = { CHAT:'chat', FOCUS:'focus', LOW_SPOON:'low-spoon', PARTNER:'partner', CRISIS:'crisis' };
-
-function App() {
+function AppContent() {
+  const { mode } = useMode();
   const [showFacts, setShowFacts] = useState(false);
   const { facts, addFact, clearFacts } = useFacts();
   const { settings, setSettings } = useSettings();
-  const { spoons, spoonMax, isUnset } = useSpoons();
+  const { spoons, spoonMax } = useSpoons();
   const [poweredDown, setPoweredDown] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  
-  const [mode, setMode] = useState(() => localStorage.getItem('mode') || MODES.CHAT);
-  const [lastMode, setLastMode] = useState(() => localStorage.getItem('lastMode') || MODES.CHAT);
 
-  useEffect(() => {
-    document.body.setAttribute('data-mode', mode);
-    localStorage.setItem('mode', mode);
-  }, [mode]);
-
-  useEffect(() => {
-    localStorage.setItem('lastMode', lastMode);
-  }, [lastMode]);
-
-  const switchMode = useCallback((target) => {
-    if (target === mode) return false; // nothing to do
-    setLastMode(mode);
-    setMode(target);
-    return true;
-  }, [mode]);
-
-  const aeliApi = { mode, lastMode, switchMode, MODES };
-
-  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown, aeliApi);
+  const { messages, setMessages, input, setInput, isResponding, handleSubmit } = useChat(settings, setSettings, facts, addFact, spoons, poweredDown, setPoweredDown);
 
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
   const [inactivityMessageSent, setInactivityMessageSent] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [hpOpen, setHpOpen] = useState(false);
   usePersistentTimerPolling(setMessages, poweredDown, settings);
+
+  useEffect(() => {
+    document.body.setAttribute('data-mode', mode);
+  }, [mode]);
 
   useEffect(() => {
     if (poweredDown) {
@@ -137,17 +117,6 @@ function App() {
     }
   }, [settings, messages.length, setMessages]);
 
-  const renderModeContent = () => {
-    let content = null;
-    if (mode === MODES.FOCUS) content = <Focus />;
-    else if (mode === MODES.LOW_SPOON) content = <LowSpoon />;
-    else if (mode === MODES.PARTNER) content = <PartnerSupport />;
-    else if (mode === MODES.CRISIS) content = <Crisis />;
-    else content = <LandingDashboard settings={settings} setSettings={setSettings} setShowSettings={setShowSettings} />;
-
-    return content;
-  };
-
   return (
     <>
       <div className={`App ${mode}-theme`}>
@@ -187,7 +156,7 @@ function App() {
             </button>
           </div>
 
-          <div className={`chat-container ${settings.mode}-theme`}>
+          <div className={`chat-container ${mode}-theme`}>
             {showFacts && (
               <div className="memory-facts" style={{ background: '#feffe8', border: '1px solid #eee', margin: '8px', padding: '8px' }}>
                 <b>My Memories:</b>
@@ -231,9 +200,7 @@ function App() {
             )}
           </div>
 
-          <div>
-            {renderModeContent()}
-          </div>
+          <ModeRouter />
 
           {showSettings && (
             <SettingsModal
@@ -252,6 +219,17 @@ function App() {
         </div>
       )}
     </>
+  );
+}
+
+
+function App() {
+  return (
+    <SpoonProvider>
+      <ModeProvider>
+        <AppContent />
+      </ModeProvider>
+    </SpoonProvider>
   );
 }
 
