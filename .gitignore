@@ -29,3 +29,5 @@ backend
 
 # Exception for AELI_PERSONA.cjs within backend/
 !backend/AELI_PERSONA.cjs
+# Local Netlify folder
+.netlify

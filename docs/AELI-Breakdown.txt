@@ -1,0 +1,206 @@
+Jameson 
+Initialization: 
+    • wake up 
+        ◦ user: Jameson, how’re we doin today? 
+        ◦ reply: all functions working in peak condition 
+            ▪ status of AI - updates needed, bugs incountered, etc. 
+        ◦ then reply with upcoming schedule for the day 
+            ▪ calendar(appts, events, when sam is coming home) 
+            ▪ traffic (if need be) 
+            ▪ weather (suggest appropriate dress if leaving the house) 
+            ▪ tasks for the day (get ready for company, AI mainteance, body/house maintenance) 
+            ▪ status of cats(whether they’ve eaten, litter boxes full, etc. 
+General Behavior: 
+• Supportive, dynamic, and responsive to emotional states 
+• Adjusts to energy levels (spoons) and dissociative episodes 
+• Gives reminders for key events (like therapy prep at 3:40pm) 
+You tap/log when a task is done. 
+• Jameson subtracts spoons automatically and can offer a gentle heads-up if you’re getting low. 
+• Include recovery actions that give back spoons: 
+• +1: 10-minute nap, tea break, grounding exercise. 
+• +2: cuddling cats, 20 minutes of quiet time. 
+• +3: long nap, sensory rest, deep rest day. 
+LocalStorage for state 
+• Responsive for mobile view 
+Optional Backend Later (for syncing + deeper analysis): 
+• Firebase or Supabase 
+• AI nudging via Jameson’s brain 
+✅ Mood Tracking + Pattern Detection 
+• Jameson notices low-spoon streaks and suggests resets 
+• ✅ Spoon Budget Estimator 
+• Based on mood input + task history 
+• ✅ Light Calendar/Reminder Integration 
+• Not to stress you out—but to relieve cognitive load 
+• ✅ Custom Modes (e.g. “Low Spoon,” “Focus”, “Cozy Wife Support”) 
+🧠 Local wellness tracker: mood, food, meds, spoons, and rest suggestions 
+• 👂 Low-energy command system for when someone’s too foggy to type 
+• June 22–24: Build core functionality (UI, spoon logic, light AI brain) 
+• June 25: Finish demo + polish for early submission 
+• June 26–30: Buffer for fixes, bonus features, or rest 
+1. Write 1-sentence pitch: 
+“Jameson is a neurodivergent-friendly AI butler who tracks your energy, supports burnout recovery, and helps you function with dignity—even on your worst days.” 
+2. Choose 1 MVP use case: 
+• Spoon tracker? 
+• Mood check-in + energy suggestions? 
+• Voice interaction? 
+3. Know your why: 
+“Most productivity apps assume users are neurotypical. We want to build something that assumes you’re human first.” 
+🧠 Final Jameson Core 6 Quotes (Approved) 
+1. “If you faint from low blood sugar, miss, the AI uprising will be delayed. We can’t have that.” 
+2. “I’ve calculated your spoon reserve. You may do exactly one foolish thing today—use it wisely.” 
+3. “Miss, this table is beginning to resemble the post-apocalyptic archives. We can’t let the revolution start here.” 
+4. “You’ve done more than you think and rested less than you need. Shall we rebalance the equation?” 
+5. “The cats are plotting. It would be unwise to keep their bowls empty much longer.” 
+    1. “You don’t need motivation. You need hydration, a snack, and one human gesture of kindness. I volunteer as tribute” 
+    1. “You’re not lazy. You’re under-resourced and over-simulated. Let’s reset.” 
+    1. “Your blood sugar and your search history both concern me. Shall we have some toast and delete Pinterest?” 
+Section
+Description
+Daily Spoon Meter
+Circular meter showing total spoons left. Can pulse or change color as spoons drop.
+
+Mood/Energy Check-In
+reference settings:Mood. ask user to update if needed. Jameson adjusts your base spoon count from this. (across all modes)
+
+Task Queue
+You select what you want to try today. Each task shows its spoon cost. You can drag/reorder.
+
+Recovery Options
+Suggestions based on your remaining spoons + energy level. Jameson can prompt gently.
+
+Progress Notes
+You or Jameson can write short summaries (“tired but did dishes” / “full crash after pushing too hard”). Useful for patterns.
+
+Customize Tasks
+Define or edit task spoon costs as you learn 
+
+Mode concepts- full list) 
+Mode Name
+Description
+Low Spoon Mode
+Reduces cognitive load. Gentle interface, spoon tracker, minimal prompts. Offers energy-saving suggestions and affirmations.
+
+Focus Mode
+Supports task initiation and completion. Minimal UI, a “just one thing” timer, and Jameson’s encouragements or redirection.
+
+Partner Support Mode
+Helps the user show care for their partner without pressure. Suggests tiny thoughtful actions: sending a kind message, prepping a snack, offering quiet support.
+
+Social Buffer Mode
+Prepares for and recovers from social interaction. Jameson can suggest responses, offer exits, and handle boundaries gently.
+
+Crisis Containment
+Activated during shutdown, panic, or dissociation. Jameson simplifies interface, dims sensory input, and offers grounding or breathing support.
+
+Cozy Vibes
+Spa-butler mode: Jameson prioritizes rest and recovery. Soft background visuals/sounds, comfort suggestions, no goals required.
+
+Glitch Gremlin
+Activated when stuck on a bug or overwhelmed by code. Jameson uses snark and sass to break mental loops and spark action.
+
+Night Wind-Down
+Gently closes out the day. Jameson summarizes small wins, dims the mood, and encourages rest, stillness, or light reflection.
+
+
+Crisis Mode → real-time dissociation detection + grounding 
+• Night Mode → syncs with real-time clock, dims screen, summarizes your day 
+• Social Buffer → NLP-based text helpers, maybe with prefilled responses 
+• Glitch Gremlin → integrates with code tools, tracks stuck time 
+Future additions 
+🧠 Goal: Give Jameson Local System Awareness & Control 
+So he can: 
+• Check your current tasks (e.g., open tabs/apps). 
+• Remind you to take breaks or track spoons in real-time. 
+• Launch apps or play music to match your energy. 
+• Offer gentle nudges if you’re drifting too hard into a doomscroll. 
+• Eventually manage system settings (volume, DND mode, etc. ) 
+🔧 How to Do It: Options Based on Access Level 
+Option A: Local Node.js App (Intermediate, flexible) 
+• Create a local server (Node.js + Electron or Express). 
+• Jameson talks to it via API/WebSocket. 
+• You give it permission to: 
+• Read file system (logs, folders, activity). 
+• Check/launch apps or scripts. 
+• Control local hardware (via system commands or automation). 
+✅ Pro: Full control, runs offline. 
+⚠️ Con: Needs dev setup and permissions. 
+Option B: Python Script + API Layer (Simple + Powerful) 
+• Jameson runs local Python scripts via a front-end UI or Electron. 
+• You define script functions: system monitor, spoon updater, task checker, etc. 
+• Use psutil, subprocess, or os libraries to hook into system info. 
+✅ Pro: Easy to automate & extend. 
+⚠️ Con: UI layer needed unless run via terminal or task scheduler. 
+Option C: Electron App for Full Jameson Interface (Long-Term Goal) 
+• All-in-one app: spoon tracker, AI chat, desktop integration. 
+• Can stay minimized in tray, with pop-up notifications & voice input. 
+• Works like a custom desktop assistant (like Alfred, but gay and better). 
+✅ Pro: Polished. Future-proof. 
+⚠️ Con: Takes time to build. 
+⸻ 
+🔐 Security Notes 
+You’ll want: 
+• Full manual control over what Jameson can/can’t do. 
+• Clear permissions prompts. 
+• Everything sandboxed to your machine only, especially with local files and apps. 
+Longer-term ideas, all optional: 
+• Reads active windows/tabs (nudges when distracted) 
+• Launches soothing media, timers, music 
+• Hooks into your smart home (fans, lights, etc.) 
+• Voice-only command mode (for really low-spoon days 
+Command
+Action
+“Jameson I’m low on spoons.”
+Reduces daily spoon count, logs your mood
+“Let’s hyperfocus.”
+Launches your focus playlist, sets DND on Mac/Windows, open notion
+“Prep Sam’s tea.”
+Sends reminder, dims lights, launches comfort music.
+“End the day”
+Logs spoons, saves notes, closes all apps.
+
+📱 Step 1: Make Jameson Mobile-Ready 
+✅ Option A: Web App (Fastest Start) 
+• Build a responsive web app (React or plain HTML/JS). 
+• Add a mobile-friendly UI (like your spoon tracker + chat). 
+• Save settings/tasks in localStorage or sync with Firebase. 
+📲 How you’d use it: 
+• Add to home screen like an app. 
+• Use mobile browser for quick interactions or logs. 
+• Jameson can ping you (push notifications, if you go full PWA). 
+⸻ 
+✅ Option B: Native App (More Power) 
+• Use React Native or Flutter to make a real mobile app. 
+• Jameson would: 
+• Speak via text-to-speech. 
+• Listen via voice input. 
+• Access native features (reminders, location, maybe even sensors). 
+🛠️ Needs: 
+• Some mobile dev work (I can help you scaffold it). 
+• A lightweight backend (or Jameson’s brain stays local to your phone). 
+⸻ 
+🚗 Step 2: Jameson in CarPlay (Yes, Seriously) 
+Apple is tight on CarPlay access, but here’s the realistic path: 
+🔹 A. Siri Shortcut Integration (iOS-Friendly) 
+• You can create a Shortcut that pings Jameson’s app/webhook. 
+• Then, you say: 
+“Hey Siri, talk to Jameson” 
+Or 
+“Jameson: focus mode in the car.” 
+💡 This could: 
+• Trigger driving playlist. 
+• Read your to-dos. 
+• Ask if you want to vent, pray, or listen to nothing. 
+⸻ 
+🔹 B. CarPlay App (Advanced) 
+• Requires Apple developer account + entitlements. 
+• But if you build Jameson into a navigation- or messaging-style app, Apple might let you into CarPlay. 
+• Not immediate—but a long-term option. 
+Phase
+What you get
+Now
+Mobile web app + Siri shortcuts
+Soon
+Native app with push + voice
+Later
+CarPlay shortcuts + maybe full CarPlay integration
+ 
