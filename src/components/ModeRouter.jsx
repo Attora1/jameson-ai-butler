@@ -1,31 +1,31 @@
-import React from "react";
-import { useMode } from "../context/ModeContext.jsx";
+import React, { Suspense, lazy } from 'react';
+import { useMode } from '../context/ModeContext.jsx';
 
-// Import your mode pages (or keep placeholders to avoid crashes)
-import LandingDashboard from "./Modes/LandingDashboard.jsx"; // For chat mode
-import LowSpoon from "./Modes/LowSpoon.jsx";
-import Focus from "./Modes/Focus.jsx";
-import PartnerSupport from "./Modes/PartnerSupport.jsx";
-// Optional crisis:
-const CrisisMode = () => <div className="mode crisis">Crisis Mode</div>;
+// Lazy-load each mode screen
+const ChatMode = lazy(() => import('../modes/ChatMode.jsx'));
+const FocusMode = lazy(() => import('../modes/FocusMode.jsx'));
+const LowSpoonMode = lazy(() => import('../modes/LowSpoonMode.jsx'));
+const PartnerSupportMode = lazy(() => import('../modes/PartnerSupportMode.jsx'));
+const CrisisMode = lazy(() => import('../modes/CrisisMode.jsx'));
+const Dashboard = lazy(() => import('../modes/Dashboard.jsx')); // keep if you have one
 
-// Fail-safe placeholders if any imports are temporarily missing
-const Fallback = ({ name }) => <div className="mode fallback">Missing: {name}</div>;
+// Normalize "Low Spoon", "low-spoon", etc. → "lowspoon"
+const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+
+// Map normalized mode → component
+const MODE_MAP = {
+  chat: ChatMode,
+  focus: FocusMode,
+  lowspoon: LowSpoonMode,
+  partnersupport: PartnerSupportMode,
+  crisis: CrisisMode,
+};
 
 export default function ModeRouter() {
   const { mode } = useMode();
-
-  switch (mode) {
-    case "lowSpoon":
-      return LowSpoon ? <LowSpoon /> : <Fallback name="LowSpoonMode" />;
-    case "focus":
-      return Focus ? <Focus /> : <Fallback name="FocusMode" />;
-    case "partner":
-      return PartnerSupport ? <PartnerSupport /> : <Fallback name="PartnerSupportMode" />;
-    case "crisis":
-      return <CrisisMode />;
-    case "chat":
-    default:
-      return LandingDashboard ? <LandingDashboard /> : <Fallback name="ChatMode" />;
-  }
+  const key = norm(mode);
+  const Screen = MODE_MAP[key] || ChatMode; // ✅ fallback is Chat, not Dashboard
+  return (
+    <Suspense fallback={<div className="loading">Loading…</div>}>      <Screen />    </Suspense>
+  );
 }
