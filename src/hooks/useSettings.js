@@ -3,19 +3,33 @@ import { DEFAULT_SETTINGS } from '../constants';
 
 const SETTINGS_KEY = 'AELI_SETTINGS';
 
+// New normalizeSettings function
+function normalizeSettings(s) {
+  const src = s || {};
+  const chat = src.chat && typeof src.chat === 'object' ? src.chat : {};
+  return {
+    ...DEFAULT_SETTINGS, // Use the imported DEFAULT_SETTINGS
+    ...src,
+    chat: {
+      ...DEFAULT_SETTINGS.chat, // Assuming DEFAULT_SETTINGS also has a chat object
+      ...chat,
+    },
+  };
+}
+
 function loadSettings() {
   try {
     const saved = localStorage.getItem(SETTINGS_KEY);
     const parsed = saved ? JSON.parse(saved) : {};
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    return normalizeSettings(parsed); // Use normalizeSettings here
   } catch (e) {
     console.error("Failed to load settings from localStorage", e);
-    return { ...DEFAULT_SETTINGS };
+    return normalizeSettings({}); // Use normalizeSettings here
   }
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState(loadSettings());
+  const [settings, setSettingsState] = useState(() => normalizeSettings(loadSettings())); // Modified useState init
 
   useEffect(() => {
     try {
@@ -24,6 +38,11 @@ export function useSettings() {
       console.error("Failed to save settings to localStorage", e);
     }
   }, [settings]);
+
+  // Modified setSettings updater
+  const setSettings = (patch) => {
+    setSettingsState(prev => normalizeSettings({ ...prev, ...patch }));
+  };
 
   return { settings, setSettings };
 }

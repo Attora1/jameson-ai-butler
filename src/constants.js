@@ -24,6 +24,11 @@ export const DEFAULT_SETTINGS = {
   fontFamily: "sans-serif",
   memoryLimit: 5,
   enableWeather: true,
+  chat: { // Added chat object
+    fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
+    fontSize: '1rem',
+    lineHeight: 1.5,
+  },
 };
 
 export const HONORIFICS = [
