@@ -2,10 +2,10 @@ import React from "react";
 import { useMode } from "../context/ModeContext.jsx";
 
 // Import your mode pages (or keep placeholders to avoid crashes)
-import ChatMode from "../modes/ChatMode.jsx";
-import LowSpoonMode from "../modes/LowSpoonMode.jsx";
-import FocusMode from "../modes/FocusMode.jsx";
-import PartnerSupportMode from "../modes/PartnerSupportMode.jsx";
+import LandingDashboard from "./Modes/LandingDashboard.jsx"; // For chat mode
+import LowSpoon from "./Modes/LowSpoon.jsx";
+import Focus from "./Modes/Focus.jsx";
+import PartnerSupport from "./Modes/PartnerSupport.jsx";
 // Optional crisis:
 const CrisisMode = () => <div className="mode crisis">Crisis Mode</div>;
 
@@ -17,15 +17,15 @@ export default function ModeRouter() {
 
   switch (mode) {
     case "lowSpoon":
-      return LowSpoonMode ? <LowSpoonMode /> : <Fallback name="LowSpoonMode" />;
+      return LowSpoon ? <LowSpoon /> : <Fallback name="LowSpoonMode" />;
     case "focus":
-      return FocusMode ? <FocusMode /> : <Fallback name="FocusMode" />;
+      return Focus ? <Focus /> : <Fallback name="FocusMode" />;
     case "partner":
-      return PartnerSupportMode ? <PartnerSupportMode /> : <Fallback name="PartnerSupportMode" />;
+      return PartnerSupport ? <PartnerSupport /> : <Fallback name="PartnerSupportMode" />;
     case "crisis":
       return <CrisisMode />;
     case "chat":
     default:
-      return ChatMode ? <ChatMode /> : <Fallback name="ChatMode" />;
+      return LandingDashboard ? <LandingDashboard /> : <Fallback name="ChatMode" />;
   }
 }
