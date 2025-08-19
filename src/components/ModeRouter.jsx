@@ -7,7 +7,6 @@ const FocusMode = lazy(() => import('../modes/FocusMode.jsx'));
 const LowSpoonMode = lazy(() => import('../modes/LowSpoonMode.jsx'));
 const PartnerSupportMode = lazy(() => import('../modes/PartnerSupportMode.jsx'));
 const CrisisMode = lazy(() => import('../modes/CrisisMode.jsx'));
-const Dashboard = lazy(() => import('../modes/Dashboard.jsx')); // keep if you have one
 
 // Normalize "Low Spoon", "low-spoon", etc. → "lowspoon"
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
