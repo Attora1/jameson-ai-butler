@@ -18,7 +18,7 @@ import { composeMemoryEntries } from '../utils/memoriesBridge.js';
 import { useMode } from '../context/useMode.js'; // Corrected import
 import ModeRouter from './ModeRouter.jsx';
 
-export default function AppContent() {
+export default function AppContent() { // Added comment to force change
   const { mode } = useMode();
   const [showFacts, setShowFacts] = useState(false);
   const { facts, addFact, clearFacts } = useFacts();
