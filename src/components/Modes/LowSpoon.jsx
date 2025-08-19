@@ -9,7 +9,7 @@ import '../../styles/modes-css/LowSpoon.css';
 import { useSpoons } from '../../context/SpoonContext.jsx';
 
 export default function LowSpoon({ settings }) {
-  const { spoons, isUnset } = useSpoons();
+  const { spoons } = useSpoons();
   const [isBreathing, setIsBreathing] = useState(false);
   const [dimVisible, setDimVisible] = useState(false);
   const [AELIMessage, setAELIMessage] = useState('');

@@ -487,14 +487,13 @@ export function useChat(
     input,
     isResponding,
     messages,
-    settings,
-    setSettings,
+    startupPhrasesParam,
+    setMode, // Add setMode to dependency array
     addFact,
-    skipNextResponse,
     poweredDown,
     setPoweredDown,
-    startupPhrasesParam,
-    setMode // Add setMode to dependency array
+    settings,
+    skipNextResponse
   ]);
 
   return { messages, setMessages, input, setInput, isResponding, handleSubmit, poweredDown, setPoweredDown };

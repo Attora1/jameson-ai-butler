@@ -1,7 +1,6 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SPOON_MAX, DEFAULT_SPOONS, clampSpoons } from '../constants/spoons';
-
-export const SpoonContext = createContext();
+import { SpoonContext } from './useSpoons'; // Import SpoonContext from the new file
 
 export function SpoonProvider({ children }) {
   // Previously defaulted to 12; now we allow "unset"
@@ -30,5 +29,3 @@ export function SpoonProvider({ children }) {
     </SpoonContext.Provider>
   );
 }
-
-export const useSpoons = () => useContext(SpoonContext);

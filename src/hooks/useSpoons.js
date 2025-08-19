@@ -16,10 +16,10 @@ export function useSpoons(defaultValue = null) {
   // Write locally and broadcast to other listeners (no network here).
   const setSpoonsLocal = useCallback((val, { broadcast = true } = {}) => {
     const n = Math.max(0, Math.min(10, Math.round(Number(val))));
-    try { localStorage.setItem(LS_KEY, String(n)); } catch {}
+    try { localStorage.setItem(LS_KEY, String(n)); } catch { /* ignore */ }
     setSpoons(n);
     if (broadcast && typeof window !== 'undefined') {
-      try { window.dispatchEvent(new CustomEvent('aeli:spoons', { detail: { spoons: n } })); } catch {}
+      try { window.dispatchEvent(new CustomEvent('aeli:spoons', { detail: { spoons: n } })); } catch { /* ignore */ }
     }
     return n;
   }, []);

@@ -56,7 +56,7 @@ export async function wellnessIntent({ input, settings, setMessages, setInput })
         try {
           localStorage.setItem('AELI_SPOONS', String(spoons));
           window.dispatchEvent(new CustomEvent('aeli:spoons', { detail: { spoons } }));
-        } catch {}
+        } catch { /* ignore */ }
         setMessages(prev => [
           ...prev,
           { isUser: true, text: raw },
@@ -96,7 +96,7 @@ export async function wellnessIntent({ input, settings, setMessages, setInput })
           try {
             localStorage.setItem('AELI_SPOONS', String(s));
             window.dispatchEvent(new CustomEvent('aeli:spoons', { detail: { spoons: s } }));
-          } catch {}
+          } catch { /* ignore */ }
         }
         const parts = [];
         parts.push(`Spoons: ${Number.isFinite(s) ? `${s}/10` : '—'}.`);

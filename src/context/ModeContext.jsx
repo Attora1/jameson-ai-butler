@@ -1,6 +1,5 @@
-import { createContext, useContext, useReducer, useMemo } from "react";
-
-const ModeContext = createContext(null);
+import { useReducer, useMemo } from "react";
+import { ModeContext } from "./useMode"; // Import ModeContext from the new file
 
 const initial = {
   mode: "chat",        // "chat" | "lowSpoon" | "focus" | "partner" | "crisis"
@@ -29,10 +28,4 @@ export function ModeProvider({ children }) {
   }), [state.mode, state.lastMode]);
 
   return <ModeContext.Provider value={api}>{children}</ModeContext.Provider>;
-}
-
-export function useMode() {
-  const ctx = useContext(ModeContext);
-  if (!ctx) throw new Error("useMode must be used inside <ModeProvider>");
-  return ctx;
 }

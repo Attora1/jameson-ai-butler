@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getHealthProfile, setHealthProfile, upsertCondition } from '../utils/healthProfile';
+import { getHealthProfile, setHealthProfile } from '../utils/healthProfile';
 import { PHQ9_ITEMS, scorePHQ9, savePHQ9Result } from '../utils/phq9';
 
 export default function HealthProfileEditor({ open, onClose }) {

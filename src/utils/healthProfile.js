@@ -45,7 +45,7 @@ export function setHealthProfile(patch = {}) {
   cache = next;
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
-  } catch {}
+  } catch { /* ignore */ }
   return next;
 }
 
@@ -62,6 +62,6 @@ export function upsertCondition(name) {
 
 export function clearHealthProfile() {
   cache = null;
-  try { localStorage.removeItem(KEY); } catch {}
+  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
   return getHealthProfile();
 }
