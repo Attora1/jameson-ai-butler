@@ -1,6 +1,6 @@
 import React from "react";
 
-function ChatContainer({ settings, children }) {
+function ChatContainer({ settings = { fontFamily: 'default', fontSize: 'medium' }, children }) {
     const fontClass = `font-${settings.fontFamily || 'default'}`;
     const sizeClass = `size-${settings.fontSize || 'medium'}`;
   
