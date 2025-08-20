@@ -74,6 +74,34 @@
   --chip-bg: rgba(255,255,255,0.08);
   --chip-shadow: 0 2px 10px rgba(0,0,0,0.18);
   --border-2: rgba(255,255,255,0.22);
+
+/* Focus Mode Colors */
+  --color-focus-dark-purple: #2a2b4a;
+  --color-focus-medium-purple: #3a3b5a;
+  --color-focus-light-blue: #a0c0ff;
+  --box-shadow-focus-panel: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --color-focus-border-blue: #5a7a9a;
+  --color-focus-background-dark: #1a1b2f;
+  --color-white: #ffffff; /* Placeholder, should map to --text or --text-light */
+  --color-focus-checked-text: #888888;
+  --color-focus-add-btn: #4CAF50;
+  --color-focus-add-btn-hover: #45a049;
+  --color-focus-timer-btn: #007bff;
+  --color-focus-timer-btn-text: #ffffff;
+  --color-focus-timer-btn-hover: #0056b3;
+  --color-focus-stop-btn: #dc3545;
+  --color-focus-stop-btn-hover: #c82333;
+  --color-focus-timer-display: #ffffff;
+  --color-focus-timer-background: rgba(0, 0, 0, 0.5);
+  --color-focus-quote-background: rgba(0, 0, 0, 0.3);
+  --color-focus-quote-shadow: rgba(0, 0, 0, 0.2);
+  --color-focus-modal-background: rgba(0, 0, 0, 0.8);
+  --color-focus-modal-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  --color-focus-modal-btn-background: #007bff;
+  --color-focus-modal-btn-hover: #0056b3;
+  --color-mission-complete-btn: #28a745;
+  --color-mission-complete-btn-border: #218838;
+  --color-scrollbar-thumb: #888888;
 }
 
 /* =========

@@ -4,12 +4,12 @@
   min-width: 280px;
   background: linear-gradient(145deg, var(--color-focus-dark-purple), var(--color-focus-medium-purple));
   color: var(--color-focus-light-blue);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-l);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
   box-shadow: var(--box-shadow-focus-panel);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-l);
+  gap: var(--space-4);
   max-height: none;
 
 }
@@ -17,9 +17,9 @@
 /* Headers */
 h3, h4, .task-header {
   text-align: center;
-  font-size: var(--spacing-l);
+  font-size: var(--space-4);
   color: var(--color-focus-accent-blue);
-  margin: var(--spacing-xs) 0 var(--spacing-m);
+  margin: var(--space-1) 0 var(--space-4);
 }
 
 /* Task input */
@@ -27,11 +27,11 @@ h3, h4, .task-header {
   width: 100%;
   padding: var(--spacing-xs);
   margin-top: 0.3rem;
-  border-radius: var(--border-radius-m);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-focus-border-blue);
   background: var(--color-focus-background-dark);
   color: var(--color-white);
-  font-size: var(--spacing-m);
+  font-size: var(--space-4);
   box-shadow: none;
   outline: none;
 }
@@ -39,8 +39,8 @@ h3, h4, .task-header {
 /* Checklist input group */
 .checklist-input {
   display: flex;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-xs);
+  gap: var(--space-1);
+  margin-top: var(--space-1);
   box-shadow: none;
   outline: none;
 }
@@ -48,12 +48,12 @@ h3, h4, .task-header {
 /* New checklist item input */
 .new-item-input {
   flex: 1;
-  padding: var(--spacing-s);
-  border-radius: var(--border-radius-m);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-focus-border-blue);
   background: var(--color-focus-background-dark);
   color: var(--color-white);
-  font-size: var(--spacing-m);
+  font-size: var(--space-4);
   box-shadow: none;
   outline: none;
 }
@@ -64,11 +64,11 @@ h3, h4, .task-header {
   padding-left: 0;
   max-height: 180px;
   overflow-y: auto;
-  margin: var(--spacing-xs) 0 var(--spacing-m);
+  margin: var(--space-1) 0 var(--space-4);
 }
 
 .checklist li {
-  margin-bottom: var(--spacing-s);
+  margin-bottom: var(--space-2);
 }
 
 .checklist li.checked label {
@@ -81,8 +81,8 @@ h3, h4, .task-header {
 .add-btn {
   background-color: var(--color-focus-add-btn);
   color: var(--color-white);
-  padding: 0 var(--spacing-m);
-  border-radius: var(--border-radius-s);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   transition: var(--transition-ease);
   box-shadow: none;
@@ -99,18 +99,18 @@ h3, h4, .task-header {
 
 /* Side quests section */
 .side-quest-section {
-  margin-bottom: var(--spacing-m);
+  margin-bottom: var(--space-4);
 }
 
 .suggestion-list {
   list-style: none;
   padding-left: 0;
   line-height: 1.6;
-  margin-top: var(--spacing-xs);
+  margin-top: var(--space-1);
 }
 
 .suggestion-list li {
-  padding-left: var(--spacing-m);
+  padding-left: var(--space-4);
   text-indent: -0.8rem;
 }
 
@@ -119,7 +119,7 @@ h3, h4, .task-header {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
+  gap: var(--space-1);
   margin-bottom: 0;
 }
 
@@ -127,8 +127,8 @@ h3, h4, .task-header {
   background-color: var(--color-focus-timer-btn);
   border: none;
   color: var(--color-focus-timer-btn-text);
-  padding: var(--spacing-s) var(--spacing-l);
-  border-radius: var(--border-radius-l);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-xl);
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition-ease);
@@ -149,24 +149,24 @@ h3, h4, .task-header {
 /* Timer display */
 .timer-display {
   text-align: center;
-  font-size: var(--spacing-l);
+  font-size: var(--space-4);
   font-weight: bold;
   color: var(--color-focus-timer-display);
   background: var(--color-focus-timer-background);
-  padding: var(--spacing-s);
-  border-radius: var(--border-radius-l);
+  padding: var(--space-2);
+  border-radius: var(--radius-xl);
   box-shadow: inset 0 0 10px rgba(0, 128, 255, 0.2);
   margin-bottom: 0;
 }
 
 .motivational-quote {
   margin-top: var(--spacing-s);
-  padding: var(--spacing-m) var(--spacing-l);
+  padding: var(--space-4) var(--space-4);
   background: var(--color-focus-quote-background);
-  border-radius: var(--border-radius-l);
+  border-radius: var(--radius-xl);
   font-style: italic;
   color: var(--color-gold-deep);
-  font-size: var(--spacing-m);
+  font-size: var(--space-4);
   line-height: 1.5;
   box-shadow: inset 0 0 8px var(--color-focus-quote-shadow);
   transition: var(--transition-ease);
@@ -181,8 +181,8 @@ h3, h4, .task-header {
 .music-toggle .btn { /* Use .btn class */
   background-color: var(--color-gold-deep);
   color: var(--color-white);
-  padding: var(--spacing-xs) var(--spacing-m);
-  border-radius: var(--border-radius-m);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-md);
   font-weight: 600;
   transition: var(--transition-ease);
 }
@@ -199,10 +199,10 @@ h3, h4, .task-header {
   transform: translateX(-50%);
   background: var(--color-focus-modal-background);
   color: var(--color-white);
-  padding: var(--spacing-m) var(--spacing-xl);
-  border-radius: var(--border-radius-l);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-xl);
   box-shadow: var(--color-focus-modal-shadow);
-  font-size: var(--spacing-m);
+  font-size: var(--space-4);
   z-index: 1000;
   opacity: 0;
   transition: top 0.6s ease, opacity 0.6s ease;
@@ -220,20 +220,20 @@ h3, h4, .task-header {
 .focus-modal-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-m);
+  gap: var(--space-4);
 }
 
 .focus-modal-buttons {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-l);
+  gap: var(--space-4);
 }
 
 .focus-modal-buttons .btn { /* Use .btn class */
-  padding: var(--spacing-xs) var(--spacing-m);
+  padding: var(--space-1) var(--space-4);
   background: var(--color-focus-modal-btn-background);
   color: var(--color-white);
-  border-radius: var(--border-radius-m);
+  border-radius: var(--radius-md);
   font-weight: 600;
   transition: var(--transition-ease);
 }
@@ -253,8 +253,8 @@ h3, h4, .task-header {
   background-color: var(--color-mission-complete-btn);
   color: var(--color-white);
   border: 1px solid var(--color-mission-complete-btn-border);
-  padding: var(--spacing-xs) var(--spacing-m);
-  border-radius: var(--border-radius-m);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-md);
   font-weight: 600;
   transition: var(--transition-ease);
 }
@@ -277,13 +277,13 @@ h3, h4, .task-header {
 /* Scrollbars */
 .focus-wrapper::-webkit-scrollbar,
 .focus-panel::-webkit-scrollbar {
-  width: var(--spacing-xs);
+  width: var(--space-1);
 }
 
 .focus-wrapper::-webkit-scrollbar-thumb,
 .focus-panel::-webkit-scrollbar-thumb {
   background-color: var(--color-scrollbar-thumb);
-  border-radius: var(--border-radius-s);
+  border-radius: var(--radius-sm);
 }
 
 /* Accessibility */
@@ -299,7 +299,7 @@ h3, h4, .task-header {
 @media (max-width: 700px) {
   .focus-wrapper {
     flex-direction: column;
-    padding: var(--spacing-m);
+    padding: var(--space-4);
   }
 
   .focus-panel {
