@@ -20,7 +20,10 @@ const isValidZipCode = (zip) => {
   return /^\d{5}(-\d{4})?$/.test(cleanZip);
 };
 
+import { useMode } from '../context/useMode.js';
+
 const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
+  const { setMode } = useMode();
   const [localSettings, setLocalSettings] = useState(settings);
   const [zipError, setZipError] = useState('');
 
@@ -238,9 +241,10 @@ const SettingsModal = ({ settings, setSettings, onClose, setMessages }) => {
           <select
             className='form-control'
             value={localSettings.mode}
-            onChange={(e) =>
-              setLocalSettings(prev => ({ ...prev, mode: e.target.value }))
-            }
+            onChange={(e) => {
+              setLocalSettings(prev => ({ ...prev, mode: e.target.value }));
+              setMode(e.target.value); // Add this line
+            }}
           >
             <option value="dashboard">Dashboard</option>
             <option value="low_spoon">Low Spoon</option>
