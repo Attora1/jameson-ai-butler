@@ -24,6 +24,7 @@ const MODE_MAP = {
 
 export default function ModeRouter() {
   const { mode } = useMode();
+  console.log("Current mode:", mode);
   const key = norm(mode);
   const Screen = MODE_MAP[key] || ChatMode; // ✅ fallback is Chat, not Dashboard
   return (
